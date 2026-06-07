@@ -26,6 +26,11 @@ Every way input reaches this feature.
 
 Walk STRIDE as a prompt — spoofing, tampering, repudiation, information disclosure, denial of service, elevation of privilege — and keep the ones that are real here.
 
+Rate each threat L/M/H on both axes using this rubric (rate, don't agonize — the point is to sort, not to be precise):
+
+- **Likelihood** — H: reachable by untargeted scanning or anonymous users. M: requires an authenticated user or specific knowledge. L: requires insider access or chaining several exploits.
+- **Impact** — H: account takeover or compromise of a whole data class. M: single-user data exposure or integrity loss. L: nuisance or degradation.
+
 | # | Threat | Likelihood (L/M/H) | Impact (L/M/H) |
 |---|---|---|---|
 | T1 | <WHO_DOES_WHAT_TO_WHAT> | <L_M_H> | <L_M_H> |

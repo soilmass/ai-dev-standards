@@ -20,6 +20,8 @@ How shipped code becomes a release: versioning, changelog, and feature flags. Bu
 8. Every flag has an owner and a removal condition stated where it's declared. A flag that's been 100%-on for a release cycle is debt: remove it (`08-maintenance/tech-debt-policy.md`).
 9. Kill-switch flags for risky integrations are part of the rollback story (`06-delivery/rollback.md`).
 
+The minimal flag, concretely: a boot-validated env var (e.g. `FLAG_NEW_CHECKOUT`), parsed as a boolean by the env schema so an invalid value fails startup, not a request. Read it **once at the server boundary** and pass the resolved value down — never re-read the env or sniff the flag ad hoc deep in components, where it can drift between call sites (`04-build/secrets-config.md`). A kill switch is the same pattern with a degrade-gracefully branch: flag off → the safe fallback path, not an error.
+
 ## Release steps (the whole ceremony)
 
 1. Confirm the nightly/pre-deploy tier is green on the release commit (`05-verification/ci-pipeline.md`).

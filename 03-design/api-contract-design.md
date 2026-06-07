@@ -8,6 +8,13 @@ Contracts before handlers: the shape of every API is declared as a schema first,
 2. Types are **inferred from the schemas** and shared front↔back from one module — never hand-duplicated interface declarations on each side. One declaration, both directions.
 3. Handlers parse input through the schema at the boundary (reject early, typed thereafter) and — in development and tests — validate output against the response schema too.
 
+### How sharing works in practice
+
+- One contract module per resource (a `contracts/` or `schemas/` area): each file exports the schema written in the stack's validation library, plus the types **inferred** from that schema.
+- Server code imports the schema itself — it needs the runtime parser to validate input at the boundary.
+- Client code imports **only the inferred types** — never the validator runtime, never a re-declared interface.
+- A contract change is therefore one file's diff: the schema and its inferred types move together, reviewed once, and every consumer recompiles against it (`03-design/architecture-standards.md` rule 6).
+
 ## The error envelope
 
 4. All errors cross the wire in one standardized shape:

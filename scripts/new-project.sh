@@ -11,8 +11,11 @@
 #   2. Copies the preset's known-good configs: lint-config/*, ci/* -> .github/workflows
 #      (+ ci config files -> project root), hooks/* -> .husky + config files,
 #      dependabot.yml -> .github/, env.schema.example -> env.schema.ts,
-#      project-config/*.example -> project root with the .example stripped
-#      (vitest/playwright/drizzle configs, .gitignore).
+#      project-config/** -> project root (RECURSIVE, relative paths preserved) with
+#      the .example stripped: tool configs (vitest/playwright/drizzle), .gitignore,
+#      the test scaffolding (tests/setup.ts, MSW server+handlers, example
+#      unit/e2e/visual tests), instrumentation.ts (boot env-validation), and the
+#      db/schema.ts starter — e.g. tests/msw/server.example.ts -> tests/msw/server.ts.
 #   3. Drops the working templates into <target>/docs/ (incl. docs/slos.md and
 #      docs/debt-log.md starters).
 #
@@ -116,20 +119,27 @@ install_file "$PRESET_DIR/dependabot.yml" "$TARGET/.github/dependabot.yml"
 # env schema example -> env.schema.ts
 install_file "$PRESET_DIR/env.schema.example" "$TARGET/env.schema.ts"
 
-# per-project tool configs -> project root, '.example' stripped
-# (gitignore.example becomes .gitignore; *.config.example.ts become *.config.ts)
+# per-project tool configs -> project root, '.example' stripped, RECURSIVELY so
+# nested paths are preserved (e.g. project-config/tests/msw/server.example.ts ->
+# <project>/tests/msw/server.ts). gitignore.example -> .gitignore is special-cased;
+# foo.example.ts -> foo.ts; foo.example -> foo. install_file keeps it idempotent.
 if [[ -d "$PRESET_DIR/project-config" ]]; then
-  for f in "$PRESET_DIR/project-config/"*; do
-    [[ -f "$f" ]] || continue
-    base="$(basename "$f")"
+  PC_ROOT="$PRESET_DIR/project-config"
+  while IFS= read -r -d '' f; do
+    rel="${f#"$PC_ROOT"/}"          # path relative to project-config/
+    dir="$(dirname "$rel")"         # '.' for top-level files
+    base="$(basename "$rel")"
     case "$base" in
-      gitignore.example) dest=".gitignore" ;;
-      *.example.*)       dest="${base/.example/}" ;;
-      *.example)         dest="${base%.example}" ;;
-      *)                 dest="$base" ;;
+      gitignore.example) base=".gitignore" ;;
+      *.example.*)       base="${base/.example/}" ;;
+      *.example)         base="${base%.example}" ;;
     esac
-    install_file "$f" "$TARGET/$dest"
-  done
+    if [[ "$dir" == "." ]]; then
+      install_file "$f" "$TARGET/$base"
+    else
+      install_file "$f" "$TARGET/$dir/$base"
+    fi
+  done < <(find "$PC_ROOT" -type f -print0)
 fi
 
 # --- 3. drop in templates ----------------------------------------------------

@@ -62,6 +62,16 @@ Better Auth is the self-hosted default; Clerk when you want zero-maintenance man
 
 ---
 
+## Currency pass checklist
+
+The twice-yearly pass (see `standards-lifecycle.md`) is concrete work, not a glance:
+
+1. Walk every table row: check each tool for deprecation notices, security advisories, major releases, and ecosystem drift (is the industry default moving away from it?).
+2. Re-verify the dated guardrails in `agent-operating-rules.md` — a guardrail naming a deprecated tool or a "as of <date>" claim is the first thing to go stale.
+3. Update the **Snapshot date** at the top of this file.
+4. Patch any affected preset ADRs (`stacks/nextjs-default/stack-decisions.md`) in the same change — the table and its ADRs must never drift.
+5. Record the pass in the library's git history as a tagged commit, so each currency review is locatable later.
+
 ## How these decisions are consumed
 
 - Each pinned tool has a pre-written ADR in `stacks/nextjs-default/stack-decisions.md` — choice, rationale, accepted tradeoff.

@@ -24,6 +24,15 @@ Layering, dependency direction, and module boundaries — the rules that keep a 
 9. Architectural decisions — new layer, new service, new boundary — get an ADR before the implementing PR.
 10. Frameworks live at the edges: domain logic that imports the framework is domain logic you can't test cheaply or move (the testing strategy depends on this rule).
 
+## Layer-review prompts
+
+The lint only catches deep relative imports; full layering is review-carried. Apply these to every diff (reviewer or agent):
+
+- Does any domain module import interface or infrastructure? (Rule 2 — the domain imports neither.)
+- Does new code reach into another module's internals instead of its entry/index? (Rule 4.)
+- Did a new boundary, component, or external dependency update the architecture map? (Rule 8.)
+- Is framework code creeping inward past the edges into domain logic? (Rule 10.)
+
 ## Enforcement
 - Mechanism: lint rule
 - Config: stacks/nextjs-default/lint-config/biome.json (restricted-imports rules blocking deep relative cross-module imports)

@@ -10,7 +10,7 @@ Column meanings — **Articulated**: rule written concretely. **Templated**: fil
 | Standards lifecycle | [standards-lifecycle.md](standards-lifecycle.md) | n/a — process doc | gap (accepted): process is human-arbitered by design | reference only |
 | Agent operating rules | [agent-operating-rules.md](agent-operating-rules.md) | n/a — rules doc | partially: never-touch items backed by hooks/CI ([pre-commit](../stacks/nextjs-default/hooks/pre-commit), [pr.yml](../stacks/nextjs-default/ci/pr.yml)); rest rides [code-review-standard.md](../05-verification/code-review-standard.md) | linked from every bootstrapped `CLAUDE.md` |
 | Pinned decisions | [pinned-decisions.md](pinned-decisions.md) | n/a — reference | gap (accepted): currency relies on the lifecycle's twice-yearly pass | consumed via preset ADRs |
-| Completeness matrix | this file | n/a | [audit-completeness.sh](../scripts/audit-completeness.sh) | reference only |
+| Completeness matrix | this file | n/a | [audit-completeness.sh](../scripts/audit-completeness.sh), run with the wider library QA by [suite-ci.sh](../scripts/suite-ci.sh) on every push/PR ([suite-ci.yml](../.github/workflows/suite-ci.yml)) | reference only |
 | **01 Context** | — | — | — | — |
 | Project agent index | [CLAUDE.template.md](../01-context/CLAUDE.template.md) | same file | n/a — template | [new-project.sh](../scripts/new-project.sh) assembles `CLAUDE.md` |
 | ADRs | [adr.template.md](../01-context/adr.template.md) | same file | n/a — template | injected to `docs/` |
@@ -56,7 +56,9 @@ Column meanings — **Articulated**: rule written concretely. **Templated**: fil
 | Documentation | [documentation.md](../_spines/documentation.md) | the `docs/` template set | CI docs-check ([pr.yml](../stacks/nextjs-default/ci/pr.yml)) | template set + workflow |
 | **Stacks & scripts** | — | — | — | — |
 | Preset contract | [stacks/README.md](../stacks/README.md) | [nextjs-default/](../stacks/nextjs-default/) is the worked example | [audit-completeness.sh](../scripts/audit-completeness.sh) keeps footer pointers honest | [new-project.sh](../scripts/new-project.sh) |
-| Stack decisions | [stack-decisions.md](../stacks/nextjs-default/stack-decisions.md) | ADR template | gap (accepted): ADR currency is a lifecycle review item | n/a — lives in the library |
+| Stack decisions | [stack-decisions.md](../stacks/nextjs-default/stack-decisions.md) | ADR template | gap (accepted): ADR currency is a lifecycle review item (checklist now in [pinned-decisions.md](pinned-decisions.md) § Currency pass) | n/a — lives in the library |
+| Test scaffolding | [testing-strategy.md](../04-build/testing-strategy.md) | example setup/MSW/unit/e2e/visual files ([project-config/tests/](../stacks/nextjs-default/project-config/tests/)) | suite-ci bootstrap smoke asserts injection ([suite-ci.sh](../scripts/suite-ci.sh)) | injected to `tests/` |
+| Library QA (this repo) | [suite-ci.sh](../scripts/suite-ci.sh) | n/a — the script is the artifact | [suite-ci.yml](../.github/workflows/suite-ci.yml) on every push/PR | n/a — lives in the library |
 
 ## Known gaps (explicit, not blank)
 

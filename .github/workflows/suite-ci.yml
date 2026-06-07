@@ -1,0 +1,14 @@
+name: Suite CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  suite-ci:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run suite CI
+        run: bash scripts/suite-ci.sh

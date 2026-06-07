@@ -1,0 +1,10 @@
+#!/usr/bin/env sh
+# Husky pre-commit hook.
+# 1. lint-staged: Biome lint + format on staged files only (fast — Rust binary).
+# 2. gitleaks: scan the staged diff for secrets before they ever enter history.
+# Never bypass with --no-verify to "save time"; fix the finding instead
+# (see 04-build/secrets-config.md).
+
+pnpm exec lint-staged
+
+pnpm exec gitleaks protect --staged --redact --verbose

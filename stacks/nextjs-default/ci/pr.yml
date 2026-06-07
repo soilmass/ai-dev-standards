@@ -1,0 +1,122 @@
+# PR pipeline — runs on every pull request.
+# Execution model (per 05-verification/ci-pipeline.md): sequential gating with
+# parallel execution within each tier; unit tests + fast static checks first (fail fast),
+# then build + preview-dependent gates.
+#
+# Tier 1 (parallel): lint+format, type check, unit/component tests (incl. a11y unit checks), secret scan
+# Tier 2 (after tier 1): production build
+# Tier 3 (after tier 2): Lighthouse CI against the preview deploy
+#
+# Requires repo secrets: VERCEL_PREVIEW (set automatically by the Vercel GitHub
+# integration as a deployment) — the Lighthouse job waits for that deployment URL.
+
+name: PR
+
+on:
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: pr-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NODE_VERSION: '22'
+
+jobs:
+  lint:
+    name: Lint & format (Biome)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Biome check (lint + format + import order)
+        run: pnpm exec biome ci .
+
+  typecheck:
+    name: Type check (tsc, strict)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm exec tsc --noEmit
+
+  test:
+    name: Unit + component tests (Vitest, a11y included)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Vitest with coverage gate
+        run: pnpm exec vitest run --coverage
+      - name: Upload coverage report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage
+          path: coverage/
+          retention-days: 7
+
+  secrets:
+    name: Secret scan (gitleaks)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # full history so gitleaks scans every commit in the PR
+      - uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  build:
+    name: Production build
+    needs: [lint, typecheck, test, secrets]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Validate env schema (boot validation against example values)
+        run: pnpm exec tsx env.schema.ts
+        env:
+          ENV_VALIDATE_ONLY: 'true'
+      - run: pnpm build
+
+  lighthouse:
+    name: Lighthouse CI (preview deploy)
+    needs: [build]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Wait for Vercel preview deployment
+        id: preview
+        uses: patrickedqvist/wait-for-vercel-preview@v1.3.2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          max_timeout: 600
+      - name: Lighthouse audit against preview URL
+        uses: treosh/lighthouse-ci-action@v12
+        with:
+          urls: ${{ steps.preview.outputs.url }}
+          uploadArtifacts: true
+          # Budgets live with the repo so they are reviewable; see 05-verification/a11y-perf-gates.md
+          configPath: ./lighthouserc.json

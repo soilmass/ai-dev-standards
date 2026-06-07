@@ -1,0 +1,38 @@
+# Dependabot config — copied to .github/dependabot.yml by new-project.sh.
+# Policy lives in 08-maintenance/dependency-updates.md: weekly batches,
+# grouped minor/patch to keep PR noise low, security updates land immediately.
+
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: '/'
+    schedule:
+      interval: weekly
+      day: monday
+      time: '06:00'
+      timezone: Etc/UTC
+    open-pull-requests-limit: 5
+    groups:
+      minor-and-patch:
+        applies-to: version-updates
+        update-types: ['minor', 'patch']
+    # Majors arrive as individual PRs and are reviewed by hand
+    labels: ['dependencies']
+    commit-message:
+      prefix: 'build(deps)'
+
+  - package-ecosystem: github-actions
+    directory: '/'
+    schedule:
+      interval: weekly
+      day: monday
+      time: '06:00'
+      timezone: Etc/UTC
+    open-pull-requests-limit: 3
+    groups:
+      actions:
+        applies-to: version-updates
+        update-types: ['minor', 'patch']
+    labels: ['dependencies']
+    commit-message:
+      prefix: 'ci(deps)'

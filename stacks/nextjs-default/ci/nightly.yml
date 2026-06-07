@@ -1,0 +1,93 @@
+# Nightly / pre-deploy pipeline — the slow, comprehensive tier.
+# Per 05-verification/ci-pipeline.md: full E2E suite + visual regression run
+# nightly and before any production deploy, not on every PR.
+
+name: Nightly
+
+on:
+  schedule:
+    - cron: '0 3 * * *' # 03:00 UTC daily
+  workflow_dispatch: {} # manual pre-deploy run
+
+concurrency:
+  group: nightly
+  cancel-in-progress: false
+
+env:
+  NODE_VERSION: '22'
+
+jobs:
+  e2e:
+    name: Full E2E suite (Playwright)
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Install Playwright browsers
+        run: pnpm exec playwright install --with-deps chromium firefox webkit
+      - name: Build app
+        run: pnpm build
+      - name: Run full E2E suite
+        run: pnpm exec playwright test
+      - name: Upload Playwright report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 14
+
+  visual-regression:
+    name: Visual regression (Playwright screenshots)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Install Playwright browsers
+        run: pnpm exec playwright install --with-deps chromium
+      - name: Build app
+        run: pnpm build
+      - name: Compare against committed screenshot baselines
+        run: pnpm exec playwright test --project=visual --update-snapshots=none
+      - name: Upload diff artifacts on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: visual-diffs
+          path: test-results/
+          retention-days: 14
+
+  notify:
+    name: Report failures
+    needs: [e2e, visual-regression]
+    if: failure()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Open/refresh a tracking issue on nightly failure
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const title = `Nightly pipeline failed — ${new Date().toISOString().slice(0, 10)}`;
+            const { data: issues } = await github.rest.issues.listForRepo({
+              ...context.repo, state: 'open', labels: 'nightly-failure',
+            });
+            if (issues.length === 0) {
+              await github.rest.issues.create({
+                ...context.repo,
+                title,
+                labels: ['nightly-failure'],
+                body: `See run: ${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`,
+              });
+            }

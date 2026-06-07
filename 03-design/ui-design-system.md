@@ -20,7 +20,7 @@ Component structure and styling discipline. The styling system itself is a stack
 
 ## Accessibility baseline
 
-8. The accessibility bar and budgets live in `05-verification/a11y-perf-gates.md` (WCAG 2.2 AA; axe checks in the unit tier; Lighthouse on preview). Structural consequences here:
+8. The accessibility bar and budgets live in `05-verification/a11y-perf-gates.md` (WCAG 2.2 AA; automated checks in the unit tier; full audit on the preview deploy). Structural consequences here:
    - Interactive elements are real elements (`button`, `a`, `label`) — div-with-onClick fails review.
    - Every interactive component is keyboard-operable and visibly focusable; every form control has a programmatic label; images carry meaningful `alt` (or empty alt when decorative).
    - Component tests query by **role and accessible name**, which makes unnameable controls fail by construction.

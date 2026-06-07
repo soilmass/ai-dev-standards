@@ -6,7 +6,7 @@ Every dependency is code you now own without having written. This doc governs ho
 
 1. **Adding/removing a dependency is an ask-first action for agents** (`00-governance/agent-operating-rules.md` §2). Humans add deps via a PR that states the justification.
 2. Justify against the alternatives: standard library / platform API, ~30 lines of own code, or an existing dep already in the tree. A dep that saves less than it costs in audit surface doesn't go in.
-3. Vet before adding: maintenance activity (commits/releases within the last year), download base, open CVEs, install scripts, transitive weight (`pnpm why` afterward).
+3. Vet before adding: maintenance activity (commits/releases within the last year), download base, open CVEs, install scripts, transitive weight (check with the package manager's dependency-explain command afterward).
 4. Pin via the lockfile (committed, never hand-edited); version ranges follow the ecosystem default (caret) — the lockfile is the real pin.
 
 ## License allowlist
@@ -19,7 +19,7 @@ Every dependency is code you now own without having written. This doc governs ho
 
 8. Vulnerability audit runs **on every PR** (high+ severity blocks merge) and implicitly via the update tooling's security PRs.
 9. A vulnerability with no upstream fix gets a documented decision: pin + mitigate, replace the dep, or accept-with-expiry (an ADR with a review date). Silent acceptance is not an option.
-10. Quarterly: prune — remove deps no longer imported (`pnpm why` each suspect), and review anything held back by an accepted-risk ADR.
+10. Quarterly: prune — remove deps no longer imported (trace each suspect with the dependency-explain command), and review anything held back by an accepted-risk ADR.
 
 ## Enforcement
 - Mechanism: CI job

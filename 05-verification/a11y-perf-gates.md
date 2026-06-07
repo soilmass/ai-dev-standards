@@ -5,7 +5,7 @@ Accessibility and performance are merge criteria, not launch-week cleanup. Both 
 ## Accessibility
 
 - **Target: WCAG 2.2 AA** for all user-facing pages and components.
-- **Unit tier (every PR):** automated accessibility assertions run inside component tests — axe-based checks on rendered output, plus the discipline that Testing Library's role/label queries impose (an unnameable control is a failing test by construction).
+- **Unit tier (every PR):** automated accessibility assertions run inside component tests — axe-based checks on rendered output, plus the discipline that role/label-based test queries impose (an unnameable control is a failing test by construction).
 - **Preview tier (every PR):** the Lighthouse accessibility category runs against the preview deploy with a minimum score of **0.95**.
 - Automated checks catch roughly half of WCAG; the remainder (focus order, meaningful alt text, keyboard traps) rides the self-review checklist via the UI standard (`03-design/ui-design-system.md`).
 

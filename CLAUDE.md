@@ -44,5 +44,6 @@ Structural changes to this library are built **in phases with verification gates
 
 - Patch, don't rebuild — see `00-governance/standards-lifecycle.md`. The smallest edit that encodes the lesson wins.
 - A doc and the preset config it points at must change in the same commit; they must never drift.
+- **Every tunable knob lives in the calibration register.** Changing any threshold, budget, cadence, score floor, or version pin means updating its row (value + rationale + recalibration trigger) in `00-governance/calibration.md` — and its manifest entry — in the same commit. `scripts/check-calibration.sh` (run by suite CI) fails on any disagreement between the register and the tree. Adding a new knob means adding its row + manifest entry.
 - Templates keep their `.template.md` suffix; renaming one breaks `scripts/new-project.sh` — update the script in the same commit if a template is added, renamed, or removed.
 - Keep `01-context/CLAUDE.template.md` **lean**: non-negotiable rules inline, everything else linked. It is an index, not a manual; resist additions that belong in a layer doc.

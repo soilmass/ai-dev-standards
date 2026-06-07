@@ -11,7 +11,7 @@ Accessibility and performance are merge criteria, not launch-week cleanup. Both 
 
 ## Performance — Core Web Vitals
 
-Budgets asserted by Lighthouse CI on every PR's preview deploy (3 runs, median):
+Budgets asserted by Lighthouse CI on every PR's preview deploy (3 runs, median, **mobile emulation** — Lighthouse's default and the form factor field CWV and search ranking actually measure; a desktop-only gate would pass CI while shipping mobile regressions):
 
 | Metric | Budget |
 |---|---|

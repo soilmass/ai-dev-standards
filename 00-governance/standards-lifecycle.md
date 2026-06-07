@@ -47,7 +47,7 @@ The library improves only through this loop:
 
 1. **During a project**, friction with a standard is logged in the project's decision log / debt log — not fixed by editing the library mid-task (agents: see the never-touch list in `agent-operating-rules.md`).
 2. **After the work ships**, review the log entries. Each becomes one of: a patch PR to the relevant doc, a preset config change, a new ADR in the stack, or a conscious "no change" with a one-line reason.
-3. **Currency pass**: at least twice a year, re-verify the time-sensitive claims in `pinned-decisions.md` and the dated guardrails in `agent-operating-rules.md` (each carries its verification date). Update the snapshot date when done.
+3. **Currency pass**: at least twice a year, re-verify the time-sensitive claims in `pinned-decisions.md` and the dated guardrails in `agent-operating-rules.md` (each carries its verification date). In the same pass, walk the calibration register (`calibration.md`): check each knob's recalibration trigger against observed project data and run `scripts/check-calibration.sh`. Update the snapshot date when done.
 4. Run `scripts/audit-completeness.sh` after every change-batch; the matrix and the tree must never disagree.
 
 ## 7. Who decides

@@ -11,6 +11,7 @@ Column meanings — **Articulated**: rule written concretely. **Templated**: fil
 | Agent operating rules | [agent-operating-rules.md](agent-operating-rules.md) | n/a — rules doc | partially: never-touch items backed by hooks/CI ([pre-commit](../stacks/nextjs-default/hooks/pre-commit), [pr.yml](../stacks/nextjs-default/ci/pr.yml)); rest rides [code-review-standard.md](../05-verification/code-review-standard.md) | linked from every bootstrapped `CLAUDE.md` |
 | Pinned decisions | [pinned-decisions.md](pinned-decisions.md) | n/a — reference | gap (accepted): currency relies on the lifecycle's twice-yearly pass | consumed via preset ADRs |
 | Completeness matrix | this file | n/a | [audit-completeness.sh](../scripts/audit-completeness.sh), run with the wider library QA by [suite-ci.sh](../scripts/suite-ci.sh) on every push/PR ([suite-ci.yml](../.github/workflows/suite-ci.yml)) | reference only |
+| Calibration register | [calibration.md](calibration.md) — every tunable knob: value, rationale, recalibration trigger | n/a — the register is the artifact | [check-calibration.sh](../scripts/check-calibration.sh) verifies register ↔ tree on every push/PR via suite CI | n/a — lives in the library |
 | **01 Context** | — | — | — | — |
 | Project agent index | [CLAUDE.template.md](../01-context/CLAUDE.template.md) | same file | n/a — template | [new-project.sh](../scripts/new-project.sh) assembles `CLAUDE.md` |
 | ADRs | [adr.template.md](../01-context/adr.template.md) | same file | n/a — template | injected to `docs/` |

@@ -1,9 +1,30 @@
 #!/usr/bin/env sh
 # Husky pre-commit hook.
-# 1. lint-staged: Biome lint + format on staged files only (fast — Rust binary).
-# 2. gitleaks: scan the staged diff for secrets before they ever enter history.
+# 1. Branch-name gate: no direct commits to main; branches follow the
+#    <type>/<slug> convention (see 04-build/git-standards.md).
+# 2. lint-staged: Biome lint + format on staged files only (fast — Rust binary).
+# 3. gitleaks: scan the staged diff for secrets before they ever enter history.
 # Never bypass with --no-verify to "save time"; fix the finding instead
 # (see 04-build/secrets-config.md).
+
+branch="$(git rev-parse --abbrev-ref HEAD)"
+case "$branch" in
+  main)
+    echo "✖ Direct commits to main are blocked — create a branch: <type>/<slug>" >&2
+    exit 1
+    ;;
+  HEAD)
+    : # detached HEAD (rebase/cherry-pick in progress) — allow
+    ;;
+  feat/*|fix/*|docs/*|style/*|refactor/*|perf/*|test/*|build/*|ci/*|chore/*|revert/*)
+    : # conforms to convention
+    ;;
+  *)
+    echo "✖ Branch '$branch' violates naming convention <type>/<slug>" >&2
+    echo "  allowed types: feat fix docs style refactor perf test build ci chore revert" >&2
+    exit 1
+    ;;
+esac
 
 pnpm exec lint-staged
 

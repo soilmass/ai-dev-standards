@@ -2,7 +2,7 @@
 
 This file governs edits to the **standards library itself**. It is distinct from `01-context/CLAUDE.template.md`, which projects consume. If you are working in a project bootstrapped *from* this library, this file does not apply to you.
 
-The layer standards in `02-product/` through `08-maintenance/` (notably `04-build/git-standards.md`) govern projects bootstrapped from this library, **not this repo's own operation**. This repo is a solo docs library: it commits direct to `main` and relies on `suite-ci.yml` (push + PR) as its only gate — it runs no git hooks of its own. Do not create branches or PRs, invoke `git-standards.md` / branch-protection rules, or add a pre-commit hook here; to shorten the feedback loop you may run `scripts/suite-ci.sh` manually before pushing.
+The layer standards in `02-product/` through `08-maintenance/` (notably `04-build/git-standards.md`) govern projects bootstrapped from this library, **not this repo's own operation**. This repo is a solo docs library: it commits direct to `main` (the branching model — no branches/PRs — not a grant of commit authority; per `00-governance/standards-lifecycle.md` §7 an agent proposes and prepares a change but the human commits it) and relies on `suite-ci.yml` (push + PR) as its only gate — it runs no git hooks of its own. Do not create branches or PRs, invoke `git-standards.md` / branch-protection rules, or add a pre-commit hook here; to shorten the feedback loop you may run `scripts/suite-ci.sh` manually before pushing.
 
 ## 1. The footer contract
 

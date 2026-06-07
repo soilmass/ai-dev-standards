@@ -141,7 +141,7 @@ jobs:
           BASE: ${{ github.event.pull_request.base.sha }}
           HEAD: ${{ github.event.pull_request.head.sha }}
         run: |
-          violations=$(git diff --name-status "$BASE" "$HEAD" -- 'drizzle/**/*.sql' | awk '$1 !~ /^A/ {print}')
+          violations=$(git diff --name-status "$BASE" "$HEAD" -- ':(glob)drizzle/**/*.sql' | awk '$1 !~ /^A/ {print}')
           if [ -n "$violations" ]; then
             echo "::error::Applied migrations were modified or deleted — migrations are forward-only (06-delivery/migration-discipline.md):"
             echo "$violations"
@@ -163,7 +163,7 @@ jobs:
           WAIVED: ${{ contains(github.event.pull_request.labels.*.name, 'no-docs-needed') }}
         run: |
           code=$(git diff --name-only "$BASE" "$HEAD" -- 'app/**' 'components/**' 'lib/**' 'db/**' 'src/**' | wc -l)
-          docs=$(git diff --name-only "$BASE" "$HEAD" -- '**/*.md' | wc -l)
+          docs=$(git diff --name-only "$BASE" "$HEAD" -- ':(glob)**/*.md' | wc -l)
           echo "code files changed: $code, markdown files changed: $docs, waived: $WAIVED"
           if [ "$code" -gt 0 ] && [ "$docs" -eq 0 ] && [ "$WAIVED" != "true" ]; then
             echo "::error::Code changed but no docs did (_spines/documentation.md). Update docs or add the 'no-docs-needed' label."

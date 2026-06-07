@@ -16,8 +16,8 @@ case "$branch" in
   HEAD)
     : # detached HEAD (rebase/cherry-pick in progress) — allow
     ;;
-  feat/*|fix/*|docs/*|style/*|refactor/*|perf/*|test/*|build/*|ci/*|chore/*|revert/*)
-    : # conforms to convention
+  feat/?*|fix/?*|docs/?*|style/?*|refactor/?*|perf/?*|test/?*|build/?*|ci/?*|chore/?*|revert/?*)
+    : # conforms to convention (?* requires >=1 slug char after the slash)
     ;;
   *)
     echo "✖ Branch '$branch' violates naming convention <type>/<slug>" >&2

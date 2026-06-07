@@ -13,7 +13,7 @@ How a spec becomes a sequence of small, shippable units. Decomposition quality i
 ## Sizing heuristics
 
 - A unit an experienced developer (or an agent run) can complete — code, tests, docs — in **half a day or less**.
-- Diff budget: aim under ~400 changed lines; the CI gate hard-fails at 800 (excluding lockfile/snapshots). When generated code legitimately exceeds it, split the generated commit from the hand-written one.
+- Diff budget: aim under ~400 changed lines; the CI gate hard-fails above 800 — i.e. 801+ (excluding lockfile/snapshots). When generated code legitimately exceeds it, split the generated commit from the hand-written one.
 - If you can't name the unit in one short sentence without "and", it's two units.
 - If the test plan needs a table of contents, it's an epic — decompose again.
 

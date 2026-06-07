@@ -67,9 +67,13 @@ These three guardrails are standing governance rules. Items 1 and 3 are hard "NE
 
 1. **NEVER scaffold a new project on Lucia** — it was deprecated in early 2025 and receives no security patches. Use Better Auth.
 
-2. **TanStack Start is now a valid alternative, not a default.** It reached a feature-complete v1.0 RC and is used in production with dependencies pinned. Default to Next.js; choose TanStack Start deliberately as a stack-preset decision. Known tradeoff: no React Server Components support yet — if you need RSC, use Next.js. (Verified current as of the June 2026 audit; re-check at next currency pass.)
+2. **TanStack Start is now a valid alternative, not a default.** It reached a stable v1.0 (GA, used in production) with dependencies pinned. Default to Next.js; choose TanStack Start deliberately as a stack-preset decision. Known tradeoff: React Server Components support is experimental/opt-in, not the default — if you need production-grade RSC, use Next.js. (Re-verified June 2026 currency pass; re-check at next currency pass.)
 
-3. **NEVER rely on Next.js middleware alone for auth/session protection.** CVE-2025-29927 (disclosed March 2025) showed middleware-only protection was bypassable via a spoofed `x-middleware-subrequest` header; it is patched in Next.js 12.3.5 / 13.5.9 / 14.2.25 / 15.2.3+. Pin a patched version AND keep defense-in-depth: verify the session in the route handler / server component, never in middleware alone. The principle outlives the specific CVE.
+3. **NEVER rely on Next.js middleware alone for auth/session protection, AND keep Next.js patched against the known App-Router RCE.** Two distinct advisories drive this guardrail:
+   - **CVE-2025-29927** (disclosed March 2025): middleware-only protection was bypassable via a spoofed `x-middleware-subrequest` header; patched in Next.js 12.3.5 / 13.5.9 / 14.2.25 / 15.2.3+.
+   - **CVE-2025-55182 (React2Shell; CVE-2025-66478 was filed and merged as a duplicate of the same RSC root cause), disclosed December 2025**: a CVSS-10 *unauthenticated* RCE via insecure deserialization in the React Server Components Flight protocol, affecting App Router apps on 15.x and 16.x. Defense-in-depth does not cover an unauthenticated RCE — the only mitigation is the patched line. A project pinned only to the 29927 floor (e.g. 15.2.3) is still vulnerable.
+
+   Pin Next.js **at or above the React2Shell-patched line for your major** (≥ 15.5.7 on the 15.x line, ≥ 16.0.7 on 16.x — patched lines: 15.0.5 / 15.1.9 / 15.2.6 / 15.3.6 / 15.4.8 / 15.5.7 / 16.0.7), which also clears the 29927 floor. AND keep defense-in-depth: verify the session in the route handler / server component, never in middleware alone. The principle (patch the App-Router RCE surface; never trust middleware alone) outlives the specific CVEs. (Re-verified June 2026 currency pass.)
 
 Further guardrails live where they bite: production migration discipline in `06-delivery/migration-discipline.md` (never `db push` in production), test-runner limitations in `04-build/testing-strategy.md` (async Server Components).
 

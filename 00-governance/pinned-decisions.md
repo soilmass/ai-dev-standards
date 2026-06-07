@@ -2,7 +2,7 @@
 
 The standing tool recommendations behind the default stack preset, kept as a living reference. **This is the one global file permitted to name tools.** Everything here is framed as *defaults plus deviation rules*, not immutable law: the default preset uses the Primary column; the Deviation rule says when a *second preset* is warranted. Never silently substitute — a deviation is a new preset plus an ADR.
 
-Snapshot date: June 2026. Re-verify confidence levels at each currency pass (see `standards-lifecycle.md`).
+Snapshot date: June 2026 (currency pass 2026-06-07). Re-verify confidence levels at each currency pass (see `standards-lifecycle.md`).
 
 ---
 
@@ -24,7 +24,7 @@ Snapshot date: June 2026. Re-verify confidence levels at each currency pass (see
 | Secret scanning | **gitleaks** | none | Locked |
 | Dependency updates | **Dependabot** | Renovate if monorepo grouping/policy outgrows it | Locked |
 | CI | **GitHub Actions** | none | Locked |
-| Framework | **Next.js** | SvelteKit if leaving React for DX/perf; TanStack Start for type-safe Vite-native (no RSC yet) | Pinned |
+| Framework | **Next.js** | SvelteKit if leaving React for DX/perf; TanStack Start for type-safe Vite-native (RSC experimental/opt-in, not default) | Pinned |
 | ORM | **Drizzle** (edge/serverless + AI-agent-friendly default) | Prisma if on a warm Node server and you want the most mature migration tooling | Pinned (rule) |
 | Auth | **Better Auth** | Clerk if you want zero-maintenance managed auth; NEVER Lucia (deprecated) | Pinned |
 | Hosting | **Vercel** (frontend) | Railway/Fly.io for heavy backend (WebSockets, cron, long jobs); Coolify/VPS at scale | Pinned (rule) |
@@ -39,7 +39,7 @@ These cells are *rules*, not single picks, because this library is reused across
 
 ### ORM — decide by *where the code runs*
 
-- **Edge / serverless** (cold starts matter) → **Drizzle**: 3–5x faster cold start, no generation step, AI-editor-friendly (plain TypeScript the agent can read and edit directly).
+- **Edge / serverless** (cold starts matter) → **Drizzle**: faster cold start and no codegen step on edge/serverless, AI-editor-friendly (plain TypeScript the agent can read and edit directly). (The pre-Prisma-7 gap was 3–5x; Prisma 7's Rust-free TypeScript client narrows but does not close it — re-verified June 2026 currency pass.)
 - **Warm Node server** valuing the most mature migration tooling → **Prisma**.
 - APIs are converging, so pick on architecture fit, not syntax taste. Industry drift is Prisma→Drizzle, not the reverse.
 - Either way, production changes go through generated, reviewed migration files — see `06-delivery/migration-discipline.md`.

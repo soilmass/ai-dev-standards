@@ -61,7 +61,7 @@ Pre-written ADRs for every pinned tool in this preset. Each records the choice, 
 ## ADR-S10: Drizzle as ORM (with documented Prisma swap)
 
 - **Decision:** Drizzle + drizzle-kit for schema, queries, and migrations.
-- **Rationale:** The preset deploys to edge/serverless (Vercel), where Drizzle's 3–5x faster cold start and zero codegen step win per the ORM decision rule. Plain-TypeScript schema is the most AI-agent-friendly surface — the agent reads and edits the real source, not a DSL.
+- **Rationale:** The preset deploys to edge/serverless (Vercel), where Drizzle's faster cold start and zero codegen step win per the ORM decision rule. (The pre-Prisma-7 cold-start gap was 3–5x; Prisma 7's Rust-free TypeScript client narrows but does not close it — re-verified June 2026 currency pass.) Plain-TypeScript schema is the most AI-agent-friendly surface — the agent reads and edits the real source, not a DSL.
 - **Prisma swap:** If a project moves to a warm Node server and wants the most mature migration tooling, swap to Prisma **as a new preset** — port `db/schema.ts` to `schema.prisma`, replace drizzle-kit commands, keep the same migration discipline (`06-delivery/migration-discipline.md`). The rule (decide by where the code runs) stays; only the pick changes.
 - **Accepted tradeoff:** Migration tooling is younger than Prisma's; some complex relational queries take more SQL-shaped code.
 
@@ -103,9 +103,9 @@ Pre-written ADRs for every pinned tool in this preset. Each records the choice, 
 
 ## ADR-S17: Next.js as framework
 
-- **Decision:** Next.js, App Router, Server Components by default; version pinned ≥ the CVE-2025-29927-patched line for its major.
-- **Rationale:** The most mature React full-stack framework: RSC support, first-class Vercel deployment, the largest knowledge base (which AI agents have deepest training coverage of). Deviations per `pinned-decisions.md`: SvelteKit (leaving React), TanStack Start (type-safe Vite-native, accepted no-RSC tradeoff — governance guardrail 2).
-- **Accepted tradeoff:** Framework complexity (caching layers, server/client boundary) and a degree of Vercel gravity; both are managed by the standards rather than avoided.
+- **Decision:** Next.js, App Router, Server Components by default; version pinned ≥ the React2Shell-patched line for its major (≥ 15.5.7 on the 15.x line, ≥ 16.0.7 on 16.x), which also clears the older CVE-2025-29927 floor.
+- **Rationale:** The most mature React full-stack framework: RSC support, first-class Vercel deployment, the largest knowledge base (which AI agents have deepest training coverage of). Deviations per `pinned-decisions.md`: SvelteKit (leaving React), TanStack Start (type-safe Vite-native, RSC experimental/opt-in not the default — governance guardrail 2).
+- **Accepted tradeoff:** Framework complexity (caching layers, server/client boundary) and a degree of Vercel gravity; both are managed by the standards rather than avoided. The App Router's RSC surface carries an active RCE history (CVE-2025-29927 middleware bypass; CVE-2025-55182 / React2Shell unauthenticated RCE) — the version-pin floor above and guardrail 3 in `agent-operating-rules.md` are the standing mitigation (re-verified June 2026 currency pass).
 
 ## ADR-S18: Vercel for hosting
 

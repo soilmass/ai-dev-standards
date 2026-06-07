@@ -1,5 +1,5 @@
 {
-  "$schema": "https://biomejs.dev/schemas/1.9.4/schema.json",
+  "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
   "vcs": {
     "enabled": true,
     "clientKind": "git",
@@ -7,17 +7,18 @@
   },
   "files": {
     "ignoreUnknown": true,
-    "ignore": [
-      "node_modules",
-      ".next",
-      "dist",
-      "build",
-      "coverage",
-      "playwright-report",
-      "test-results",
-      "drizzle/meta",
-      "*.generated.*",
-      "pnpm-lock.yaml"
+    "includes": [
+      "**",
+      "!node_modules",
+      "!.next",
+      "!dist",
+      "!build",
+      "!coverage",
+      "!playwright-report",
+      "!test-results",
+      "!drizzle/meta",
+      "!**/*.generated.*",
+      "!pnpm-lock.yaml"
     ]
   },
   "formatter": {
@@ -27,8 +28,13 @@
     "lineWidth": 100,
     "lineEnding": "lf"
   },
-  "organizeImports": {
-    "enabled": true
+  "assist": {
+    "enabled": true,
+    "actions": {
+      "source": {
+        "organizeImports": "on"
+      }
+    }
   },
   "linter": {
     "enabled": true,
@@ -52,7 +58,15 @@
         "useConst": "error",
         "useImportType": "error",
         "useExportType": "error",
-        "noDefaultExport": "off"
+        "noDefaultExport": "off",
+        "noRestrictedImports": {
+          "level": "error",
+          "options": {
+            "paths": {
+              "../../..": "Deep relative imports cross module boundaries; use the path alias (@/) instead."
+            }
+          }
+        }
       },
       "complexity": {
         "noExcessiveCognitiveComplexity": {
@@ -67,16 +81,6 @@
       },
       "a11y": {
         "recommended": true
-      },
-      "nursery": {
-        "noRestrictedImports": {
-          "level": "error",
-          "options": {
-            "paths": {
-              "../../..": "Deep relative imports cross module boundaries; use the path alias (@/) instead."
-            }
-          }
-        }
       }
     }
   },
@@ -94,7 +98,7 @@
   },
   "overrides": [
     {
-      "include": ["**/*.test.ts", "**/*.test.tsx", "tests/**", "e2e/**"],
+      "includes": ["**/*.test.ts", "**/*.test.tsx", "tests/**", "e2e/**"],
       "linter": {
         "rules": {
           "suspicious": {
@@ -105,7 +109,7 @@
       }
     },
     {
-      "include": ["scripts/**"],
+      "includes": ["scripts/**"],
       "linter": {
         "rules": {
           "suspicious": {

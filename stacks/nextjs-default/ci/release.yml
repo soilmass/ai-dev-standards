@@ -18,16 +18,16 @@ jobs:
     name: Generate release notes from Conventional Commits
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0 # full history — the generator diffs against the previous tag
       - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
-          node-version: '22'
+          node-version: '24'
       - name: Create GitHub release with generated changelog
         # changelogithub: groups feat/fix/perf by type, links PRs/commits,
         # excludes chore/ci noise — exactly the release-process.md rule 4 split.
-        run: pnpm dlx changelogithub@13
+        run: pnpm dlx changelogithub@14
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

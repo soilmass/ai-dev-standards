@@ -7,7 +7,7 @@
 // handler in the same PR. Per-test overrides go through server.use(...) in the
 // test, then are dropped by the afterEach reset in tests/setup.ts.
 
-import { http, HttpResponse } from 'msw';
+import { HttpResponse, http } from 'msw';
 
 export const handlers = [
   // Example: replace with handlers that match your real contract.

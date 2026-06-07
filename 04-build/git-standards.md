@@ -11,7 +11,7 @@ How history is shaped. Machine-checkable parts (commit format, branch names) are
 
 ## Commit format — Conventional Commits
 
-5. Every commit message: `<type>(<scope>): <subject>` — subject ≤ 72 chars, imperative mood. Enforced by commitlint in the commit-msg hook.
+5. Every commit message: `<type>(<scope>): <subject>` — subject ≤ 72 chars, imperative mood. Enforced by the commit-format linter in the commit-msg hook.
 6. The body (when present) explains *why*; the diff already shows *what*.
 7. One logical change per commit. "WIP" commits are fine on a branch but get squashed before merge.
 

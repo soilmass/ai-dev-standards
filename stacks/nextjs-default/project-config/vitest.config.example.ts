@@ -5,9 +5,9 @@
 // coverage grows; lowering one is a reviewable diff with a stated reason
 // (04-build/testing-strategy.md).
 
-import { defineConfig } from 'vitest/config';
 import react from '@vitejs/plugin-react';
 import tsconfigPaths from 'vite-tsconfig-paths';
+import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
   plugins: [react(), tsconfigPaths()],

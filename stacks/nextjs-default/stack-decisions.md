@@ -97,7 +97,7 @@ Pre-written ADRs for every pinned tool in this preset. Each records the choice, 
 
 ## ADR-S16: GitHub Actions for CI
 
-- **Decision:** GitHub Actions runs the pinned pipeline: `ci/pr.yml` (per-PR tiers) and `ci/nightly.yml` (full E2E + visual regression).
+- **Decision:** GitHub Actions runs the pinned pipeline: `ci/pr.yml` (per-PR tiers), `ci/nightly.yml` (full E2E + visual regression), and `ci/release.yml` (tag-triggered changelog/release).
 - **Rationale:** Co-located with the repo and the PR gate it enforces; marketplace actions cover the Vercel-preview wait and Lighthouse steps; free tier is ample for solo scale.
 - **Accepted tradeoff:** Vendor lock-in to GitHub; YAML duplication across workflows is kept minimal by keeping logic in package scripts.
 

@@ -21,6 +21,12 @@ LIB_ROOT="$(dirname "$SCRIPT_DIR")"
 
 failures=0
 
+# All scratch output lives under one mktemp dir registered in a single trap, so
+# nothing leaks on abnormal exit and concurrent runs never clobber each other.
+WORK_DIR="$(mktemp -d)"
+cleanup() { rm -rf "$WORK_DIR"; }
+trap cleanup EXIT
+
 section() {
   echo
   echo "=== $1 ==="
@@ -44,13 +50,12 @@ section "b. Script syntax (bash -n)"
 for script in "$LIB_ROOT/scripts/"*.sh; do
   [[ -f "$script" ]] || continue
   rel="${script#"$LIB_ROOT"/}"
-  if bash -n "$script" 2>/tmp/suite-ci-bashn.err; then
+  if bash -n "$script" 2>"$WORK_DIR/bashn.err"; then
     echo "  ok   $rel"
   else
-    fail "syntax error in $rel: $(cat /tmp/suite-ci-bashn.err)"
+    fail "syntax error in $rel: $(cat "$WORK_DIR/bashn.err")"
   fi
 done
-rm -f /tmp/suite-ci-bashn.err
 
 # --- c. Config validity ------------------------------------------------------
 section "c. Config validity (YAML + JSON)"
@@ -66,33 +71,31 @@ if [[ -d "$LIB_ROOT/stacks" || -d "$LIB_ROOT/.github" ]]; then
   while IFS= read -r -d '' yml; do
     rel="${yml#"$LIB_ROOT"/}"
     if [[ $have_yaml -eq 1 ]]; then
-      if python3 -c 'import sys,yaml; list(yaml.safe_load_all(open(sys.argv[1])))' "$yml" 2>/tmp/suite-ci-yaml.err; then
+      if python3 -c 'import sys,yaml; list(yaml.safe_load_all(open(sys.argv[1])))' "$yml" 2>"$WORK_DIR/yaml.err"; then
         echo "  ok   $rel"
       else
-        fail "invalid YAML $rel: $(cat /tmp/suite-ci-yaml.err)"
+        fail "invalid YAML $rel: $(cat "$WORK_DIR/yaml.err")"
       fi
     fi
   done < <(find "$LIB_ROOT/stacks" "$LIB_ROOT/.github" \( -name '*.yml' -o -name '*.yaml' \) -type f -print0 2>/dev/null)
-  rm -f /tmp/suite-ci-yaml.err
 fi
 
 if [[ -d "$LIB_ROOT/stacks" ]]; then
   while IFS= read -r -d '' json; do
     rel="${json#"$LIB_ROOT"/}"
-    if python3 -c 'import sys,json; json.load(open(sys.argv[1]))' "$json" 2>/tmp/suite-ci-json.err; then
+    if python3 -c 'import sys,json; json.load(open(sys.argv[1]))' "$json" 2>"$WORK_DIR/json.err"; then
       echo "  ok   $rel"
     else
-      fail "invalid JSON $rel: $(cat /tmp/suite-ci-json.err)"
+      fail "invalid JSON $rel: $(cat "$WORK_DIR/json.err")"
     fi
   done < <(find "$LIB_ROOT/stacks" -name '*.json' -type f -print0 2>/dev/null)
-  rm -f /tmp/suite-ci-json.err
 fi
 
 # --- d. Internal link check --------------------------------------------------
 section "d. Internal link check (relative markdown links)"
 # Collect broken links into a report file. Run in a subshell that always exits 0
 # so set -e never trips on a benign test result inside the scan loops.
-LINK_REPORT="/tmp/suite-ci-links.$$.out"
+LINK_REPORT="$WORK_DIR/links.out"
 : > "$LINK_REPORT"
 (
   while IFS= read -r -d '' md; do
@@ -126,17 +129,14 @@ if [[ -s "$LINK_REPORT" ]]; then
 else
   echo "all relative markdown links resolve"
 fi
-rm -f "$LINK_REPORT"
 
 # --- e. Bootstrap smoke test -------------------------------------------------
 section "e. Bootstrap smoke test (new-project.sh)"
-SMOKE_DIR="$(mktemp -d)"
-cleanup() { rm -rf "$SMOKE_DIR"; }
-trap cleanup EXIT
+SMOKE_DIR="$WORK_DIR/smoke"
 
-if ! "$LIB_ROOT/scripts/new-project.sh" "$SMOKE_DIR" >/tmp/suite-ci-bootstrap1.out 2>&1; then
+if ! "$LIB_ROOT/scripts/new-project.sh" "$SMOKE_DIR" >"$WORK_DIR/bootstrap1.out" 2>&1; then
   fail "new-project.sh exited non-zero on first run"
-  cat /tmp/suite-ci-bootstrap1.out
+  cat "$WORK_DIR/bootstrap1.out"
 else
   echo "first bootstrap run completed"
 
@@ -153,6 +153,8 @@ else
     vitest.config.ts
     playwright.config.ts
     drizzle.config.ts
+    instrumentation.ts
+    db/schema.ts
     .gitignore
     docs/slos.md
     docs/debt-log.md
@@ -184,18 +186,16 @@ else
     echo "  skip tests/setup.ts (preset ships no project-config/tests/ yet)"
   fi
 fi
-rm -f /tmp/suite-ci-bootstrap1.out
 
 # Second run must be idempotent: summary reports 0 created.
-if ! "$LIB_ROOT/scripts/new-project.sh" "$SMOKE_DIR" >/tmp/suite-ci-bootstrap2.out 2>&1; then
+if ! "$LIB_ROOT/scripts/new-project.sh" "$SMOKE_DIR" >"$WORK_DIR/bootstrap2.out" 2>&1; then
   fail "new-project.sh exited non-zero on second (idempotency) run"
-  cat /tmp/suite-ci-bootstrap2.out
-elif grep -qE '^Done: 0 created,' /tmp/suite-ci-bootstrap2.out; then
+  cat "$WORK_DIR/bootstrap2.out"
+elif grep -qE '^Done: 0 created,' "$WORK_DIR/bootstrap2.out"; then
   echo "second run created 0 artifacts (idempotent)"
 else
-  fail "second run was not idempotent — summary: $(grep -E '^Done:' /tmp/suite-ci-bootstrap2.out || echo '(no summary line)')"
+  fail "second run was not idempotent — summary: $(grep -E '^Done:' "$WORK_DIR/bootstrap2.out" || echo '(no summary line)')"
 fi
-rm -f /tmp/suite-ci-bootstrap2.out
 
 # --- summary -----------------------------------------------------------------
 echo

@@ -33,4 +33,4 @@ Rules for schema design that survive migrations, scale, and agent edits. The ORM
 - Fallback if unenforceable: n/a — migration immutability is CI-enforced; naming/keys/timestamp conventions are reviewable in the generated migration diff the same gate forces into the PR.
 
 ## Bootstrap
-- What new-project.sh injects for this standard: the PR workflow containing the migration-discipline guard.
+- What new-project.sh injects for this standard: the PR workflow containing the migration-discipline guard, plus the schema starter (`db/schema.ts`) and the ORM config pinning the migrations path.

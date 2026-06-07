@@ -131,7 +131,7 @@ if [[ -d "$PRESET_DIR/project-config" ]]; then
     base="$(basename "$rel")"
     case "$base" in
       gitignore.example) base=".gitignore" ;;
-      *.example.*)       base="${base/.example/}" ;;
+      *.example.*)       base="${base/.example./.}" ;;  # collapse the '.example.' segment only
       *.example)         base="${base%.example}" ;;
     esac
     if [[ "$dir" == "." ]]; then

@@ -1,0 +1,65 @@
+# ai-dev-standards
+
+A reusable, project-agnostic **standards library** for a solo developer working with AI coding agents. It bootstraps and governs any full-stack web project: every standard ships with its **enforcement mechanism** and **bootstrap hook** co-located, so this library is the only meta-tooling needed to start and run a project.
+
+## The law: GLOBAL = RULES; PROJECT = CHOICES
+
+The suite separates two things cleanly:
+
+- **Global standards** (`00`–`08`, `_spines/`) — project-agnostic *rules and templates*. The source of truth. No framework names, no versions, no project-specific values. The single sanctioned exception is [`00-governance/pinned-decisions.md`](00-governance/pinned-decisions.md), which documents the standing tool recommendations as defaults + deviation rules (and the governance guardrails in [`agent-operating-rules.md`](00-governance/agent-operating-rules.md) that name the tools they ban or default).
+- **Stack presets** (`stacks/`) — per-stack *choices and configs*. Where decisions and real config files live. If a value is a *choice* rather than a *rule*, it belongs here.
+
+When you're unsure where something goes: would it still be true if you switched frameworks? Yes → global. No → preset.
+
+## Bootstrap a new project
+
+```bash
+./scripts/new-project.sh <target-directory> [stack-preset]   # default preset: nextjs-default
+```
+
+This:
+
+1. Assembles the project's `CLAUDE.md` from [`01-context/CLAUDE.template.md`](01-context/CLAUDE.template.md) + the preset's `CLAUDE.partial.md` (you fill the `<ANGLE_BRACKET>` blanks afterward);
+2. Copies the preset's known-good configs into place: lint config, CI workflows, git hooks, `dependabot.yml`, `env.schema.example`;
+3. Drops in the working templates (ADR, glossary, architecture map, spec, threat model, incident runbook) under `docs/`.
+
+It is idempotent (re-running refuses to clobber files you've edited) and prints everything it did. That's the whole bootstrap — no other meta-tooling required.
+
+## The four-test quality bar
+
+Every standard in this library must pass four tests, tracked live in [`00-governance/completeness-matrix.md`](00-governance/completeness-matrix.md):
+
+| Test | Meaning |
+|---|---|
+| **Articulated** | The rule is written down, concretely, in a layer doc. |
+| **Templated** | Where a fill-in artifact is the deliverable, a `*.template.md` exists. |
+| **Enforced** | A mechanism (lint rule, CI job, git hook, runtime check) catches violations — or the doc declares `none-possible` and contributes a fallback line to the AI self-review checklist. |
+| **Bootstrappable** | `new-project.sh` injects the standard's config/template into new projects, or the doc states "nothing — reference only". |
+
+Every layer doc (`02`–`08`, `_spines/`) ends with an **Enforcement / Bootstrap footer** declaring how it satisfies the last two tests; [`scripts/audit-completeness.sh`](scripts/audit-completeness.sh) verifies no doc is missing it.
+
+## Table of contents
+
+| Layer | Contents |
+|---|---|
+| [`00-governance/`](00-governance/) | [standards-lifecycle](00-governance/standards-lifecycle.md) · [agent-operating-rules](00-governance/agent-operating-rules.md) · [pinned-decisions](00-governance/pinned-decisions.md) · [completeness-matrix](00-governance/completeness-matrix.md) |
+| [`01-context/`](01-context/) | [CLAUDE.template](01-context/CLAUDE.template.md) · [adr.template](01-context/adr.template.md) · [glossary.template](01-context/glossary.template.md) · [architecture-map.template](01-context/architecture-map.template.md) |
+| [`02-product/`](02-product/) | [spec.template](02-product/spec.template.md) · [task-decomposition](02-product/task-decomposition.md) · [acceptance-criteria](02-product/acceptance-criteria.md) |
+| [`03-design/`](03-design/) | [architecture-standards](03-design/architecture-standards.md) · [data-modeling](03-design/data-modeling.md) · [api-contract-design](03-design/api-contract-design.md) · [ui-design-system](03-design/ui-design-system.md) · [threat-model.template](03-design/threat-model.template.md) |
+| [`04-build/`](04-build/) | [coding-standards](04-build/coding-standards.md) · [git-standards](04-build/git-standards.md) · [testing-strategy](04-build/testing-strategy.md) · [dependency-policy](04-build/dependency-policy.md) · [secrets-config](04-build/secrets-config.md) |
+| [`05-verification/`](05-verification/) | [definition-of-done](05-verification/definition-of-done.md) · [code-review-standard](05-verification/code-review-standard.md) · [ci-pipeline](05-verification/ci-pipeline.md) · [a11y-perf-gates](05-verification/a11y-perf-gates.md) |
+| [`06-delivery/`](06-delivery/) | [deployment-strategy](06-delivery/deployment-strategy.md) · [release-process](06-delivery/release-process.md) · [migration-discipline](06-delivery/migration-discipline.md) · [rollback](06-delivery/rollback.md) |
+| [`07-operations/`](07-operations/) | [observability](07-operations/observability.md) · [incident-runbook.template](07-operations/incident-runbook.template.md) · [slo-error-budgets](07-operations/slo-error-budgets.md) · [backup-dr](07-operations/backup-dr.md) |
+| [`08-maintenance/`](08-maintenance/) | [dependency-updates](08-maintenance/dependency-updates.md) · [tech-debt-policy](08-maintenance/tech-debt-policy.md) · [deprecation-process](08-maintenance/deprecation-process.md) |
+| [`_spines/`](_spines/) | [security-privacy](_spines/security-privacy.md) · [documentation](_spines/documentation.md) — cross-cutting concerns, referencing where they bite in each layer |
+| [`stacks/`](stacks/) | [README (preset contract)](stacks/README.md) · [`nextjs-default/`](stacks/nextjs-default/) — the one fully wired preset |
+| [`scripts/`](scripts/) | [new-project.sh](scripts/new-project.sh) (bootstrap) · [audit-completeness.sh](scripts/audit-completeness.sh) (footer audit) |
+
+## For AI agents
+
+- Working **on this library**: read the root [`CLAUDE.md`](CLAUDE.md) — footer contract, never-stub rule, rules-vs-choices placement, phased-build expectation.
+- Working **on a project bootstrapped from this library**: the project's own `CLAUDE.md` is your index; [`00-governance/agent-operating-rules.md`](00-governance/agent-operating-rules.md) is binding.
+
+## Maintaining the library
+
+Lessons from projects come back as **small patches**, not rewrites — process in [`00-governance/standards-lifecycle.md`](00-governance/standards-lifecycle.md). After any change: run `./scripts/audit-completeness.sh` and update the completeness matrix.

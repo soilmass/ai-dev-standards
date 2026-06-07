@@ -1,6 +1,8 @@
 # SLOs — <PROJECT_NAME>
 
 > Dropped at bootstrap as `docs/slos.md`. Fill it once real traffic exists (method: `07-operations/slo-error-budgets.md` — measure a month, set targets slightly above reality). Keep it to 2–3 SLIs; review quarterly.
+>
+> Backtick layer paths in this file (e.g. `07-operations/slo-error-budgets.md`, `07-operations/backup-dr.md`) are relative to the standards library root, not to this `docs/` folder. The library's absolute location is the path stamped into this project's `CLAUDE.md` (its standards-path); open the docs there.
 
 - **Window for all SLOs:** rolling <30_DAYS_OR_OTHER>
 - **Last reviewed:** <YYYY-MM-DD>

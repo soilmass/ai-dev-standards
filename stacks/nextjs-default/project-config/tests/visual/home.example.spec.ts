@@ -11,6 +11,8 @@
 import { expect, test } from '@playwright/test';
 
 test('home page matches visual baseline', async ({ page }) => {
+  // EXAMPLE — '/' and 'home.png' are a placeholder route/baseline, not a contract;
+  // rename per the page under test and point at your real landing route.
   await page.goto('/');
   await expect(page).toHaveScreenshot('home.png');
 });

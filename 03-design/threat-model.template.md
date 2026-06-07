@@ -1,6 +1,8 @@
 # Threat Model: <FEATURE_NAME>
 
 > Per-feature, not global: copy this file when building anything that touches auth, sessions, money, PII, file handling, or new input surfaces. Keep it short — a filled-in page beats an abandoned framework. Cross-layer security rules: `_spines/security-privacy.md`.
+>
+> Backtick layer paths in this file (e.g. `_spines/security-privacy.md`) are relative to the standards library root, not to this `docs/` folder. The library's absolute location is the path stamped into this project's `CLAUDE.md` (its standards-path); open the doc there.
 
 - **Date:** <YYYY-MM-DD>
 - **Feature/spec:** <LINK_TO_SPEC>

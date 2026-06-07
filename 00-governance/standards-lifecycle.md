@@ -9,7 +9,7 @@ How a standard in this library is proposed, changed, versioned, and deprecated �
 | State | Meaning |
 |---|---|
 | **Active** | In force. Linked from `completeness-matrix.md`. |
-| **Proposed** | Drafted in a branch/PR against this repo; not yet binding. |
+| **Proposed** | Drafted but not yet committed to `main`; not yet binding. (This solo repo commits direct to `main` — see root `CLAUDE.md` — so a proposal lives as a working draft the human reviews, not a long-lived branch/PR.) |
 | **Deprecated** | Still present, marked `> **DEPRECATED:** superseded by <link>` at the top; binding only for projects that haven't migrated. |
 | **Removed** | Deleted after every consuming project has migrated; the removal commit message records why. |
 
@@ -19,7 +19,7 @@ How a standard in this library is proposed, changed, versioned, and deprecated �
 2. Write the doc in the correct layer folder. If it is a layer doc (`02`–`08`, `_spines`), it MUST carry the Enforcement/Bootstrap footer (see root `CLAUDE.md`).
 3. Wire enforcement first where possible: add the config to the relevant stack preset, then point the doc at it.
 4. Update `completeness-matrix.md` and run `scripts/audit-completeness.sh`.
-5. Open a PR against this repo. The PR description states which projects prompted the standard.
+5. Present the change to the human for review, recording which projects prompted the standard; the human commits it to `main` (this solo repo commits direct to `main` — see root `CLAUDE.md`). suite CI re-checks it on push.
 
 ## 3. Changing an existing standard — patch, don't rebuild
 
@@ -31,7 +31,7 @@ How a standard in this library is proposed, changed, versioned, and deprecated �
 ## 4. Versioning
 
 - The library is versioned **as a whole** by git history; individual docs are not version-stamped.
-- Tag the repo (`vYYYY.MM`) after any change-batch that alters enforcement behavior, so a project can record which library snapshot it bootstrapped from.
+- Tag the repo (`vYYYY.MM[.N]` — the year-month, plus an incrementing sequence suffix when more than one enforcement-altering batch ships in the same month) after any change-batch that alters enforcement behavior, so a project can record which library snapshot it bootstrapped from.
 - Projects record their bootstrap snapshot in their `CLAUDE.md` (the bootstrap script stamps the date); they upgrade by re-diffing against the current library, not by silently inheriting changes.
 
 ## 5. Deprecating a standard
@@ -52,4 +52,4 @@ The library improves only through this loop:
 
 ## 7. Who decides
 
-This is a solo-developer library: the human is the final arbiter. AI agents may **propose** lifecycle changes (a drafted PR with rationale) but never merge changes to this repo on their own authority.
+This is a solo-developer library: the human is the final arbiter. AI agents may **propose** lifecycle changes (a drafted change with rationale) but never commit changes to this repo on their own authority.

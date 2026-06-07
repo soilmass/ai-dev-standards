@@ -2,6 +2,8 @@
 
 The system at a glance. Keep this to one screen per section; link to ADRs for the *why*. Update it in the same PR as any change that adds a component, boundary, or external dependency (see `_spines/documentation.md`).
 
+> Backtick layer paths in this file (e.g. `_spines/documentation.md`, `03-design/architecture-standards.md`) are relative to the standards library root, not to this `docs/` folder. The library's absolute location is the path stamped into this project's `CLAUDE.md` (its standards-path); open the docs there.
+
 ## System overview
 
 <THREE_TO_FIVE_SENTENCES: what the system is, its runtime shape (e.g. web app + API + DB), and where it runs.>

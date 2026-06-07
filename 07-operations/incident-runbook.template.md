@@ -1,6 +1,8 @@
 # Incident Runbook: <FAILURE_SCENARIO_NAME>
 
 > One runbook per failure scenario you can foresee (DB unreachable, auth provider down, deploy broke production, error-budget burn alert). Fill the top half *before* any incident; the bottom half is filled during/after one. Keep steps copy-pasteable — 3 a.m. you has no judgment to spare.
+>
+> Backtick layer paths in this file (e.g. `06-delivery/rollback.md`) are relative to the standards library root, not to this `docs/` folder. The library's absolute location is the path stamped into this project's `CLAUDE.md` (its standards-path); open the doc there.
 
 - **Scenario:** <WHAT_IS_FAILING_FROM_THE_USERS_PERSPECTIVE>
 - **Severity when it fires:** <S1_USERS_BLOCKED | S2_DEGRADED | S3_ANNOYANCE>

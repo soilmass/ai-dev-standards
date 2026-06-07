@@ -20,6 +20,8 @@ test('home page loads, primary CTA is visible, no console errors', async ({ page
 
   // Query by role like a user would (accessible name), not by CSS selector.
   await expect(page.getByRole('navigation')).toBeVisible();
+  // EXAMPLE assertion — replace the CTA name regex with your real primary CTA;
+  // adapt the example to your app, do not change the app to match this string.
   await expect(page.getByRole('link', { name: /get started|sign in/i })).toBeVisible();
 
   expect(consoleErrors).toEqual([]);

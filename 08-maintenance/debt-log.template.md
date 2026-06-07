@@ -1,6 +1,8 @@
 # Debt Log — <PROJECT_NAME>
 
 > Dropped at bootstrap as `docs/debt-log.md`. Every shortcut gets a row **in the same PR that takes it** (`08-maintenance/tech-debt-policy.md`). Triggered debt blocks the work that triggers it. Sweep quarterly: close paid rows, escalate grown ones, re-confirm "accepted permanently" rows.
+>
+> Backtick layer paths in this file (e.g. `08-maintenance/tech-debt-policy.md`) are relative to the standards library root, not to this `docs/` folder. The library's absolute location is the path stamped into this project's `CLAUDE.md` (its standards-path); open the doc there.
 
 | ID | Date | What was shortcut | Why | Cost when it bites | Paydown trigger | Status |
 |---|---|---|---|---|---|---|

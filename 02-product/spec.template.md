@@ -1,5 +1,7 @@
 # Spec: <FEATURE_OR_CHANGE_NAME>
 
+> Backtick layer paths in this file (e.g. `02-product/acceptance-criteria.md`, `02-product/task-decomposition.md`) are relative to the standards library root, not to this `docs/` folder. The library's absolute location is the path stamped into this project's `CLAUDE.md` (its standards-path); open the docs there.
+
 - **Date:** <YYYY-MM-DD>
 - **Status:** <Draft | Approved | Implemented>
 - **Owner:** <WHO_DECIDES_SCOPE_QUESTIONS>

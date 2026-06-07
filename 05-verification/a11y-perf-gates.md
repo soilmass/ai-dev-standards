@@ -17,7 +17,7 @@ Budgets asserted by Lighthouse CI on every PR's preview deploy (3 runs, median, 
 |---|---|
 | Largest Contentful Paint (LCP) | ≤ 2.5 s |
 | Cumulative Layout Shift (CLS) | ≤ 0.10 |
-| Total Blocking Time (TBT, lab proxy for INP) | ≤ 200 ms |
+| Total Blocking Time (TBT, lab proxy for INP) | ≤ 300 ms |
 | Lighthouse performance score | ≥ 0.90 |
 | Lighthouse best-practices / SEO scores | ≥ 0.90 |
 

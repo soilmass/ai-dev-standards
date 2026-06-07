@@ -21,7 +21,7 @@ A backup that has never been restored is a wish. This doc sets the cadence and â
 
 ## Disaster recovery targets
 
-9. Declare two numbers in `docs/slos.md` alongside the SLOs:
+9. Declare two numbers in `docs/slos.md` (injected at bootstrap; has a DR-targets table) alongside the SLOs:
    - **RPO** (max acceptable data loss): bounded by backup frequency â€” daily dumps mean accepting up to a day; tighten with PITR if that's unacceptable.
    - **RTO** (max acceptable downtime): bounded by measured restore duration + redeploy time.
 10. The full-loss drill (provider account gone): restore the external dump to a fresh DB, point a fresh deploy at it, verify. Run it once before launch; its steps become an incident runbook (`incident-runbook.template.md`).

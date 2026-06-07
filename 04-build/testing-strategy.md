@@ -33,6 +33,7 @@ Keep the E2E suite at **≈20–30 tests covering revenue-critical paths only** 
 ## Hygiene
 
 - Tests are deterministic: no real network (mock at the network boundary), no real clocks (fake timers), no order dependence.
+- Visual-regression baselines are created and updated **locally, on purpose** (run the visual project with snapshot-update on, review the changed images like any diff, commit them); CI only compares against committed baselines, never regenerates them.
 - A flaky test is a P1 against the suite: fix or quarantine-with-issue the same day; never retry-until-green as a policy.
 - Test code is production code: same lint rules (relaxations only where the preset's config says so), same review bar.
 

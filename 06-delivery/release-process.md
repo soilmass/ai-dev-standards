@@ -10,7 +10,7 @@ How shipped code becomes a release: versioning, changelog, and feature flags. Bu
 
 ## Changelog
 
-4. The changelog is **generated from Conventional Commits** (`feat`/`fix` land in it; `chore`/`ci` don't) — this is why the commit-format check is a hook, not advice. Hand-curate the user-facing summary for announced releases; never hand-maintain the raw list.
+4. The changelog is **generated from Conventional Commits** (`feat`/`fix` land in it; `chore`/`ci` don't) — this is why the commit-format check is a hook, not advice. The preset ships a tag-triggered release workflow that generates the release notes; hand-curate the user-facing summary for announced releases on top of it, never hand-maintain the raw list.
 5. Each entry links its PR; reverts reference what they reverted.
 
 ## Feature flags
@@ -29,8 +29,8 @@ How shipped code becomes a release: versioning, changelog, and feature flags. Bu
 
 ## Enforcement
 - Mechanism: git hook
-- Config: stacks/nextjs-default/hooks/commitlint.config.mjs (commit-msg hook guarantees release-parseable history; changelog generation and tagging consume it)
-- Fallback if unenforceable: n/a — history parseability is hook-enforced; flag-removal discipline is carried by the tech-debt fallback line in the self-review checklist.
+- Config: stacks/nextjs-default/hooks/commitlint.config.mjs (commit-msg hook guarantees release-parseable history) + stacks/nextjs-default/ci/release.yml (tag-triggered workflow that actually generates the release notes from it)
+- Fallback if unenforceable: n/a — history parseability is hook-enforced and note generation is workflow-automated; flag-removal discipline is carried by the tech-debt fallback line in the self-review checklist.
 
 ## Bootstrap
-- What new-project.sh injects for this standard: the commit-msg hook and commitlint config that make generated changelogs possible from the first commit.
+- What new-project.sh injects for this standard: the commit-msg hook + commitlint config, and the release workflow into `.github/workflows/` — pushing a version tag produces the generated changelog from the first release.

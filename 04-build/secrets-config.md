@@ -6,7 +6,7 @@ Configuration is data with a schema; secrets are configuration that must never t
 
 1. Every environment variable the app reads is declared in one schema file (`env.schema.ts` in the preset), with type, constraints, and optionality made explicit.
 2. The schema is **validated at boot**: a missing or malformed variable kills startup with a named error. No half-configured process ever serves traffic.
-3. Application code imports the parsed `env` object from the schema module. Direct `process.env` reads elsewhere are a review violation — they bypass validation and typing.
+3. Application code imports the parsed env from the schema module (separate server and client exports — server values must be unreachable from client bundles). Direct `process.env` reads elsewhere are a review violation — they bypass validation and typing.
 4. Client-exposed variables carry the framework's public prefix and contain no secrets; server-only variables never get the prefix.
 5. Optional variables are modeled as optional in the schema — never papered over with runtime fallbacks scattered through the code.
 

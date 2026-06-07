@@ -9,7 +9,7 @@ Reliability targets you set on purpose, and what happens when you spend them. So
    - **Latency:** share of requests faster than a threshold (e.g. p95 < 500 ms on API routes).
    - Optionally one **journey SLI** for the revenue-critical flow (checkout completes, login succeeds).
 2. Set each target from **measured reality minus ambition**: run a month, look at the data (`observability.md` metrics), set the SLO slightly above current performance — not at 99.99% because it sounds professional. A solo-operated app with no on-call rotation has no business promising more than ~99.5% anywhere.
-3. Write them down in the project (a short `docs/slos.md` listing SLI, target, window) — an SLO that lives in your head is a mood, not an objective.
+3. Write them down in the project — the bootstrap drops a `docs/slos.md` starter (from `07-operations/slos.template.md`: SLI/target/window table, burn-alert column, RPO/RTO, verified-restore log). An SLO that lives in your head is a mood, not an objective.
 
 ## Error budgets
 
@@ -32,4 +32,4 @@ Reliability targets you set on purpose, and what happens when you spend them. So
 - Fallback if unenforceable: If this change can move a user-facing SLI (latency, availability, error rate), state the expected impact on the SLO in the PR description.
 
 ## Bootstrap
-- What new-project.sh injects for this standard: nothing — reference only (SLOs are set per project once real traffic exists; this doc is the recipe).
+- What new-project.sh injects for this standard: `docs/slos.md` (from `slos.template.md`) — the targets are filled in once real traffic exists; this doc is the recipe.

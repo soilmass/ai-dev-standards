@@ -10,8 +10,11 @@
 #      preset's CLAUDE.partial.md (stamping preset name + date).
 #   2. Copies the preset's known-good configs: lint-config/*, ci/* -> .github/workflows
 #      (+ ci config files -> project root), hooks/* -> .husky + config files,
-#      dependabot.yml -> .github/, env.schema.example -> env.schema.ts.
-#   3. Drops the working templates into <target>/docs/.
+#      dependabot.yml -> .github/, env.schema.example -> env.schema.ts,
+#      project-config/*.example -> project root with the .example stripped
+#      (vitest/playwright/drizzle configs, .gitignore).
+#   3. Drops the working templates into <target>/docs/ (incl. docs/slos.md and
+#      docs/debt-log.md starters).
 #
 # Idempotent: existing files are never overwritten; they are reported and skipped.
 # Re-running after you've edited files is safe.
@@ -113,6 +116,22 @@ install_file "$PRESET_DIR/dependabot.yml" "$TARGET/.github/dependabot.yml"
 # env schema example -> env.schema.ts
 install_file "$PRESET_DIR/env.schema.example" "$TARGET/env.schema.ts"
 
+# per-project tool configs -> project root, '.example' stripped
+# (gitignore.example becomes .gitignore; *.config.example.ts become *.config.ts)
+if [[ -d "$PRESET_DIR/project-config" ]]; then
+  for f in "$PRESET_DIR/project-config/"*; do
+    [[ -f "$f" ]] || continue
+    base="$(basename "$f")"
+    case "$base" in
+      gitignore.example) dest=".gitignore" ;;
+      *.example.*)       dest="${base/.example/}" ;;
+      *.example)         dest="${base%.example}" ;;
+      *)                 dest="$base" ;;
+    esac
+    install_file "$f" "$TARGET/$dest"
+  done
+fi
+
 # --- 3. drop in templates ----------------------------------------------------
 echo "[3/3] Working templates -> docs/"
 install_file "$LIB_ROOT/01-context/adr.template.md"              "$TARGET/docs/adr.template.md"
@@ -121,12 +140,16 @@ install_file "$LIB_ROOT/01-context/architecture-map.template.md" "$TARGET/docs/a
 install_file "$LIB_ROOT/02-product/spec.template.md"             "$TARGET/docs/spec.template.md"
 install_file "$LIB_ROOT/03-design/threat-model.template.md"      "$TARGET/docs/threat-model.template.md"
 install_file "$LIB_ROOT/07-operations/incident-runbook.template.md" "$TARGET/docs/incident-runbook.template.md"
+install_file "$LIB_ROOT/07-operations/slos.template.md"          "$TARGET/docs/slos.md"
+install_file "$LIB_ROOT/08-maintenance/debt-log.template.md"     "$TARGET/docs/debt-log.md"
 
 # --- summary ------------------------------------------------------------------
 echo
 echo "Done: $created created, $skipped skipped (already existed)."
-echo "Next steps:"
-echo "  1. Fill the <ANGLE_BRACKET> blanks in CLAUDE.md and docs/."
-echo "  2. Initialize the project (git init, pnpm init / framework scaffold) if not done."
-echo "  3. Wire hooks: pnpm add -D husky lint-staged @commitlint/cli @commitlint/config-conventional && pnpm exec husky init (hooks already in .husky/)."
-echo "  4. Read $LIB_ROOT/00-governance/agent-operating-rules.md before letting an agent loose."
+echo "Next steps (full walkthrough: the 'Project setup after bootstrap' section of CLAUDE.md):"
+echo "  1. Scaffold the framework app if not done, then fill the <ANGLE_BRACKET> blanks in CLAUDE.md and docs/."
+echo "  2. Install the stack's dependencies — the canonical pnpm add lines are in CLAUDE.md's setup section."
+echo "  3. Install the gitleaks binary (brew install gitleaks | github.com/gitleaks/gitleaks/releases) — the pre-commit hook fails closed without it."
+echo "  4. Wire hooks: pnpm exec husky init (scripts already in .husky/), then make one test commit on a branch."
+echo "  5. After the first push: set branch protection per the checklist in 05-verification/ci-pipeline.md (Bootstrap section)."
+echo "  6. Read $LIB_ROOT/00-governance/agent-operating-rules.md before letting an agent loose."

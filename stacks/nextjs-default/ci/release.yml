@@ -1,0 +1,33 @@
+# Release pipeline — makes release-process.md rule 4 real: the changelog is
+# GENERATED from Conventional Commits (which commitlint guarantees), never
+# hand-maintained. Trigger: pushing a version tag (the release ceremony's
+# "Tag + generate changelog" step, 06-delivery/release-process.md).
+
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write # create the GitHub release
+
+jobs:
+  changelog:
+    name: Generate release notes from Conventional Commits
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # full history — the generator diffs against the previous tag
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Create GitHub release with generated changelog
+        # changelogithub: groups feat/fix/perf by type, links PRs/commits,
+        # excludes chore/ci noise — exactly the release-process.md rule 4 split.
+        run: pnpm dlx changelogithub@13
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

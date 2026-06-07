@@ -4,7 +4,7 @@ Debt is a tool: borrowing speed against future work is sometimes right. Unmanage
 
 ## The debt log
 
-1. The project keeps a debt log — `docs/debt-log.md`, one table:
+1. The project keeps a debt log — `docs/debt-log.md` (starter injected at bootstrap from `debt-log.template.md`), one table:
 
    | ID | Date | What was shortcut | Why | Cost when it bites | Paydown trigger | Status |
    |---|---|---|---|---|---|---|
@@ -30,4 +30,4 @@ Debt is a tool: borrowing speed against future work is sometimes right. Unmanage
 - Fallback if unenforceable: Every shortcut taken in this diff is recorded in the debt log with a paydown trigger; none are silent.
 
 ## Bootstrap
-- What new-project.sh injects for this standard: nothing — reference only (the debt log is created on first borrow; this doc defines its shape).
+- What new-project.sh injects for this standard: `docs/debt-log.md` (from `debt-log.template.md`) — rows accrue from the first shortcut; this doc defines the policy around it.

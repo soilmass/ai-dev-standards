@@ -17,10 +17,11 @@ Every preset MUST contain all of the following. `new-project.sh` and the complet
 | `stack-decisions.md` | A real ADR for **every** tool the preset pins — choice, rationale, accepted tradeoff. No tool enters the preset without one. |
 | `CLAUDE.partial.md` | Stack-specific agent rules + command table, appended to the project `CLAUDE.md` at bootstrap. Keep it as lean as the template it merges into. |
 | `lint-config/` | The real lint/format config file(s), copied verbatim into new projects. |
-| `ci/` | Real CI workflow files implementing the pinned pipeline of `05-verification/ci-pipeline.md` — at minimum a per-PR workflow and a nightly/pre-deploy workflow, plus any budget/config files they reference. |
+| `ci/` | Real CI workflow files implementing the pinned pipeline of `05-verification/ci-pipeline.md` — at minimum a per-PR workflow, a nightly/pre-deploy workflow, and a tag-triggered release workflow, plus any budget/config files they reference. |
 | `hooks/` | Real git hook scripts (pre-commit, commit-msg) and the configs they invoke (lint-staged, commitlint). |
 | `dependabot.yml` | Real dependency-update config implementing `08-maintenance/dependency-updates.md`. |
-| `env.schema.example` | Real boot-validated env schema example implementing `04-build/secrets-config.md`. |
+| `env.schema.example` | Real boot-validated env schema example implementing `04-build/secrets-config.md` (server/client split). |
+| `project-config/` | Per-project tool configs the CI gates depend on (test runner with coverage thresholds, E2E/visual config, ORM config pinning the migrations path, gitignore) — copied to the project root with `.example` stripped. |
 
 Layer-doc footers point into these paths (`Config: stacks/<stack>/<path>`). If you add a preset, every footer reference must resolve for your stack too — or the doc's enforcement is honestly re-declared for that stack.
 

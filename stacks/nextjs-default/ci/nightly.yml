@@ -60,6 +60,10 @@ jobs:
       - name: Build app
         run: pnpm build
       - name: Compare against committed screenshot baselines
+        # The 'visual' project is defined in playwright.config.ts (injected from
+        # project-config/playwright.config.example.ts at bootstrap). Baselines are
+        # created locally — `pnpm exec playwright test --project=visual --update-snapshots`
+        # — reviewed, and committed; CI only ever compares, never regenerates.
         run: pnpm exec playwright test --project=visual --update-snapshots=none
       - name: Upload diff artifacts on failure
         if: failure()

@@ -21,8 +21,12 @@ You can't operate what you can't see. This doc sets the conventions for logs, me
 
 ## Client-side error tracking & real-user monitoring
 
-9. **Required, not optional**: an error-tracking SDK captures unhandled exceptions and rejections in the browser with source maps, release tagging, and user-impact counts. The server being green while every client throws is the classic silent failure.
-10. Real-user monitoring collects Core Web Vitals from the field — the lab budgets in `05-verification/a11y-perf-gates.md` are gates; field data is the truth they approximate.
+9. **Required, not optional**: an error-tracking SDK captures unhandled exceptions and rejections in the browser. The server being green while every client throws is the classic silent failure. The vendor is a per-project choice (recorded as an ADR); whatever is chosen, the wiring floor is:
+   - **Both global hooks covered** — uncaught exceptions *and* unhandled promise rejections — plus the framework's root error boundary reporting into the same SDK (an error boundary that only renders a sad face swallows the signal).
+   - **Source maps uploaded per release and events tagged with the release/commit ID** — an unsymbolicated minified stack is noise, and untagged events can't answer "did the last deploy cause this?".
+   - **User-impact counts, not raw event counts**, drive triage: 1 error × 10,000 users outranks 10,000 errors × 1 user.
+   - The SDK's redaction config upholds rule 5 (no PII/secrets in error payloads — scrub URLs, form values, request bodies).
+10. Real-user monitoring collects Core Web Vitals **from the field**, reported through the framework's built-in vitals hook into the analytics/error pipeline (no second SDK needed to start). The lab budgets in `05-verification/a11y-perf-gates.md` are gates; field data is the truth they approximate — review field p75 against the same thresholds when SLOs are set (`docs/slos.md`).
 
 ## Alerting
 

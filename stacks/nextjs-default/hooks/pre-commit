@@ -28,4 +28,14 @@ esac
 
 pnpm exec lint-staged
 
-pnpm exec gitleaks protect --staged --redact --verbose
+# gitleaks is a standalone binary (Go), not an npm package. Fail CLOSED if it
+# is missing — committing unscanned would betray the never-commit rule
+# (04-build/secrets-config.md rule 7). CI re-scans full history regardless.
+if command -v gitleaks >/dev/null 2>&1; then
+  gitleaks protect --staged --redact --verbose
+else
+  echo "✖ gitleaks not installed — staged secret scan cannot run." >&2
+  echo "  Install: brew install gitleaks  |  or grab a release: https://github.com/gitleaks/gitleaks/releases" >&2
+  echo "  (Refusing to commit unscanned; see 04-build/secrets-config.md.)" >&2
+  exit 1
+fi

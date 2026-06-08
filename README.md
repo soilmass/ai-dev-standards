@@ -62,4 +62,4 @@ Every layer doc (`02`–`08`, `_spines/`) ends with an **Enforcement / Bootstrap
 
 ## Maintaining the library
 
-Lessons from projects come back as **small patches**, not rewrites — process in [`00-governance/standards-lifecycle.md`](00-governance/standards-lifecycle.md). After any change: run `./scripts/audit-completeness.sh` and update the completeness matrix. Every change is checked by [`scripts/suite-ci.sh`](scripts/suite-ci.sh) (footers, internal links, config validity, bootstrap smoke test), which CI runs on every push and pull request.
+Lessons from projects come back as **small patches**, not rewrites — process in [`00-governance/standards-lifecycle.md`](00-governance/standards-lifecycle.md). After any change: run `./scripts/audit-completeness.sh` and update the completeness matrix. Every change is checked by [`scripts/suite-ci.sh`](scripts/suite-ci.sh) (footers, calibration register, flow-back ledger, internal links, config validity, bootstrap smoke test), which CI runs on every push and pull request.

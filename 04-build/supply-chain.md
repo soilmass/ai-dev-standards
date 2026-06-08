@@ -41,9 +41,9 @@ An attacker who can't breach your app will try to breach what *built* it. This d
 - **OpenSSF Scorecard** (https://scorecard.dev) — automated security-health heuristics (Signed-Releases, Pinned-Dependencies, Dangerous-Workflow, Maintained) for evaluating a dependency's project posture before adoption. Grounds rule 14 (and shares the vetting backbone with `dependency-policy.md` rule 3).
 
 ## Enforcement
-- Mechanism: none-possible
-- Config: n/a — the preset's CI (`stacks/nextjs-default/ci/`) enforces the consumer-side CVE/license gate (`dependency-policy.md`) but ships no provenance-generation, artifact-signing, SBOM, or verify-on-consume job; SLSA L2 posture depends on the deploy target's build platform, which is a per-project choice (`stacks/<stack>/stack-decisions.md`).
-- Fallback if unenforceable: Confirm every released artifact carries signed SLSA-provenance + an SBOM generated in CI, that external build inputs (base images, actions, binaries) are pinned by digest and verified before use, and that verification failure blocks the pipeline.
+- Mechanism: CI job
+- Config: stacks/nextjs-default/ci/pr.yml (supply-chain job: CycloneDX SBOM generated + retained, and PR-diff dependency review blocking high+ vulns / disallowed licenses). Build-provenance attestation (SLSA, `actions/attest-build-provenance`) is enforced by presets that publish a built artifact to attest — a serverless deploy has no artifact, so provenance is preset-dependent, not global.
+- Fallback if unenforceable: n/a — SBOM + PR dependency review are CI-enforced; build-provenance is CI-enforced wherever a preset publishes an artifact; verify-on-consume / digest-pinning of build inputs (base images, actions) is reviewable in the diff and carried by the standing self-review items.
 
 ## Bootstrap
-- What new-project.sh injects for this standard: nothing — reference only.
+- What new-project.sh injects for this standard: the PR workflow containing the supply-chain job (SBOM + dependency review).

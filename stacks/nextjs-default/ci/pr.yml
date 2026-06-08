@@ -5,7 +5,8 @@
 #
 # Tier 1 (parallel): lint+format, type check, unit/component tests (incl. a11y unit checks),
 #                    secret scan, PR-size gate, dependency audit + license allowlist,
-#                    migration-discipline guard, docs-updated check
+#                    supply-chain (SBOM + dependency review), migration-discipline guard,
+#                    docs-updated check
 # Tier 2 (after tier 1): production build
 # Tier 3 (after tier 2): Lighthouse CI against the preview deploy
 #
@@ -129,6 +130,37 @@ jobs:
           pnpm dlx license-checker-rseidelsohn@4 --production --excludePrivatePackages
           --onlyAllow "MIT;Apache-2.0;ISC;BSD-2-Clause;BSD-3-Clause;0BSD;BlueOak-1.0.0;CC0-1.0;Unlicense;Python-2.0"
 
+  supply-chain:
+    name: Supply chain (SBOM + dependency review)
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v6
+      # PR-diff dependency review: blocks newly-introduced vulnerable deps and
+      # disallowed licenses on the change itself (04-build/supply-chain.md,
+      # complements the deps job's full-tree audit). OWASP Top 10:2025 supply chain.
+      - name: Dependency review
+        uses: actions/dependency-review-action@v5
+        with:
+          fail-on-severity: high
+          license-check: true
+      # SBOM (CycloneDX) of the full dependency tree, retained as an artifact —
+      # the inventory side of supply-chain provenance (SLSA / NIST SSDF). Build
+      # provenance attestation lives in presets that publish a built artifact
+      # (e.g. a container image); a serverless deploy has no artifact to attest.
+      - name: Generate SBOM (CycloneDX)
+        uses: anchore/sbom-action@v0
+        with:
+          format: cyclonedx-json
+          artifact-name: sbom.cdx.json
+      - name: Upload SBOM
+        uses: actions/upload-artifact@v4
+        with:
+          name: sbom
+          path: sbom.cdx.json
+          retention-days: 30
+
   migrations:
     name: Migration discipline guard
     runs-on: ubuntu-latest
@@ -172,7 +204,7 @@ jobs:
 
   build:
     name: Production build
-    needs: [lint, typecheck, test, secrets, pr-size, deps, migrations, docs]
+    needs: [lint, typecheck, test, secrets, pr-size, deps, supply-chain, migrations, docs]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6

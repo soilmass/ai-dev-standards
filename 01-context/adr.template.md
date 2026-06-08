@@ -1,3 +1,5 @@
+<!-- Format: Michael Nygard's Architecture Decision Record (2011) — Status / Context / Decision / Consequences. Keep it short and immutable; supersede rather than rewrite. See adr.github.io. -->
+
 # ADR-<NUMBER>: <SHORT_DECISION_TITLE>
 
 - **Date:** <YYYY-MM-DD>

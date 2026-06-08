@@ -30,6 +30,14 @@ Language-agnostic rules for all production code. Concrete lint/format settings a
 15. Never introduce a new pattern when an existing one fits; search first (see `00-governance/agent-operating-rules.md` §4).
 16. Never weaken lint config, type strictness, or suppress diagnostics (`ignore` pragmas) to make a check pass; fix the code or raise the rule's validity as a question.
 
+## Standards basis
+
+- **Clean Code principles** (Martin) — single-responsibility functions, intention-revealing names, comments that justify rather than narrate: the basis for rules 2–4, 11. Aligned: "if a name needs 'and', split it" and "comments explain *why*".
+- **Cyclomatic Complexity** (McCabe, 1976) — counts independent execution paths; the original testability/branch-count metric. The floor a stack's lint config encodes per rule 3.
+- **Cognitive Complexity** (SonarSource white paper, https://www.sonarsource.com/resources/cognitive-complexity/) — measures *understandability* by penalising nested control flow and breaks in linear reading, correcting cyclomatic's blind spots. The preferred per-function readability budget behind rule 3's "small enough to read".
+- **Parse, don't validate** (Alexis King) — push validation into types at the boundary so illegal states are unrepresentable: the basis for rules 6 and 9.
+- **OWASP ASVS 5.0 V14 Configuration & Input Validation** (May 2025, https://owasp.org/www-project-application-security-verification-standard/) — mandates server-side validation of all untrusted input at trust boundaries: grounds rule 9.
+
 ## Enforcement
 - Mechanism: lint rule
 - Config: stacks/nextjs-default/lint-config/biome.json

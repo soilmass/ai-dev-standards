@@ -31,6 +31,14 @@ Where things run is decided by workload shape (full rule + current picks: `00-go
 
 Start with box 1 (+3) for speed; the moment a workload fights the host, move the workload to its box rather than bending the architecture.
 
+## Standards basis
+
+- **Continuous Delivery** (Humble & Farley) — every change is releasable through an automated, repeatable deployment pipeline; the same artifact is promoted across environments, not rebuilt. Aligns: one build previewed, then the *exact* build deployed from `main`.
+- **Deployment ≠ release** (Fowler/Hodgson, *Feature Toggles*, martinfowler.com/articles/feature-toggles.html) — pushing code to production and exposing it to users are separate acts. Aligns: risky features cross the deploy boundary dark behind flags.
+- **Blue-green & canary deployment** (Fowler, martinfowler.com/bliki/BlueGreenDeployment.html) — keep the prior version instantly switch-able; expose a new version to a traffic subset before full cutover. Aligns: atomic deploys keep the previous build warm; preview-per-PR is the pre-production canary surface.
+- **DORA software delivery metrics** (dora.dev/guides/dora-metrics) — deployment frequency and change lead time (throughput) vs. change fail rate, rework rate, and failed-deployment recovery time (stability); the 2024–25 model added rework rate and reframed recovery time toward throughput. The atomic-deploy + instant-rollback design optimizes recovery time directly.
+- **Reproducible config across environments** (12-Factor App, factor III "Config", 12factor.net) — config lives in the environment, never the code, and differs only by environment. Aligns: per-environment secrets through the boot-validated env schema; no manual host-side edits.
+
 ## Enforcement
 - Mechanism: none-possible
 - Config: n/a

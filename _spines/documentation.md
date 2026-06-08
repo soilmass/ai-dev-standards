@@ -29,6 +29,18 @@ Docs are part of the change, not a chore after it. The rule that makes everythin
 6. Templates exist so the blank page never blocks: copy, fill the `<ANGLE_BRACKETS>`, delete sections that don't apply — a section consciously deleted beats one emptily present.
 7. Agents treat doc updates as part of "done" (`05-verification/definition-of-done.md` item 5) and may trust the docs they read to be current — that's the contract this spine maintains.
 
+## Reader-need shape (which doc, for whom)
+
+8. Documentation serves four distinct reader needs; conflating them is the most common doc failure. Match the artifact to the need: **tutorial** (learning-oriented, takes a newcomer by the hand), **how-to guide** (task-oriented, an already-competent reader pursuing a goal), **reference** (information-oriented, accurate and complete — schemas and the architecture map are reference), **explanation** (understanding-oriented — ADRs and the *why* in this spine are explanation). A page that tries to teach and to be a complete reference at once does neither well; split it.
+
+## Standards basis
+
+- **Diátaxis** (diataxis.fr, Daniele Procida) — the four-mode reader-need model in rule 8: tutorials / how-to / reference / explanation, each with a distinct purpose (learning vs. task vs. information vs. understanding). This spine's per-layer artifacts already partition along these lines — specs and runbooks are how-to/reference, ADRs and the *why*-rules are explanation, schemas are reference.
+- **Architecture Decision Records** (Michael Nygard, 2011, "Documenting Architecture Decisions"; adr.github.io) — a short immutable record per consequential decision with Status / Context / Decision / Consequences; numbered, markdown, stored in-repo (canonically `doc/adr`). Basis for rule 2's "decision a future reader will question → ADR" and the ADR artifact in layer 01; `01-context/adr.template.md` follows the Nygard structure.
+- **Docs-as-code** — docs live in the repo, version-controlled, reviewed and diffed alongside code, built/checked in CI. This is the foundation of the same-PR rule (intro), rule 4 (closest-to-use / everything in the repo), and the CI docs-check enforcement below.
+- **C4 model** (Simon Brown, c4model.com) — Context / Container / Component / Code hierarchy for architecture diagrams at chosen zoom levels; the basis for `docs/architecture-map.md` being a layered map rather than one undifferentiated diagram. New component/boundary → an architecture-map row (rule 2) corresponds to a C4 Container/Component entry.
+- **README / CONTRIBUTING conventions** (community standard; e.g. GitHub community-profile, Standard Readme) — a project's entry-point README and contributor guide are first-class artifacts; rule 4's "closest-to-use wins" ranks README above wiki precisely because it ships with the code.
+
 ## Enforcement
 - Mechanism: CI job
 - Config: stacks/nextjs-default/ci/pr.yml (docs job: code-without-docs diffs fail unless the waiver label is applied)

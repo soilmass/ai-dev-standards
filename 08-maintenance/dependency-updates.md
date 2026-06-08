@@ -19,6 +19,12 @@ Staying current is cheaper than catching up: small weekly updates each carry nea
 
 8. Update automation is configured **in the repo** (the preset ships the config) so cadence and grouping are reviewable like everything else. Per the pinned-decisions deviation rule, switch tooling only when grouping/policy needs outgrow it — as a preset change.
 
+## Standards basis
+- **OWASP Top 10:2025 A06 Vulnerable and Outdated Components / A03 Software Supply Chain Failures** (owasp.org/Top10/2025) — outdated and known-vulnerable components are a top risk class; mandates continuous inventory + SCA and treating a missed update as a security defect. The weekly-cadence + immediate-security rules implement "small and current beats large and late."
+- **OWASP Vulnerable Dependency Management Cheat Sheet** (cheatsheetseries.owasp.org) — packaging must support component-level patching *at any time* to meet SLAs, not only on a monthly/quarterly change-control window; this is the basis for rule 2 (security updates land immediately, outside the weekly rhythm).
+- **SemVer 2.0.0** (semver.org) — defines the patch/minor/major contract this doc's grouping rests on: patch/minor are non-breaking (auto-merge on green CI), major may break (changelog read + migration in-PR). A bump that breaks CI under a non-major range is a publisher SemVer violation, which rule 6 surfaces rather than suppresses.
+- **OpenSSF Scorecard** (scorecard.dev) — `Dependency-Update-Tool` and `Pinned-Dependencies` are scored security-health signals; configuring the update bot *in-repo* (rule 8) is exactly what Scorecard rewards and keeps cadence reviewable. Automated-update tooling (Dependabot/Renovate-class) is the vendor-neutral mechanism.
+
 ## Enforcement
 - Mechanism: CI job
 - Config: stacks/nextjs-default/dependabot.yml (weekly grouped update PRs) + stacks/nextjs-default/ci/pr.yml (deps job gates every update PR like any other)

@@ -21,6 +21,17 @@ Every dependency is code you now own without having written. This doc governs ho
 9. A vulnerability with no upstream fix gets a documented decision: pin + mitigate, replace the dep, or accept-with-expiry (an ADR with a review date). Silent acceptance is not an option.
 10. Quarterly: prune — remove deps no longer imported (trace each suspect with the dependency-explain command), and review anything held back by an accepted-risk ADR.
 
+## Build provenance
+
+11. Released artifacts carry **build provenance** — a signed attestation of what built them, from which source commit, with which inputs. Generate it in CI (the platform's attestation step) so consumers can verify the artifact traces to this repo, not a tampered build. This is the producer side of the same supply-chain trust the audit/license gates enforce on the consumer side.
+
+## Standards basis
+
+- **SLSA v1.0 Build Track** (https://slsa.dev/spec/v1.0/levels) — Build L1 requires provenance describing the build; L2 adds a hosted, signed build; L3 adds isolation/non-falsifiability. Grounds the build-provenance rule (rule 11); provenance is expressed as **in-toto attestations**.
+- **OpenSSF Scorecard** (https://scorecard.dev) — automated 0–10 security-health heuristics (Maintained, Vulnerabilities, Dangerous-Workflow, Pinned-Dependencies, Signed-Releases) for evaluating a dependency before adoption: the objective backbone of the rule 3 vetting checklist.
+- **SPDX License List** (https://spdx.org/licenses/) — canonical machine-readable license short-identifiers; the allowlist (rules 5–6) and CI license check are expressed in SPDX IDs for unambiguous, language-neutral matching.
+- **OWASP Dependency management / Vulnerable & Outdated Components** (OWASP Top 10 A06) — mandates inventorying components and continuously monitoring for known CVEs: grounds the per-PR audit gate (rule 8) and the documented-decision rule for unfixed vulns (rule 9).
+
 ## Enforcement
 - Mechanism: CI job
 - Config: stacks/nextjs-default/ci/pr.yml (deps job: `pnpm audit --prod --audit-level=high` + license allowlist check)

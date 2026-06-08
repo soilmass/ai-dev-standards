@@ -22,6 +22,13 @@ Configuration is data with a schema; secrets are configuration that must never t
 10. Secrets never appear in logs, error messages, exception payloads, or analytics (see `07-operations/observability.md` redaction rules).
 11. Each environment (dev/preview/production) has its own secret values; production secrets exist only in the production host's settings. Rotation procedure and cadence: `_spines/security-privacy.md`.
 
+## Standards basis
+
+- **12-Factor App — Factor III (Config)** (https://12factor.net/config) — strict separation of config from code, config stored in the environment, no secrets in the repo: the founding principle for the env-schema and never-commit sections (rules 1–6).
+- **OWASP Secrets Management Cheat Sheet** (https://cheatsheetseries.owasp.org/cheatsheets/Secrets_Management_Cheat_Sheet.html) — keep secrets out of source/logs, scan for leaks, prefer short-lived secrets with defined expiry, and treat any leaked secret as compromised → rotate then remediate: grounds rules 6–8, 10. Aligned: "rotation first, history rewriting is cosmetic."
+- **NIST SP 800-57 Part 1 Rev. 5 (Key Management)** (https://csrc.nist.gov/pubs/sp/800/57/pt1/r5/final) — every key has a bounded *cryptoperiod* sized to sensitivity and exposure; compromise triggers immediate revocation/re-key. The basis for the per-environment rotation cadence (rule 11; procedure in `_spines/security-privacy.md`).
+- **OWASP ASVS 5.0 — V6 Stored Cryptography & V14 Configuration** (May 2025, https://owasp.org/www-project-application-security-verification-standard/) — V6 mandates secrets held in a managed secret store with controlled creation/destruction; V14 mandates secure, validated, environment-segregated configuration. Grounds the boot-validation (rules 2–3) and per-environment isolation (rule 11) requirements.
+
 ## Enforcement
 - Mechanism: git hook
 - Config: stacks/nextjs-default/hooks/pre-commit (gitleaks staged scan) + stacks/nextjs-default/ci/pr.yml (secrets job: full-history scan; build job: boot-validation of the env schema) + stacks/nextjs-default/env.schema.example (runtime check)

@@ -24,6 +24,14 @@ Component structure and styling discipline. The styling system itself is a stack
    - Interactive elements are real elements (`button`, `a`, `label`) — div-with-onClick fails review.
    - Every interactive component is keyboard-operable and visibly focusable; every form control has a programmatic label; images carry meaningful `alt` (or empty alt when decorative).
    - Component tests query by **role and accessible name**, which makes unnameable controls fail by construction.
+   - Pointer targets meet WCAG 2.2 **2.5.8 Target Size (Minimum)** — at least 24×24 CSS px (or equivalent spacing) — so the token-defined sizes for interactive primitives never drop below it; complex widgets follow the WAI-ARIA APG keyboard-interaction pattern for their role.
+
+## Standards basis
+
+- **WCAG 2.2 Level AA** (W3C Recommendation, 12 Dec 2024, https://www.w3.org/TR/WCAG22/): POUR — Perceivable, Operable, Understandable, Robust. Grounds the accessibility baseline: real semantic elements, keyboard operability + visible focus (2.4.7 / 2.4.11 Focus Not Obscured), programmatic labels (1.3.1, 4.1.2), meaningful/empty alt (1.1.1), and 2.5.8 Target Size.
+- **WAI-ARIA Authoring Practices Guide (APG)** (https://www.w3.org/WAI/ARIA/apg/): authoritative role/state/keyboard-interaction patterns for composite widgets. Basis for "use the real element first, ARIA only to fill gaps" and the per-role keyboard expectations on composites.
+- **W3C Design Tokens Format Module** (DTCG, first stable version Oct 2025; `.tokens`/`application/design-tokens+json`): a vendor-neutral interchange format for color/spacing/type/radii tokens with groups and aliases. Grounds rules 2–3 — tokens defined once, referenced everywhere, theming via token aliasing rather than per-component conditionals.
+- **Design-token / atomic structure** (single source of style; primitives→composites→views): grounds the component hierarchy (rules 4–5) and the no-parallel-styling-system rule (1).
 
 ## Enforcement
 - Mechanism: lint rule

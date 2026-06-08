@@ -29,6 +29,15 @@ The minimal flag, concretely: a boot-validated env var (e.g. `FLAG_NEW_CHECKOUT`
 3. Tag + generate changelog for announced releases.
 4. Watch the dashboards for one error-budget-relevant interval (`07-operations/observability.md`, `slo-error-budgets.md`).
 
+## Standards basis
+
+- **Semantic Versioning 2.0.0** (semver.org) — `MAJOR.MINOR.PATCH`; MAJOR for incompatible API changes, MINOR for backward-compatible additions, PATCH for backward-compatible fixes; requires a declared public API. Aligns: applied strictly to anything published for external consumption (rule 2); apps use date-based versioning since they expose no consumer API.
+- **Calendar Versioning** (calver.org) — date-derived version schemes for software whose cadence, not API contract, is the meaningful axis. Aligns: app version `YYYY.0M.sequence` (rule 1).
+- **Conventional Commits 1.0.0** (conventionalcommits.org) — structured commit prefixes (`feat`/`fix`/`chore`…) make history machine-parseable and drive automated version + changelog derivation. Aligns: the commit-msg hook and changelog generation rest on it.
+- **Keep a Changelog 1.1.0** (keepachangelog.com) — human-curated, grouped, chronologically-descending change notes; "don't let your changelog be a dump of commit logs." Aligns: hand-curate the user-facing summary on top of generated notes for announced releases.
+- **Feature Toggles** (Hodgson on martinfowler.com/articles/feature-toggles.html) — categorize toggles by longevity/dynamism (release, ops, experiment, permission); release toggles are short-lived and must be retired. Aligns: every flag has an owner + removal condition; a long-on flag is debt.
+- **Progressive delivery** (getunleash.io / DORA) — extends CD by exposing changes to expanding user cohorts (percentage rollout, rings) with metric-gated promotion. Aligns: adopt a flag service only when runtime toggling / percentage rollout is genuinely needed (rule 7).
+
 ## Enforcement
 - Mechanism: git hook
 - Config: stacks/nextjs-default/hooks/commitlint.config.mjs (commit-msg hook guarantees release-parseable history) + stacks/nextjs-default/ci/release.yml (tag-triggered workflow that actually generates the release notes from it)

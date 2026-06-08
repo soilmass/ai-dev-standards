@@ -27,6 +27,13 @@ How history is shaped. Machine-checkable parts (commit format, branch names) are
 12. Never rewrite history on a shared branch (`main` or anything someone else may have pulled). Force-push only to your own unshared branch.
 13. Reverts use `git revert` (a new commit), preserving the audit trail — see `06-delivery/rollback.md`.
 
+## Standards basis
+
+- **Conventional Commits 1.0.0** (https://www.conventionalcommits.org/en/v1.0.0/) — `<type>(<scope>): <subject>` with the closed type set and `BREAKING CHANGE` footer: grounds rules 2, 5, 11. The spec defines the type→SemVer mapping (`fix`→PATCH, `feat`→MINOR, breaking→MAJOR) the release tooling consumes.
+- **Semantic Versioning 2.0.0** (https://semver.org) — the MAJOR.MINOR.PATCH contract the Conventional Commit types drive; consumed at release/tagging time.
+- **Trunk-Based Development** (https://trunkbaseddevelopment.com) — single always-releasable `main`, short-lived branches integrated within days: grounds rules 1, 3, 4. The empirical link to delivery performance is established by **DORA / Accelerate** (Forsgren, Humble, Kim), whose four key metrics rank continuous-integration / trunk-based flow as a high-performance predictor.
+- **Reproducible reverts** — `git revert` as a forward, audit-preserving commit (rule 13) follows the same change-tracking discipline DORA's change-failure/MTTR metrics reward.
+
 ## Enforcement
 - Mechanism: git hook
 - Config: stacks/nextjs-default/hooks/ (pre-commit: branch-name gate; commit-msg: commitlint; commitlint.config.mjs)

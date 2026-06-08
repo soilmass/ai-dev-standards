@@ -33,6 +33,14 @@ The lint only catches deep relative imports; full layering is review-carried. Ap
 - Did a new boundary, component, or external dependency update the architecture map? (Rule 8.)
 - Is framework code creeping inward past the edges into domain logic? (Rule 10.)
 
+## Standards basis
+
+- **Clean Architecture — the Dependency Rule** (R. C. Martin): source-code dependencies point only inward; an inner circle names nothing from an outer one. This is the literal basis of rules 2 and 10 (frameworks at the edges) — the domain is the inner circle and imports neither interface nor infrastructure.
+- **Hexagonal / Ports & Adapters** (A. Cockburn, 2005): the application core is reached only through ports, with adapters at the boundary; isomorphic to Clean's rings. Grounds the "interface/infrastructure are adapters around an untouched domain" framing.
+- **C4 model** (Simon Brown, https://c4model.com): hierarchical Context → Container → Component → Code views as the model-as-code description of structure. The architecture map (rule 8) is the project's C4-style Component/Container record; new boundaries update it in the same PR.
+- **12-Factor App** (https://12factor.net): III (config in the environment), IV (backing services as attached resources) underpin rule 12's single config/single cross-cutting module and the "infrastructure at the edge" placement.
+- **ADR** (Architecture Decision Records, M. Nygard): one immutable record per significant decision — basis for rule 9 (an ADR precedes the implementing PR).
+
 ## Enforcement
 - Mechanism: lint rule
 - Config: stacks/nextjs-default/lint-config/biome.json (restricted-imports rules blocking deep relative cross-module imports)

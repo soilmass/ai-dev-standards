@@ -27,6 +27,14 @@ Rules for schema design that survive migrations, scale, and agent edits. The ORM
 12. New columns on existing tables are nullable or defaulted — a required column with no default breaks every in-flight writer.
 13. Destructive migrations (dropping columns/tables) state in the PR what proves the data is unused, and run only after a backup is verified restorable (`07-operations/backup-dr.md`).
 
+## Standards basis
+
+- **Relational normalization** (E. F. Codd; 3NF/BCNF): non-key attributes depend on the key, the whole key, and nothing but the key — transitive dependencies eliminated. Default to 3NF; denormalize only as a measured, recorded decision. Grounds the "each fact stored once" intent behind keys/identity and the one-mechanism timestamp rule.
+- **Evolutionary database design & expand→contract** (Ambler & Sadalage, *Refactoring Databases*): structural change as small, reversible, semantics-preserving database refactorings with a transition window of parallel old/new shapes. This is the direct basis of rules 10–12 (forward-only migrations, expand→migrate→contract, additive/nullable columns).
+- **UUIDv7 / time-ordered UUIDs** (RFC 9562, which obsoletes RFC 4122): a 48-bit Unix-ms timestamp prefix giving index-friendly, monotonic surrogate keys. Grounds rule 4's "UUIDv7 or equivalent time-sortable ID" default over random v4.
+- **PostgreSQL identifier conventions**: lower snake_case unquoted identifiers (avoids case-folding surprises), plural table names by convention. Grounds the naming rules (1, 3).
+- **ISO 4217** (currency codes) + **ISO 8601 / UTC** (instants): money as integer minor units plus a currency code, time stored as UTC. Grounds rule 9.
+
 ## Enforcement
 - Mechanism: CI job
 - Config: stacks/nextjs-default/ci/pr.yml (migrations job: blocks edits/deletes of applied migration files, forcing the forward-only discipline)

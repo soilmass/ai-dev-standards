@@ -51,6 +51,14 @@ Every threat above gets a row: a mitigation implemented in this change, or an ex
 
 Re-open this model when: <CONDITIONS_E_G_NEW_ENTRY_POINT_NEW_DATA_CLASS_AUTH_CHANGE>.
 
+## Standards basis
+
+- **STRIDE** (Microsoft): Spoofing, Tampering, Repudiation, Information disclosure, Denial of service, Elevation of privilege — the six-category mnemonic walked in the Threats section to elicit threats per element systematically.
+- **OWASP Threat Modeling** (https://cheatsheetseries.owasp.org/cheatsheets/Threat_Modeling_Cheat_Sheet.html): the four framing questions — what are we building (Assets/Entry points), what can go wrong (Threats), what are we doing about it (Mitigations), did we do a good job (Review trigger). This template's section order maps one-to-one.
+- **Attack trees** (B. Schneier): decompose an attacker goal into sub-goals/leaf actions; use to expand a high-rated STRIDE threat when one mitigation row is too coarse.
+- **DFD-driven decomposition**: enumerate entry points / trust boundaries / data stores (the Assets + Entry points tables) before rating, so no input surface is skipped.
+- **OWASP Risk Rating** (likelihood × impact): grounds the L/M/H two-axis rubric used to sort threats rather than to compute false precision.
+
 ## Enforcement
 - Mechanism: none-possible
 - Config: n/a

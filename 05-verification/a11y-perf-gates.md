@@ -25,6 +25,13 @@ Budgets asserted by Lighthouse CI on every PR's preview deploy (3 runs, median, 
 - A PR that blows a budget fixes the regression or explicitly raises the budget with justification; "merge now, optimize later" is how budgets die.
 - Real-user monitoring (field data) complements these lab gates — see `07-operations/observability.md`.
 
+## Standards basis
+
+- **WCAG 2.2 Level AA** (W3C Recommendation, Oct 2023 — w3.org/TR/WCAG22/): the conformance target this doc names; AA includes all A + AA success criteria and is what ADA Title II, Section 508, and the EU Accessibility Act require. WCAG 3.0 remains a Working Draft (no Recommendation expected before ~2029), so 2.2 AA is the current operative standard. The "automated checks catch ~half of WCAG" caveat reflects that many criteria (focus order, alt-text meaning, keyboard traps) are not machine-decidable and ride the self-review checklist.
+- **Core Web Vitals** (web.dev): the three CWV are LCP (loading, good ≤ 2.5 s), CLS (visual stability, good ≤ 0.10), and **INP** (responsiveness, good ≤ 200 ms) — INP replaced FID as the responsiveness CWV on 12 Mar 2024. Field CWV are assessed at the 75th percentile of real users; the gate uses **TBT ≤ 300 ms** as Lighthouse's lab proxy for INP because INP itself requires field interaction data (see observability for the RUM half).
+- **Lighthouse performance scoring** (GoogleChrome/lighthouse): the lab score is a weighted blend dominated by TBT (~30%), LCP (~25%), and CLS (~25%), with FCP and Speed Index (~10% each) — so the per-metric budgets and the ≥ 0.90 aggregate floor reinforce rather than duplicate each other.
+- **Mobile-first measurement** (web.dev / Google Search): CWV and search ranking use field data weighted toward mobile; Lighthouse's default mobile emulation aligns the lab gate with what users and ranking actually experience.
+
 ## Enforcement
 - Mechanism: CI job
 - Config: stacks/nextjs-default/ci/pr.yml (test job: a11y unit checks; lighthouse job) + stacks/nextjs-default/ci/lighthouserc.json (budgets)

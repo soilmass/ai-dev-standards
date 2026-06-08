@@ -17,7 +17,7 @@ You can't operate what you can't see. This doc sets the conventions for logs, me
 
 ## Tracing
 
-8. Propagate the correlation ID across every boundary (frontend → API → DB/external calls); adopt distributed tracing tooling when more than one service exists — until then, the correlated logs ARE the trace.
+8. Propagate the correlation ID across every boundary (frontend → API → DB/external calls) using the **W3C Trace Context** `traceparent`/`tracestate` headers — the vendor-neutral propagation format, so the trace stitches together no matter which backend reads it. Adopt distributed tracing tooling when more than one service exists — until then, the correlated logs ARE the trace.
 
 ## Client-side error tracking & real-user monitoring
 
@@ -31,6 +31,14 @@ You can't operate what you can't see. This doc sets the conventions for logs, me
 ## Alerting
 
 11. Alert on **symptoms users feel** (error-budget burn, elevated 5xx, p95 over threshold, client error spikes), not on causes (CPU). Every alert is actionable and links a runbook (`incident-runbook.template.md`); an alert that's routinely ignored gets fixed or deleted.
+
+## Standards basis
+- **Google SRE — Four Golden Signals** (latency, traffic, errors, saturation; *SRE* book, "Monitoring Distributed Systems", https://sre.google/sre-book/monitoring-distributed-systems/): the minimum user-facing telemetry set — rule 6's metrics floor maps directly (request rate = traffic, error rate = errors, latency percentiles = latency, platform meter = saturation).
+- **RED method** (Rate/Errors/Duration; Wilkie, request-scoped, per-service) and **USE method** (Utilization/Saturation/Errors; Gregg, resource-scoped): complementary lenses — RED frames rules 6–7's per-route service view, USE frames the saturation/resource view. The two are explicitly meant to be used together.
+- **OpenTelemetry** (https://opentelemetry.io/docs/concepts/signals/): the vendor-neutral signal model — traces and logs are stable specs, metrics data model stable via OTLP. Grounds rules 6–8 treating logs/metrics/traces as one correlated telemetry fabric and the "adopt distributed tracing tooling" guidance.
+- **W3C Trace Context** (Recommendation, https://www.w3.org/TR/trace-context/): standard `traceparent`/`tracestate` HTTP headers for cross-boundary context propagation — the concrete standard behind rule 8's correlation-ID propagation.
+- **Structured logging** (machine-parseable key/value events): rules 1–4 — `event` as primary key, context in fields not prose, levels with defined semantics — are the accepted structured-logging discipline that makes logs queryable telemetry rather than text.
+- **Core Web Vitals** (field-measured: LCP, INP — which replaced FID as the responsiveness metric in 2024 — and CLS): rule 10's real-user monitoring collects these from the field at p75, the threshold percentile the methodology defines.
 
 ## Enforcement
 - Mechanism: none-possible

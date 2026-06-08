@@ -37,6 +37,14 @@ Keep the E2E suite at **≈20–30 tests covering revenue-critical paths only** 
 - A flaky test is a P1 against the suite: fix or quarantine-with-issue the same day; never retry-until-green as a policy.
 - Test code is production code: same lint rules (relaxations only where the preset's config says so), same review bar.
 
+## Standards basis
+
+- **Test Pyramid** (Mike Cohn, *Succeeding with Agile*) — many fast unit tests, fewer integration, a thin UI/E2E crown: the shape of the tiers table and the E2E-scope rule.
+- **Testing Trophy** (Kent C. Dodds, https://kentcdodds.com/blog/the-testing-trophy-and-testing-classifications) — weights the integration band heavily ("write tests, not too many, mostly integration") and adds **static analysis** as the base layer; grounds the per-PR integration emphasis and the lint-as-first-tier posture (static gate is the type-checker + linter, see `coding-standards.md`).
+- **Google test sizes** (small/medium/large, *Software Engineering at Google*) — classifies tests by resource scope and determinism rather than position; the basis for the "deterministic: no real network, no real clocks, no order dependence" hygiene rule (small tests forbid network/disk/sleep).
+- **Coverage as a floor, not a target** — Goodhart's law applied to metrics; coverage is necessary-not-sufficient. Aligned in the coverage-philosophy section: review assertions, gate against erosion.
+- **Test behavior, not implementation** — the refactor-resilience principle (Testing Library guiding principle: "the more your tests resemble the way your software is used, the more confidence they give you").
+
 ## Enforcement
 - Mechanism: CI job
 - Config: stacks/nextjs-default/ci/pr.yml (test job with coverage gate) and stacks/nextjs-default/ci/nightly.yml (full E2E + visual regression)

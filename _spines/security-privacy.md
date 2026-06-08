@@ -29,6 +29,18 @@ Security is not a layer — it's a property every layer either upholds or leaks.
 8. **User rights:** deletion/export requests must be technically satisfiable — soft-delete and backup design account for erasure (hard-delete path exists; backups age out on the retention ladder).
 9. **Breach reality:** if user data may have been exposed, the incident runbook's postmortem includes notification obligations assessment — decided with the law applicable to the project, not improvised.
 
+## Standards basis
+
+- **OWASP Top 10:2025** (owasp.org/Top10/2025) — the consensus most-critical web risks. This spine's posture maps directly: A01 Broken Access Control → rule 1 (auth at the resource) + rule 2 (least privilege); A02 Security Misconfiguration → boot-validated env, per-environment secrets; **A03 Software Supply Chain Failures** (new, elevated from 2021's A06) → rule 4 (deps as attack surface: allowlist + audit gate + immediate updates); A07 Authentication Failures → resource-level checks; A09 Security Logging and Alerting Failures → no secrets/PII in logs + observability; **A10 Mishandling of Exceptional Conditions** (new) → error envelopes that leak no internals.
+- **OWASP ASVS 5.0** (May 2025, asvs.dev) — verification requirements by chapter (V2 Authentication, V4 Access Control, V6 Stored Cryptography, V8 Data Protection, V14 Configuration). The per-feature security acceptance criteria and the classify/minimize/PII rules below operationalize ASVS V8/V14 at design time.
+- **OWASP Proactive Controls 2024** (top10proactive.owasp.org) — developer-facing techniques: C1 access control, C3 validate all input (boundary validation, layer 04), C2 cryptography, C8 secure secrets handling. Ordered controls, not just vulnerabilities.
+- **OWASP SAMM** — security maturity model framing the threat-modeling-before-build cadence as a Design-domain practice, not an afterthought.
+- **NIST SSDF (SP 800-218 v1.1)** — four practice groups PO/PS/PW/RV; this spine realizes PW.4 (boundary validation), PS.1 (secrets out of source), PW.7/PW.8 (review + test), and RV.* (CVE patching, layer 08). (SSDF v1.2 in public draft per EO 14306, Dec 2025 — not yet final.)
+- **SLSA v1.0 Build Track** (slsa.dev/spec/v1.0) — provenance levels L1–L3 for supply-chain integrity; the supply-chain posture (rule 4) targets verifiable build provenance and tamper-resistance, aligning A03 / OWASP A08 (integrity).
+- **CIS Benchmarks** — vendor-neutral secure-configuration baselines for hosts/containers/cloud; the least-privilege and managed-store-encryption rules track CIS hardening guidance.
+- **GDPR Art. 5 principles** — data minimization (Art. 5(1)(c)), purpose limitation (Art. 5(1)(b)), storage limitation (Art. 5(1)(e)), integrity/confidentiality (Art. 5(1)(f)); these are the basis for rules 6–7. Privacy-by-design (GDPR Art. 25 / Cavoukian's 7 foundational principles) is why classification (rule 5) happens at design time, not retrofit. User rights (rule 8): GDPR Arts. 15/17 (access/export, erasure). Breach notification (rule 9): GDPR Arts. 33/34.
+- **NIST Privacy Framework** (Identify-P / Govern-P / Control-P / Communicate-P / Protect-P) — CT.DM (Data Minimization) mandates collect-only-what's-needed, defined retention, scheduled deletion; this is the framework form of rules 6–8. (PFW 1.1 in initial public draft, Apr 2025; 1.0 remains current.)
+
 ## Enforcement
 - Mechanism: git hook
 - Config: stacks/nextjs-default/hooks/pre-commit (staged secret scan) + stacks/nextjs-default/ci/pr.yml (secrets, deps jobs) — the mechanical subset; each layer row above names its own gate

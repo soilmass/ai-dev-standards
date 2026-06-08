@@ -17,6 +17,13 @@ Database changes are the least reversible thing a web project does routinely. Th
 - Schema/migration changes are **ask-first** (`00-governance/agent-operating-rules.md` §2); applied migrations are on the never-touch list.
 - An agent asked to "fix" a migration that already ran responds with a new forward migration, citing rule 2.
 
+## Standards basis
+
+- **Parallel Change / expand–contract** (Fowler, martinfowler.com/bliki/ParallelChange.html; Wellhausen, *Expand and Contract*) — apply a backward-incompatible interface change in three phases (expand → migrate → contract) so old and new coexist with zero downtime. Aligns: rule 6 ships migrations old/new-compatible; rule 7 separates the contract phase.
+- **Evolutionary Database Design** (Fowler & Sadalage, martinfowler.com/articles/evodb.html) — schema evolves continuously through small, version-controlled, automated database refactorings; each migration is an atomic, tested transformation. Aligns: one migration file per change, generated then human-reviewed, applied exactly once.
+- **Forward-only migrations** (industry consensus for zero-downtime delivery) — production recovery is a new forward migration or a restore, never a down-script run against live data. Aligns: rule 1; rollback story defers to `06-delivery/rollback.md`.
+- **Verified-restorable backup before destructive change** (NIST SP 800-34 contingency planning; backup validity must be tested, not assumed) — a backup is only a recovery option if restoration is proven. Aligns: rule 7 requires a verified-restorable backup before drops/narrowing.
+
 ## Enforcement
 - Mechanism: CI job
 - Config: stacks/nextjs-default/ci/pr.yml (migrations job: any modified/deleted migration file fails the PR; only additions pass)

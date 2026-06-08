@@ -22,6 +22,13 @@ How a spec becomes a sequence of small, shippable units. Decomposition quality i
 - An agent given an oversized task splits it and proposes the sequence rather than starting (`00-governance/agent-operating-rules.md` §2).
 - Each agent run gets one unit; "while I'm here" expansions are scope creep and get split out.
 
+## Standards basis
+
+- **INVEST (Bill Wake, 2003)** — Independent, Small, and Estimable are the unit test for a decomposition: a unit that can't ship without another is not Independent; one that can't be named in a sentence is not Small; one too large to estimate must be split. See [Agile Alliance: INVEST](https://agilealliance.org/glossary/invest/).
+- **User-story mapping & the walking skeleton (Jeff Patton; skeleton term from Alistair Cockburn)** — split by user-visible capability into thin end-to-end slices; build the barest end-to-end path first to prove integration and surface technical risk. Grounds "vertical slices over horizontal layers" and "sequence by risk." See [jpattonassociates.com: the new backlog is a map](https://jpattonassociates.com/the-new-backlog/).
+- **Working in small batches (DORA / Accelerate, Forsgren–Humble–Kim)** — small batches shorten feedback, cut variability and risk, and raise deployment frequency; the diff budget and "one unit per agent run" encode this. A unit completable in hours-to-days is DORA's own small-batch sizing. See [dora.dev: working in small batches](https://dora.dev/capabilities/working-in-small-batches/).
+- **Scrum Guide 2020 — Product Backlog refinement** — "breaking down and further defining items into smaller, more precise items" until each is Done within one cycle; this doc applies that to PR-sized shippable units. See [scrumguides.org](https://scrumguides.org/scrum-guide.html).
+
 ## Enforcement
 - Mechanism: CI job
 - Config: stacks/nextjs-default/ci/pr.yml (pr-size job: hard limit on changed lines)

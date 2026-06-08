@@ -32,12 +32,19 @@
 
 ## Postmortem (fill within 48h of resolution)
 
+> Write it **blameless**: assume everyone acted reasonably on the information they had. Name the systemic gaps (missing guard, missing alert, unclear runbook), never the person. The goal is a more reliable system, not a culprit.
+
 - **Timeline:** <DETECTED_AT / MITIGATED_AT / RESOLVED_AT>
 - **Impact:** <USERS_AFFECTED_DURATION_DATA_LOSS_IF_ANY>
 - **Root cause:** <THE_ACTUAL_CAUSE_NOT_THE_TRIGGER>
 - **Error budget consumed:** <PER_SLO_ACCOUNTING_SEE_SLO_DOC>
 - **Follow-ups:** <CONCRETE_PREVENTIONS — each becomes a tracked task; "be more careful" is not a follow-up>
 - **Runbook gaps:** <WHAT_THIS_RUNBOOK_GOT_WRONG_OR_MISSED — fix it now, same PR>
+
+## Standards basis
+- **Google SRE — Incident Management** (https://sre.google/sre-book/managing-incidents/; *Managing Incidents*): the "three Cs" — coordinate, communicate, control — and clear roles (Incident Commander, Communications Lead, Operations Lead) drawn from the Incident Command System (ICS). On a solo project one person holds all three; this template's Detection → Triage → Mitigation → Escalation structure encodes the same control flow, and the Escalation line is the explicit hand-off point that prevents lone-debugging spirals.
+- **Google SRE — Blameless Postmortem Culture** (https://sre.google/sre-book/postmortem-culture/): postmortems must find contributing causes without indicting anyone; the standard distinguishes root cause from trigger and converts findings into tracked preventive action. Grounds the Postmortem section's blameless framing, "root cause not trigger", and the "'be more careful' is not a follow-up" rule.
+- **48-hour postmortem cadence**: writing the postmortem while the incident is fresh is SRE-recommended practice; this template fixes it at 48h of resolution.
 
 ## Enforcement
 - Mechanism: none-possible

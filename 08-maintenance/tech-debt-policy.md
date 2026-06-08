@@ -24,6 +24,12 @@ Debt is a tool: borrowing speed against future work is sometimes right. Unmanage
 
 9. Bugs are bugs (fix or ticket them), and missing tests for shipped behavior are a definition-of-done violation, not debt. The log tracks *chosen* tradeoffs — calling defects "debt" launders them.
 
+## Standards basis
+- **Fowler, Technical Debt Quadrant** (martinfowler.com/bliki/TechnicalDebtQuadrant.html) — debt is two axes, deliberate↔inadvertent and prudent↔reckless; only *deliberate-prudent* ("ship now, pay later, knowingly") is a legitimate tool. The debt log captures exactly this quadrant — a logged shortcut with a reason and a paydown trigger is deliberate-prudent by construction; an unlogged one is reckless. Inadvertent-prudent debt ("now we know how it should've been done") is logged when discovered, same row.
+- **Fowler, Technical Debt** (martinfowler.com/bliki/TechnicalDebt.html) — the interest metaphor: unpaid debt accrues cost ("cost when it bites"); paying down where the code is being touched anyway minimizes that interest, which rule 6's interleave-on-touch implements.
+- **The Boy Scout Rule** (Robert C. Martin, *Clean Code*; orig. Baden-Powell, "leave it better than you found it") — leave each module marginally cleaner than found; this is the mechanism behind the "next time this module is touched" trigger and the standing 10–20% interleave, not a separate cleanup phase.
+- **Google SRE — error budgets** (sre.google/sre-book) — when the reliability budget is exhausted, reliability work preempts features; rule 7 treats that as a margin call on reliability debt.
+
 ## Enforcement
 - Mechanism: none-possible
 - Config: n/a

@@ -21,6 +21,13 @@ A PR is mergeable when:
 - Not "tests to be added in a follow-up" — the follow-up never comes; the budget for tests is this PR.
 - Not "reviewer will catch it" — solo + AI means the checklist IS the reviewer.
 
+## Standards basis
+
+- **Scrum Guide 2020 — Definition of Done** (scrumguides.org): the DoD is a formal description of the state an Increment must reach to meet the product's quality measures; an item that does not meet it cannot be released or presented. This doc applies that commitment per-PR, treating the merge gate as the team's DoD made mechanical.
+- **DoD as transparency artifact** (Scrum Guide 2020): the DoD gives everyone a shared understanding of what "complete" means — mirrored here by the "What done is not" section, which closes the empiricism gap that "done later" creates.
+- **Google Engineering Practices — The Standard of Code Review** (google.github.io/eng-practices): a change is approvable once it definitely improves overall code health (functionality, complexity, tests, no code-health regression) — grounds item 4's self-review against the full diff and the "checklist IS the reviewer" stance for solo+AI work.
+- **Modern code review evidence** (SmartBear/Cisco study; Bacchelli & Bird, *Expectations, Outcomes, and Challenges of Modern Code Review*, ICSE 2013): review's primary value is shared understanding and defect-finding, not just bug count — supports requiring author self-review even absent a second human reviewer.
+
 ## Enforcement
 - Mechanism: CI job
 - Config: stacks/nextjs-default/ci/pr.yml (all required jobs) + stacks/nextjs-default/ci/PULL_REQUEST_TEMPLATE.md (required checkboxes)

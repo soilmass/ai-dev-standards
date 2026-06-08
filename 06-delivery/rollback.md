@@ -21,9 +21,23 @@ Ordered by speed; use the fastest one that fits the failure.
 
 6. Every risky external integration (payments, email, third-party APIs) sits behind a config kill switch that degrades gracefully. The switches and their behavior are listed in the project's architecture map ("external dependencies" table — failure mode column).
 
+## Retiring a public API (the no-rollback case)
+
+8. A removed endpoint can't be "rolled back" for clients that already depend on it — withdrawal is a forward, announced process, never a silent break. When an externally-consumed API or route is being retired, signal it on the response *before* it disappears: a `Deprecation` header (with the optional `Link rel="deprecation"` to migration docs) once it's no longer preferred, then a `Sunset` header naming the date it stops responding. After the sunset date, respond `410 Gone`. This is the contract-phase analogue of expand→contract for HTTP surfaces.
+
 ## Drill
 
-7. Once per quarter (or before the first real launch), actually exercise path 2 on production with a no-op release: promote previous build, verify, re-promote. A rollback procedure that has never run is a hypothesis, not a procedure.
+9. Once per quarter (or before the first real launch), actually exercise path 2 on production with a no-op release: promote previous build, verify, re-promote. A rollback procedure that has never run is a hypothesis, not a procedure.
+
+## Standards basis
+
+- **DORA failed-deployment recovery time** (dora.dev/guides/dora-metrics) — speed of restoring service after a deployment-caused failure is a primary delivery-performance dimension (reframed toward throughput in the 2024–25 model). Aligns: paths are ordered fastest-first; the drill keeps recovery time real, not hypothetical.
+- **Forward-only / roll-forward recovery** (evolutionary DB practice) — data changes recover by corrective forward migration or verified restore, not by reversing applied migrations. Aligns: §4–5.
+- **Expand–contract / Parallel Change** (Fowler, martinfowler.com/bliki/ParallelChange.html) — keeping old code schema-compatible is what makes redeploy-previous (path 2) safe across a migration. Aligns: §4 bullet 1, §5.
+- **RFC 8594 — The Sunset HTTP Header Field** (datatracker.ietf.org/doc/html/rfc8594) — advertises the point at which a URI becomes unresponsive, plus a `sunset` link relation. Basis for §8's sunset signaling.
+- **RFC 9745 — The Deprecation HTTP Response Header Field** (Standards Track, March 2025; datatracker.ietf.org/doc/rfc9745/) — signals that a resource is or will be deprecated and links to migration guidance; pairs with `Sunset`. Basis for §8's deprecation signaling.
+- **RFC 9110 §15.5.9 — `410 Gone`** (datatracker.ietf.org/doc/html/rfc9110) — the defined status for a resource intentionally and permanently removed. Aligns: §8's post-sunset response.
+- **Immutable history on rollback** (git practice; no rewriting shared history) — reverts add commits, they don't erase them. Aligns: §3's no-force-push rule.
 
 ## Enforcement
 - Mechanism: none-possible

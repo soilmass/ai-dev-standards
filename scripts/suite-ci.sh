@@ -9,8 +9,12 @@
 #   c. Config validity    — parse every .yml/.yaml under stacks/ and .github/,
 #                           and every .json under stacks/.
 #   c2. Calibration drift — every knob in 00-governance/calibration.md's machine
-#                           manifest matches the value actually in the tree
+#                           manifest matches the value actually in the tree, and
+#                           every manifest id maps to its register table row
 #                           (delegates to scripts/check-calibration.sh).
+#   c3. Flow-back ledger  — 00-governance/flow-back-log.md is internally consistent
+#                           (ids, dispositions, patched-tag existence)
+#                           (delegates to scripts/check-flowback.sh).
 #   d. Internal link check— every relative markdown link target resolves.
 #   e. Bootstrap smoke    — new-project.sh produces the expected artifacts and
 #                           is idempotent on a second run.
@@ -100,6 +104,14 @@ if "$LIB_ROOT/scripts/check-calibration.sh"; then
   echo "calibration register and tree agree"
 else
   fail "check-calibration.sh reported drift (knob values vs 00-governance/calibration.md)"
+fi
+
+# --- c3. Flow-back ledger ----------------------------------------------------
+section "c3. Flow-back ledger (check-flowback.sh)"
+if "$LIB_ROOT/scripts/check-flowback.sh"; then
+  echo "flow-back ledger consistent"
+else
+  fail "check-flowback.sh reported ledger issues (00-governance/flow-back-log.md)"
 fi
 
 # --- d. Internal link check --------------------------------------------------
@@ -211,7 +223,7 @@ fi
 # --- summary -----------------------------------------------------------------
 echo
 if [[ $failures -eq 0 ]]; then
-  echo "OK: suite CI passed — footers, script syntax, config validity, calibration register, internal links, and bootstrap smoke test all clean."
+  echo "OK: suite CI passed — footers, script syntax, config validity, calibration register, flow-back ledger, internal links, and bootstrap smoke test all clean."
 else
   echo "FAIL: $failures finding(s). Fix the reported issues above."
   exit 1

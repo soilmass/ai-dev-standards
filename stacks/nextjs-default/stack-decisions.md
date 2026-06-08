@@ -54,9 +54,9 @@ Pre-written ADRs for every pinned tool in this preset. Each records the choice, 
 
 ## ADR-S09: Zod for schema/validation
 
-- **Decision:** Zod schemas validate every external input (forms, route handlers, Server Actions, env) and are the single source of shared types via `z.infer`.
+- **Decision:** Zod schemas validate every external input (forms, route handlers, Server Actions, env) and are the single source of shared types via `z.infer`. **Pin `zod@^4`** — Better Auth's current line (1.6.x, ADR-S11) requires it as a peer.
 - **Rationale:** Runtime validation + static types from one declaration closes the gap TypeScript leaves at runtime boundaries; the env schema (`env.schema.ts`) makes config failures boot-time, not request-time.
-- **Accepted tradeoff:** Bundle cost on the client where schemas are imported; keep client schemas lean.
+- **Accepted tradeoff:** Bundle cost on the client where schemas are imported; keep client schemas lean. zod 4 moved string formats to top-level (`z.url()`, `z.email()`) — the env-schema example uses these; the deprecated `z.string().url()` method form is avoided (surfaced by the first project, flow-back FB-01).
 
 ## ADR-S10: Drizzle as ORM (with documented Prisma swap)
 
@@ -67,7 +67,7 @@ Pre-written ADRs for every pinned tool in this preset. Each records the choice, 
 
 ## ADR-S11: Better Auth for authentication
 
-- **Decision:** Better Auth, self-hosted, with session verification in route handlers / server components.
+- **Decision:** Better Auth, self-hosted, with session verification in route handlers / server components. **Peer-version coupling:** the 1.6.x line requires `zod@^4` (ADR-S09) and `drizzle-orm@^0.45.2` / `drizzle-kit@^0.31.4` (ADR-S10) — pin all three together; bumping Better Auth re-checks these peers.
 - **Rationale:** Modern, actively maintained, framework-agnostic TypeScript auth with ownership of the user table (no per-MAU pricing). The deviation is Clerk when zero-maintenance managed auth is worth the vendor coupling. **Lucia is banned** — deprecated early 2025, no security patches (governance guardrail 1).
 - **Accepted tradeoff:** We own session storage, email flows, and security updates that a managed provider would absorb. Defense-in-depth rule applies regardless (guardrail 3: never middleware-only).
 

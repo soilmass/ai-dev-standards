@@ -45,9 +45,9 @@ How a standard in this library is proposed, changed, versioned, and deprecated �
 
 The library improves only through this loop:
 
-1. **During a project**, friction with a standard is logged in the project's decision log / debt log — not fixed by editing the library mid-task (agents: see the never-touch list in `agent-operating-rules.md`).
-2. **After the work ships**, review the log entries. Each becomes one of: a patch PR to the relevant doc, a preset config change, a new ADR in the stack, or a conscious "no change" with a one-line reason.
-3. **Currency pass**: at least twice a year, re-verify the time-sensitive claims in `pinned-decisions.md` and the dated guardrails in `agent-operating-rules.md` (each carries its verification date). In the same pass, walk the calibration register (`calibration.md`): check each knob's recalibration trigger against observed project data and run `scripts/check-calibration.sh`. Update the snapshot date when done.
+1. **During a project**, friction with a standard is logged in the project's debt-log "Library flow-back" section (the template ships one) — not fixed by editing the library mid-task (agents: see the never-touch list in `agent-operating-rules.md`).
+2. **After the work ships** (or at a currency pass), each flow-back finding gets a row in `00-governance/flow-back-log.md` with a **disposition**: `patched` (a doc/preset/ADR change shipped under a named tag), `deferred` (with a revisit trigger), or `no-change` (with a one-line reason). No finding is dropped silently; `scripts/check-flowback.sh` keeps the ledger honest (patched rows must name a real tag). A finding that moves a calibration knob also gets a row in `calibration.md`'s Observations section.
+3. **Currency pass**: at least twice a year, (a) re-verify the time-sensitive claims in `pinned-decisions.md` and the dated guardrails in `agent-operating-rules.md`; (b) for each known consuming project, diff its debt-log "Library flow-back" section against `flow-back-log.md` and add any unprocessed finding (the library can't enumerate project locations, so this harvest is manual); (c) walk the calibration register — check each knob's recalibration trigger against observed project data, record any observation, and run `scripts/check-calibration.sh`. Update the snapshot date when done.
 4. Run `scripts/audit-completeness.sh` after every change-batch; the matrix and the tree must never disagree.
 
 ## 7. Who decides

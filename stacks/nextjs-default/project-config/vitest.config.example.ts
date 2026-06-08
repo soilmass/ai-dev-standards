@@ -19,8 +19,21 @@ export default defineConfig({
     coverage: {
       provider: 'v8',
       reporter: ['text', 'lcov'],
-      include: ['app/**', 'components/**', 'lib/**', 'db/**'],
-      exclude: ['**/*.test.*', '**/*.d.ts', '**/generated/**'],
+      // Scope the UNIT-coverage denominator to unit-testable logic. The testing
+      // split (04-build/testing-strategy.md) routes Server Components, the live DB
+      // client, and the auth seam to Playwright/integration — counting app/** or
+      // db/** here makes the threshold unreachable-by-design for a correctly-split
+      // project. Surfaced by the first project; see flow-back FB-02. Add client-only
+      // components/** here once you have unit-tested client components.
+      include: ['lib/**'],
+      exclude: [
+        '**/*.test.*',
+        '**/*.d.ts',
+        '**/generated/**',
+        'lib/db.ts', // live DB client — integration-tested, not units
+        'lib/session.ts', // auth seam — Playwright/integration once auth is wired
+        'lib/*-repo.ts', // interfaces / ports — no executable lines
+      ],
       thresholds: {
         lines: 70,
         functions: 70,

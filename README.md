@@ -42,7 +42,7 @@ Every layer doc (`02`–`08`, `_spines/`) ends with an **Enforcement / Bootstrap
 
 | Layer | Contents |
 |---|---|
-| [`00-governance/`](00-governance/) | [standards-lifecycle](00-governance/standards-lifecycle.md) · [agent-operating-rules](00-governance/agent-operating-rules.md) · [pinned-decisions](00-governance/pinned-decisions.md) · [completeness-matrix](00-governance/completeness-matrix.md) · [calibration](00-governance/calibration.md) |
+| [`00-governance/`](00-governance/) | [standards-lifecycle](00-governance/standards-lifecycle.md) · [agent-operating-rules](00-governance/agent-operating-rules.md) · [pinned-decisions](00-governance/pinned-decisions.md) · [completeness-matrix](00-governance/completeness-matrix.md) · [calibration](00-governance/calibration.md) · [flow-back-log](00-governance/flow-back-log.md) |
 | [`01-context/`](01-context/) | [CLAUDE.template](01-context/CLAUDE.template.md) · [adr.template](01-context/adr.template.md) · [glossary.template](01-context/glossary.template.md) · [architecture-map.template](01-context/architecture-map.template.md) |
 | [`02-product/`](02-product/) | [spec.template](02-product/spec.template.md) · [task-decomposition](02-product/task-decomposition.md) · [acceptance-criteria](02-product/acceptance-criteria.md) |
 | [`03-design/`](03-design/) | [architecture-standards](03-design/architecture-standards.md) · [data-modeling](03-design/data-modeling.md) · [api-contract-design](03-design/api-contract-design.md) · [ui-design-system](03-design/ui-design-system.md) · [threat-model.template](03-design/threat-model.template.md) |
@@ -53,7 +53,7 @@ Every layer doc (`02`–`08`, `_spines/`) ends with an **Enforcement / Bootstrap
 | [`08-maintenance/`](08-maintenance/) | [dependency-updates](08-maintenance/dependency-updates.md) · [tech-debt-policy](08-maintenance/tech-debt-policy.md) · [deprecation-process](08-maintenance/deprecation-process.md) |
 | [`_spines/`](_spines/) | [security-privacy](_spines/security-privacy.md) · [documentation](_spines/documentation.md) — cross-cutting concerns, referencing where they bite in each layer |
 | [`stacks/`](stacks/) | [README (preset contract)](stacks/README.md) · [`nextjs-default/`](stacks/nextjs-default/) — the one fully wired preset |
-| [`scripts/`](scripts/) | [new-project.sh](scripts/new-project.sh) (bootstrap) · [audit-completeness.sh](scripts/audit-completeness.sh) (footer audit) · [check-calibration.sh](scripts/check-calibration.sh) (knob-drift check vs the calibration register) · [suite-ci.sh](scripts/suite-ci.sh) (library QA: footers + calibration + links + configs + bootstrap smoke test) |
+| [`scripts/`](scripts/) | [new-project.sh](scripts/new-project.sh) (bootstrap) · [audit-completeness.sh](scripts/audit-completeness.sh) (footer audit) · [check-calibration.sh](scripts/check-calibration.sh) (knob-drift + manifest↔row coherence vs the calibration register) · [check-flowback.sh](scripts/check-flowback.sh) (flow-back ledger integrity) · [suite-ci.sh](scripts/suite-ci.sh) (library QA: footers + calibration + flow-back + links + configs + bootstrap smoke test) |
 
 ## For AI agents
 

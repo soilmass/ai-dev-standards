@@ -85,10 +85,47 @@ for entry in manifest:
     if actual != expect:
         fail(entry, f"{fname} says '{actual}', register expects '{expect}'")
 
+# --- Coherence: every manifest id maps to its register table row -------------
+# Kills the round-3 bug class (manifest CAL-Xnn pointing at a knob that table row
+# CAL-Xnn does NOT describe). For each manifest entry, the base id (suffix a/b/c
+# stripped) must exist as a table row whose `Where` column names the entry's file.
+import os
+
+# Table rows: first cell is the CAL id (Observations rows start with a date, so
+# they don't match — only knob-definition rows do).
+rows = {}
+for ln in text.splitlines():
+    rm = re.match(r"\s*\|\s*(CAL-[A-E]\d+)\s*\|(.*)$", ln)
+    if rm:
+        cells = [c.strip() for c in rm.group(2).split("|")]
+        # remaining cells after the id: Knob | Value | Where | ...
+        where = cells[2] if len(cells) >= 3 else ""
+        rows[rm.group(1)] = where
+
+coherence = 0
+def cfail(msg):
+    global coherence
+    coherence += 1
+    print(f"COHERENCE {msg}")
+
+for entry in manifest:
+    eid = entry.get("id", "?")
+    base = re.sub(r"[a-z]+$", "", eid)  # CAL-C09c -> CAL-C09
+    if base not in rows:
+        cfail(f"{eid}: no register table row '{base}'")
+        continue
+    basename = os.path.basename(entry.get("file", ""))
+    if basename and basename not in rows[base]:
+        cfail(f"{eid}: target '{basename}' not named in row {base}'s Where column "
+              f"(row points elsewhere — id/knob mismatch)")
+
 print()
-if failures:
-    print(f"FAIL: {failures} drifted/unresolvable of {checked} calibration entries. "
-          f"Re-align the file and 00-governance/calibration.md in the same commit.")
+if failures or coherence:
+    if failures:
+        print(f"FAIL: {failures} drifted/unresolvable of {checked} calibration entries.")
+    if coherence:
+        print(f"FAIL: {coherence} manifest↔row coherence issue(s).")
+    print("Re-align the file and 00-governance/calibration.md in the same commit.")
     sys.exit(1)
-print(f"OK: {checked} calibration entries verified — register and tree agree.")
+print(f"OK: {checked} calibration entries verified — values agree and every manifest id maps to its row.")
 PYEOF

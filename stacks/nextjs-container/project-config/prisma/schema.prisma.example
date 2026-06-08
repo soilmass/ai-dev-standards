@@ -24,7 +24,7 @@ datasource db {
 }
 
 model Item {
-  id        String    @id @default(dbgenerated("uuidv7()")) @db.Uuid
+  id        String    @id @default(uuid(7)) @db.Uuid
   userId    String    @map("user_id") // FK to Better Auth's user.id once auth is generated
   url       String
   title     String

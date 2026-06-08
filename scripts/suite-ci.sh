@@ -236,8 +236,9 @@ for preset_dir in "$LIB_ROOT"/stacks/*/; do
     cat "$WORK_DIR/boot-$preset.out"
     continue
   fi
-  # Every preset must yield an assembled CLAUDE.md + lint config + the PR workflow.
-  for artifact in CLAUDE.md biome.json .github/workflows/pr.yml vitest.config.ts; do
+  # Every preset must yield a runnable-from-zero shape: assembled CLAUDE.md,
+  # package.json + tsconfig + .env.example + DB client, lint config, PR workflow.
+  for artifact in CLAUDE.md package.json tsconfig.json .env.example lib/db.ts biome.json .github/workflows/pr.yml vitest.config.ts; do
     [[ -s "$pdir/$artifact" ]] || fail "[$preset] bootstrap artifact missing/empty: $artifact"
   done
   # Container preset specifics: Prisma schema + Dockerfile + standalone next.config.

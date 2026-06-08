@@ -176,6 +176,7 @@ else
     vitest.config.ts
     playwright.config.ts
     drizzle.config.ts
+    next.config.ts
     instrumentation.ts
     db/schema.ts
     .gitignore

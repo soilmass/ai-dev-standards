@@ -10,6 +10,9 @@ Disposition values: `patched` (names the tag that shipped the fix) · `deferred`
 |---|---|---|---|---|---|---|
 | FB-01 | 2026-06-08 | stash | `env.schema.example` used zod-3 string APIs (`z.string().url()`); Better Auth 1.6.x requires zod 4, whose string formats are top-level (`z.url()`). A current-stack project must adapt the schema. | patched | v2026.06.9 | closed |
 | FB-02 | 2026-06-08 | stash | `vitest.config.example.ts` counted `app/**`+`db/**` in the unit-coverage denominator, but the testing split routes Server Components / live DB client / auth seam to Playwright/integration — making the 70% unit gate unreachable-by-design. | patched | v2026.06.9 | closed |
+| FB-03 | 2026-06-08 | stash | The preset shipped no `next.config.ts`; Better Auth pulls optional kysely adapter deps that webpack-bundles and fails `next build` until `serverExternalPackages: ['better-auth','pg']` is set. | patched | v2026.06.11 | closed |
+| FB-04 | 2026-06-08 | stash | Better Auth needs four schema tables (`user`/`session`/`account`/`verification`) via `@better-auth/cli generate`; its default camelCase columns collide with data-modeling rule 1 (snake_case). The setup section didn't cover the generate step or the reconciliation. | patched | v2026.06.11 | closed |
+| FB-05 | 2026-06-08 | stash | Calling `serverEnv()` (or constructing a DB/auth client) at module top-level throws at `next build` (env absent during route-module evaluation); `env.schema.ts` is import-safe but the caller discipline wasn't documented. | patched | v2026.06.11 | closed |
 
 ## Notes
 

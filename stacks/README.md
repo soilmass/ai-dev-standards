@@ -21,7 +21,7 @@ Every preset MUST contain all of the following. `new-project.sh` and the complet
 | `hooks/` | Real git hook scripts (pre-commit, commit-msg) and the configs they invoke (lint-staged, commitlint). |
 | `dependabot.yml` | Real dependency-update config implementing `08-maintenance/dependency-updates.md`. |
 | `env.schema.example` | Real boot-validated env schema example implementing `04-build/secrets-config.md` (server/client split). |
-| `project-config/` | Per-project tool configs the CI gates depend on (test runner with coverage thresholds, E2E/visual config, ORM config pinning the migrations path, gitignore), plus runnable test scaffolding (test setup + network-mock server/handlers + example unit/E2E/visual tests), the boot-validation hook (`instrumentation.ts` calling the env schema), and a data-model schema starter — copied **recursively** to the project root, relative paths preserved, with `.example` stripped. |
+| `project-config/` | Per-project tool configs the CI gates depend on (test runner with coverage thresholds, E2E/visual config, ORM config pinning the migrations path, `next.config` with `serverExternalPackages`, gitignore), plus runnable test scaffolding (test setup + network-mock server/handlers + example unit/E2E/visual tests), the boot-validation hook (`instrumentation.ts` calling the env schema), and a data-model schema starter — copied **recursively** to the project root, relative paths preserved, with `.example` stripped. |
 
 Layer-doc footers point into these paths (`Config: stacks/<stack>/<path>`). If you add a preset, every footer reference must resolve for your stack too — or the doc's enforcement is honestly re-declared for that stack.
 

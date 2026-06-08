@@ -53,7 +53,7 @@ Every layer doc (`02`–`08`, `_spines/`) ends with an **Enforcement / Bootstrap
 | [`08-maintenance/`](08-maintenance/) | [dependency-updates](08-maintenance/dependency-updates.md) · [tech-debt-policy](08-maintenance/tech-debt-policy.md) · [deprecation-process](08-maintenance/deprecation-process.md) |
 | [`_spines/`](_spines/) | [security-privacy](_spines/security-privacy.md) · [documentation](_spines/documentation.md) — cross-cutting concerns, referencing where they bite in each layer |
 | [`stacks/`](stacks/) | [README (preset contract)](stacks/README.md) · [`nextjs-default/`](stacks/nextjs-default/) — the one fully wired preset |
-| [`scripts/`](scripts/) | [new-project.sh](scripts/new-project.sh) (bootstrap) · [audit-completeness.sh](scripts/audit-completeness.sh) (footer audit) · [check-calibration.sh](scripts/check-calibration.sh) (knob-drift + manifest↔row coherence vs the calibration register) · [check-flowback.sh](scripts/check-flowback.sh) (flow-back ledger integrity) · [suite-ci.sh](scripts/suite-ci.sh) (library QA: footers + calibration + flow-back + links + configs + bootstrap smoke test) |
+| [`scripts/`](scripts/) | [new-project.sh](scripts/new-project.sh) (bootstrap) · [audit-completeness.sh](scripts/audit-completeness.sh) (footer audit) · [check-calibration.sh](scripts/check-calibration.sh) (knob-drift + manifest↔row coherence vs the calibration register) · [check-flowback.sh](scripts/check-flowback.sh) (flow-back ledger integrity) · [suite-ci.sh](scripts/suite-ci.sh) (library QA: footers + calibration + flow-back + links + configs + bootstrap smoke test) · [metrics.sh](scripts/metrics.sh) (informational suite-health report: structure, calibration coverage, flow-back throughput, currency-pass due) |
 
 ## For AI agents
 
@@ -62,4 +62,4 @@ Every layer doc (`02`–`08`, `_spines/`) ends with an **Enforcement / Bootstrap
 
 ## Maintaining the library
 
-Lessons from projects come back as **small patches**, not rewrites — process in [`00-governance/standards-lifecycle.md`](00-governance/standards-lifecycle.md). After any change: run `./scripts/audit-completeness.sh` and update the completeness matrix. Every change is checked by [`scripts/suite-ci.sh`](scripts/suite-ci.sh) (footers, calibration register, flow-back ledger, internal links, config validity, bootstrap smoke test), which CI runs on every push and pull request.
+Lessons from projects come back as **small patches**, not rewrites — process in [`00-governance/standards-lifecycle.md`](00-governance/standards-lifecycle.md). After any change: run `./scripts/audit-completeness.sh` and update the completeness matrix. For a quick read on the suite's overall health (and whether the currency pass is due), run `./scripts/metrics.sh`. Every change is checked by [`scripts/suite-ci.sh`](scripts/suite-ci.sh) (footers, calibration register, flow-back ledger, internal links, config validity, bootstrap smoke test), which CI runs on every push and pull request.

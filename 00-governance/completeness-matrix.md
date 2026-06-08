@@ -61,6 +61,7 @@ Column meanings — **Articulated**: rule written concretely. **Templated**: fil
 | Stack decisions | [stack-decisions.md](../stacks/nextjs-default/stack-decisions.md) | ADR template | gap (accepted): ADR currency is a lifecycle review item (checklist now in [pinned-decisions.md](pinned-decisions.md) § Currency pass) | n/a — lives in the library |
 | Test scaffolding | [testing-strategy.md](../04-build/testing-strategy.md) | example setup/MSW/unit/e2e/visual files ([project-config/tests/](../stacks/nextjs-default/project-config/tests/)) | suite-ci bootstrap smoke asserts injection ([suite-ci.sh](../scripts/suite-ci.sh)) | injected to `tests/` |
 | Library QA (this repo) | [suite-ci.sh](../scripts/suite-ci.sh) | n/a — the script is the artifact | [suite-ci.yml](../.github/workflows/suite-ci.yml) on every push/PR | n/a — lives in the library |
+| Suite health metrics | [metrics.sh](../scripts/metrics.sh) — computed structure/calibration/flow-back/currency-pass report | n/a — computed, never stored (no drift) | informational, not a gate (by design — health informs, doesn't block) | n/a — lives in the library |
 
 ## Known gaps (explicit, not blank)
 

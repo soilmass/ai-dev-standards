@@ -131,6 +131,7 @@ if [[ -d "$PRESET_DIR/project-config" ]]; then
     base="$(basename "$rel")"
     case "$base" in
       gitignore.example) base=".gitignore" ;;
+      env.example)       base=".env.example" ;;          # dotfile devs copy to .env.local
       *.example.*)       base="${base/.example./.}" ;;  # collapse the '.example.' segment only
       *.example)         base="${base%.example}" ;;
     esac

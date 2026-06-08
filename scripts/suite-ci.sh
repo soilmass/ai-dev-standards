@@ -166,6 +166,10 @@ else
   # Key artifacts that must exist and be non-empty.
   expected=(
     CLAUDE.md
+    package.json
+    tsconfig.json
+    .env.example
+    lib/db.ts
     biome.json
     .github/workflows/pr.yml
     .github/workflows/nightly.yml

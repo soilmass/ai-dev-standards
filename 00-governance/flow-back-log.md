@@ -13,6 +13,7 @@ Disposition values: `patched` (names the tag that shipped the fix) · `deferred`
 | FB-03 | 2026-06-08 | stash | The preset shipped no `next.config.ts`; Better Auth pulls optional kysely adapter deps that webpack-bundles and fails `next build` until `serverExternalPackages: ['better-auth','pg']` is set. | patched | v2026.06.11 | closed |
 | FB-04 | 2026-06-08 | stash | Better Auth needs four schema tables (`user`/`session`/`account`/`verification`) via `@better-auth/cli generate`; its default camelCase columns collide with data-modeling rule 1 (snake_case). The setup section didn't cover the generate step or the reconciliation. | patched | v2026.06.11 | closed |
 | FB-05 | 2026-06-08 | stash | Calling `serverEnv()` (or constructing a DB/auth client) at module top-level throws at `next build` (env absent during route-module evaluation); `env.schema.ts` is import-safe but the caller discipline wasn't documented. | patched | v2026.06.11 | closed |
+| FB-06 | 2026-06-08 | stash | The preset shipped no `package.json`, `tsconfig.json`, `.env.example`, or DB client — deps/scripts lived as prose in CLAUDE.partial, so a fresh project hand-assembled them (prose where a config should be). | patched | v2026.06.17 | closed |
 
 ## Notes
 

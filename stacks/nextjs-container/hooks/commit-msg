@@ -1,0 +1,5 @@
+#!/usr/bin/env sh
+# Husky commit-msg hook.
+# Enforces Conventional Commits via commitlint (see 04-build/git-standards.md).
+
+pnpm exec commitlint --edit "$1"

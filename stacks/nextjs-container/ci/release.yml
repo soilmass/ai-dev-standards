@@ -1,0 +1,66 @@
+# Release pipeline — makes release-process.md rule 4 real: the changelog is
+# GENERATED from Conventional Commits (which commitlint guarantees), never
+# hand-maintained. Trigger: pushing a version tag (the release ceremony's
+# "Tag + generate changelog" step, 06-delivery/release-process.md).
+
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write # create the GitHub release
+
+jobs:
+  changelog:
+    name: Generate release notes from Conventional Commits
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0 # full history — the generator diffs against the previous tag
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+      - name: Create GitHub release with generated changelog
+        # changelogithub: groups feat/fix/perf by type, links PRs/commits,
+        # excludes chore/ci noise — exactly the release-process.md rule 4 split.
+        run: pnpm dlx changelogithub@14
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  publish-image:
+    name: Build, push & attest container image (SLSA provenance)
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write # push to GHCR
+      id-token: write # keyless signing for the attestation
+      attestations: write # record the build-provenance attestation
+    steps:
+      - uses: actions/checkout@v6
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build & push image
+        id: build
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: ghcr.io/${{ github.repository }}:${{ github.ref_name }}
+      # SLSA build-provenance attestation on the pushed image — an unforgeable
+      # link from image digest back to this workflow run (04-build/supply-chain.md;
+      # the container preset is where there's a published artifact to attest).
+      - name: Attest build provenance
+        uses: actions/attest-build-provenance@v4
+        with:
+          subject-name: ghcr.io/${{ github.repository }}
+          subject-digest: ${{ steps.build.outputs.digest }}
+          push-to-registry: true

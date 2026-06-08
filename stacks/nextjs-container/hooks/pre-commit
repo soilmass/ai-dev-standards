@@ -1,0 +1,41 @@
+#!/usr/bin/env sh
+# Husky pre-commit hook.
+# 1. Branch-name gate: no direct commits to main; branches follow the
+#    <type>/<slug> convention (see 04-build/git-standards.md).
+# 2. lint-staged: Biome lint + format on staged files only (fast — Rust binary).
+# 3. gitleaks: scan the staged diff for secrets before they ever enter history.
+# Never bypass with --no-verify to "save time"; fix the finding instead
+# (see 04-build/secrets-config.md).
+
+branch="$(git rev-parse --abbrev-ref HEAD)"
+case "$branch" in
+  main)
+    echo "✖ Direct commits to main are blocked — create a branch: <type>/<slug>" >&2
+    exit 1
+    ;;
+  HEAD)
+    : # detached HEAD (rebase/cherry-pick in progress) — allow
+    ;;
+  feat/?*|fix/?*|docs/?*|style/?*|refactor/?*|perf/?*|test/?*|build/?*|ci/?*|chore/?*|revert/?*)
+    : # conforms to convention (?* requires >=1 slug char after the slash)
+    ;;
+  *)
+    echo "✖ Branch '$branch' violates naming convention <type>/<slug>" >&2
+    echo "  allowed types: feat fix docs style refactor perf test build ci chore revert" >&2
+    exit 1
+    ;;
+esac
+
+pnpm exec lint-staged
+
+# gitleaks is a standalone binary (Go), not an npm package. Fail CLOSED if it
+# is missing — committing unscanned would betray the never-commit rule
+# (04-build/secrets-config.md rule 7). CI re-scans full history regardless.
+if command -v gitleaks >/dev/null 2>&1; then
+  gitleaks protect --staged --redact --verbose
+else
+  echo "✖ gitleaks not installed — staged secret scan cannot run." >&2
+  echo "  Install: brew install gitleaks  |  or grab a release: https://github.com/gitleaks/gitleaks/releases" >&2
+  echo "  (Refusing to commit unscanned; see 04-build/secrets-config.md.)" >&2
+  exit 1
+fi

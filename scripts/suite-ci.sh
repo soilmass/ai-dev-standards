@@ -221,6 +221,32 @@ else
   fail "second run was not idempotent — summary: $(grep -E '^Done:' "$WORK_DIR/bootstrap2.out" || echo '(no summary line)')"
 fi
 
+# Every non-default preset must also bootstrap to a sound shape (multi-preset proof).
+# Each preset asserts its own distinct artifacts; shared ones are covered above.
+for preset_dir in "$LIB_ROOT"/stacks/*/; do
+  preset="$(basename "$preset_dir")"
+  [[ "$preset" == "nextjs-default" ]] && continue
+  pdir="$WORK_DIR/smoke-$preset"
+  if ! "$LIB_ROOT/scripts/new-project.sh" "$pdir" "$preset" >"$WORK_DIR/boot-$preset.out" 2>&1; then
+    fail "new-project.sh failed for preset '$preset'"
+    cat "$WORK_DIR/boot-$preset.out"
+    continue
+  fi
+  # Every preset must yield an assembled CLAUDE.md + lint config + the PR workflow.
+  for artifact in CLAUDE.md biome.json .github/workflows/pr.yml vitest.config.ts; do
+    [[ -s "$pdir/$artifact" ]] || fail "[$preset] bootstrap artifact missing/empty: $artifact"
+  done
+  # Container preset specifics: Prisma schema + Dockerfile + standalone next.config.
+  if [[ "$preset" == "nextjs-container" ]]; then
+    for artifact in prisma/schema.prisma Dockerfile next.config.ts; do
+      [[ -s "$pdir/$artifact" ]] || fail "[$preset] bootstrap artifact missing/empty: $artifact"
+    done
+    grep -q "output: 'standalone'" "$pdir/next.config.ts" || fail "[$preset] next.config.ts lacks standalone output"
+    [[ -e "$pdir/drizzle.config.ts" ]] && fail "[$preset] leaked a Drizzle config into a Prisma preset"
+  fi
+  echo "  ok   preset '$preset' bootstraps to a sound shape"
+done
+
 # --- summary -----------------------------------------------------------------
 echo
 if [[ $failures -eq 0 ]]; then

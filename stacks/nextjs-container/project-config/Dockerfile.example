@@ -1,0 +1,35 @@
+# Dockerfile — copied from the preset's project-config/ by new-project.sh.
+# Container preset (the hosting deviation: a warm long-running Node server on a
+# container PaaS — Railway/Fly/Render — per 00-governance/pinned-decisions.md's
+# three-box rule, box 2). Multi-stage build; runs `next start` from the standalone
+# output (next.config output: 'standalone'). Pin the base image by tag (and ideally
+# by digest in production — 04-build/supply-chain.md verify-on-consume).
+
+# ---- deps ----
+FROM node:24-alpine AS deps
+RUN corepack enable
+WORKDIR /app
+COPY package.json pnpm-lock.yaml ./
+RUN pnpm install --frozen-lockfile
+
+# ---- build ----
+FROM node:24-alpine AS build
+RUN corepack enable
+WORKDIR /app
+COPY --from=deps /app/node_modules ./node_modules
+COPY . .
+RUN pnpm exec prisma generate
+RUN pnpm build
+
+# ---- run ----
+FROM node:24-alpine AS run
+WORKDIR /app
+ENV NODE_ENV=production
+# next standalone output: server.js + minimal node_modules + static assets
+COPY --from=build /app/.next/standalone ./
+COPY --from=build /app/.next/static ./.next/static
+COPY --from=build /app/public ./public
+# Run migrations then boot (prisma migrate deploy is forward-only, idempotent).
+# env (DATABASE_URL, BETTER_AUTH_*) is injected by the host, never baked in.
+EXPOSE 3000
+CMD ["sh", "-c", "node_modules/.bin/prisma migrate deploy && node server.js"]

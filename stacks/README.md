@@ -6,7 +6,10 @@ Available presets:
 
 | Preset | Stack | Status |
 |---|---|---|
-| [`nextjs-default/`](nextjs-default/) | Next.js + TS-strict + Biome + Vitest/TL/MSW + Playwright + Zod + Drizzle + Better Auth + Husky/commitlint/gitleaks + Dependabot + GitHub Actions → Vercel | Default |
+| [`nextjs-default/`](nextjs-default/) | Next.js + TS-strict + Biome + Vitest/TL/MSW + Playwright + Zod + Drizzle + Better Auth + Husky/commitlint/gitleaks + Dependabot + GitHub Actions → Vercel (serverless) | Default |
+| [`nextjs-container/`](nextjs-container/) | Same, but the documented warm-Node deviation: **Prisma** (mature migrations) + **container** (Dockerfile, `output: 'standalone'`, SLSA build-provenance) → container PaaS (Railway/Fly/Render) | Deviation (ORM + hosting rules) |
+
+The two presets differ only where pinned-decisions' deviation rules say they should (ORM by where-the-code-runs; hosting by the three-box model) — everything else is identical. Picking a preset is `new-project.sh <dir> <preset>`; the default is `nextjs-default`.
 
 ## The preset contract
 

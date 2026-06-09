@@ -55,6 +55,8 @@ Every tunable knob in the suite — thresholds, budgets, cadences, score floors,
 | CAL-C12 | playwright webServer timeout 120s | 120000ms (120s) | stacks/nextjs-default/project-config/playwright.config.example.ts:25 | 120s is ample headroom for `pnpm start` to boot a pre-built production server on a cold CI runner without being so long it masks a hung start; this is a standard Playwright webServer timeout. | Raise only if CI logs show legitimate boots routinely approaching 120s; lower toward 60s if boots are consistently sub-30s and you want faster failure on a hang. |
 | CAL-C13 | forbidOnly on CI true | !!process.env.CI (true on CI, false locally) | stacks/nextjs-default/project-config/playwright.config.example.ts:14 | Failing CI on a stray test.only is essential for a solo dev with no second reviewer — it prevents an accidental .only from silently shrinking the suite to one passing test while the gate still reports green; local-false preserves focused iteration. | Never disable on CI; this is a correctness guard, not a tunable threshold. |
 | CAL-C14 | vitest coverage.include scope | `include: ['lib/**']` — unit-testable logic only | stacks/nextjs-default/project-config/vitest.config.example.ts | Scopes the unit-coverage denominator to logic the unit tier actually covers. Counting `app/**` (Server Components) or `db/**` (live client) here makes the 70% threshold unreachable-by-design, since the testing split (04-build/testing-strategy.md) routes those to Playwright/integration. Surfaced by the first real project (flow-back FB-02); the prior `['app/**','components/**','lib/**','db/**']` is the shape this fixed. | Add `components/**` once you have unit-tested client components; NEVER re-add `app/**` or `db/**` (that's the bug this fixed). If raising thresholds, this scope is the denominator they apply to. |
+| CAL-C15 | Per-page `<title>` length band 30–60 chars | 30–60 characters | 03-design/per-page-quality-baseline.md (rule 8) | The conventional SERP-fit range: below ~30 chars a title under-describes the page; above ~60 Google truncates the title link in results and the browser tab clips it, losing the disambiguating tail. It is a reviewable character proxy for Google's pixel-based truncation — not a Google-mandated hard limit — and a per-route bar (every route, not just home), which is why it lives with the per-page baseline rather than the site-wide Lighthouse SEO floor (CAL-C05). | Widen the ceiling toward 65 only if a quarterly review of real SERP renderings shows the brand suffix routinely pushing legitimate titles past 60 without truncation; tighten the floor only if short titles are observed under-describing pages in click-through data. |
+| CAL-C16 | Per-page meta-description length band 70–160 chars | 70–160 characters | 03-design/per-page-quality-baseline.md (rule 9) | The conventional snippet-fit range: under ~70 chars wastes the snippet space, over ~160 is truncated mid-sentence in the result listing. Like CAL-C15 it is a reviewable per-route proxy (every route) for a pixel-measured truncation, paired with the Lighthouse `meta-description` presence audit (the floor is CAL-C05) which checks existence, not length or uniqueness. | Raise the ceiling toward 165 only if Google's documented snippet length grows and real renderings confirm it; tighten the floor if short descriptions are observed under-using the snippet across a review window. |
 
 ## Area D — CI & dependencies
 
@@ -169,6 +171,8 @@ Consumed by `scripts/check-calibration.sh` (kinds: `json` = dotted path into a J
   {"id":"CAL-D09g","file":"stacks/nextjs-default/ci/pr.yml","kind":"regex","pattern":"github/codeql-action/init@v([0-9]+)","expect":"3"},
   {"id":"CAL-D09h","file":"stacks/nextjs-container/ci/release.yml","kind":"regex","pattern":"aquasecurity/trivy-action@([0-9.]+)","expect":"0.28.0"},
   {"id":"CAL-C14","file":"stacks/nextjs-default/project-config/vitest.config.example.ts","kind":"regex","pattern":"include:\\s*\\[\\s*('lib/\\*\\*')\\s*\\]","expect":"'lib/**'"},
+  {"id":"CAL-C15","file":"03-design/per-page-quality-baseline.md","kind":"regex","pattern":"band \\*\\*([0-9]+–[0-9]+) characters\\*\\* \\(CAL-C15\\)","expect":"30–60"},
+  {"id":"CAL-C16","file":"03-design/per-page-quality-baseline.md","kind":"regex","pattern":"band \\*\\*([0-9]+–[0-9]+) characters\\*\\* \\(CAL-C16\\)","expect":"70–160"},
   {"id":"CAL-D12a","file":"stacks/nextjs-default/project-config/package.json.example","kind":"regex","pattern":"\"zod\": \"(\\^[0-9]+)","expect":"^4"},
   {"id":"CAL-D12b","file":"stacks/nextjs-default/project-config/package.json.example","kind":"regex","pattern":"\"drizzle-orm\": \"(\\^[0-9.]+)","expect":"^0.45.2"},
   {"id":"CAL-D12c","file":"stacks/nextjs-default/env.schema.example","kind":"regex","pattern":"(z\\.url)\\(","expect":"z.url"},
@@ -194,6 +198,7 @@ The forcing function that stops a new calibrated knob from sneaking in *uncalibr
 .github/workflows/preset-integration.yml
 .github/workflows/suite-ci.yml
 02-product/task-decomposition.md
+03-design/per-page-quality-baseline.md
 04-build/dependency-policy.md
 04-build/git-standards.md
 04-build/testing-strategy.md

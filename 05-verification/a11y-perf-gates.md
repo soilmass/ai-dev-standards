@@ -2,6 +2,10 @@
 
 Accessibility and performance are merge criteria, not launch-week cleanup. Both are gated twice: fast checks in the unit tier, full audits against the preview deploy.
 
+## Route coverage — every sitemap route, not only home
+
+These gates run against **every route in the site's sitemap**, not just the home page or a sampled first-N. The Lighthouse CI job derives its URL list from the deployed site's `sitemap.xml` (rooted at the preview deploy URL) and audits each route, so the accessibility, performance, and SEO floors below apply uniformly to every page the site ships. A site whose home page passes while an interior route regresses **fails** the gate — there is no per-page quality tier. This is the enforcement arm of `03-design/per-page-quality-baseline.md` (the per-route content bar: one `<h1>`, unique bounded title/description, complete metadata). The Lighthouse knobs that govern the run — `numberOfRuns 3` + mobile emulation (CAL-C09) and the category/metric floors (CAL-C02–C08) — apply identically to **each** audited route; the run multiplies across routes, the thresholds do not change per route.
+
 ## Accessibility
 
 - **Target: WCAG 2.2 AA** for all user-facing pages and components.

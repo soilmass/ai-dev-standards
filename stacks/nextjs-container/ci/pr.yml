@@ -259,10 +259,33 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           max_timeout: 600
-      - name: Lighthouse audit against preview URL
+      # Derive the full route list from the deployed sitemap so Lighthouse audits
+      # EVERY route, not just home — the per-page baseline (05-verification/a11y-perf-gates.md
+      # § Route coverage; 03-design/per-page-quality-baseline.md) is a site-wide bar.
+      # Falls back to the bare preview URL if no sitemap is published.
+      - name: Collect sitemap routes
+        id: routes
+        env:
+          PREVIEW_URL: ${{ steps.preview.outputs.url }}
+        run: |
+          base="${PREVIEW_URL%/}"
+          urls=$(curl -fsSL "$base/sitemap.xml" 2>/dev/null \
+            | grep -oE '<loc>[^<]+</loc>' \
+            | sed -E 's#</?loc>##g' || true)
+          if [ -z "$urls" ]; then
+            echo "No sitemap.xml found at $base — auditing the home route only." >&2
+            urls="$base"
+          fi
+          {
+            echo 'urls<<EOF'
+            echo "$urls"
+            echo 'EOF'
+          } >> "$GITHUB_OUTPUT"
+      - name: Lighthouse audit across every sitemap route
         uses: treosh/lighthouse-ci-action@v12
         with:
-          urls: ${{ steps.preview.outputs.url }}
+          urls: ${{ steps.routes.outputs.urls }}
           uploadArtifacts: true
-          # Budgets live with the repo so they are reviewable; see 05-verification/a11y-perf-gates.md
+          # Budgets live with the repo so they are reviewable; see 05-verification/a11y-perf-gates.md.
+          # The configPath thresholds apply identically to each audited route.
           configPath: ./lighthouserc.json

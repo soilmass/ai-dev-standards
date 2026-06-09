@@ -1,6 +1,6 @@
 # Audit-Log Retention & Compliance
 
-`observability.md` covers operational logs — the telemetry you query to keep the system healthy and throw away in days. This doc covers **audit logs**: the deliberate, durable, tamper-evident record of who did what to whom, kept long enough to answer an investigation or a regulator months later. They are a different artifact with different rules: where operational logs optimize for volume and recency, audit logs optimize for integrity and retention.
+`07-operations/observability.md` covers operational logs — the telemetry you query to keep the system healthy and throw away in days. This doc covers **audit logs**: the deliberate, durable, tamper-evident record of who did what to whom, kept long enough to answer an investigation or a regulator months later. They are a different artifact with different rules: where operational logs optimize for volume and recency, audit logs optimize for integrity and retention.
 
 ## What is an audit event
 

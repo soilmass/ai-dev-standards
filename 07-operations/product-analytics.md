@@ -1,6 +1,6 @@
 # Product Analytics, RUM & Metrics
 
-`observability.md` covers whether the system is *healthy*; this doc covers whether the product is *working* — the events, real-user performance, and success metrics that tell you if anyone is getting value. It is the same telemetry discipline pointed at the user instead of the server, and it is bound by the same privacy rules: analytics is a notorious place for PII to leak.
+`07-operations/observability.md` covers whether the system is *healthy*; this doc covers whether the product is *working* — the events, real-user performance, and success metrics that tell you if anyone is getting value. It is the same telemetry discipline pointed at the user instead of the server, and it is bound by the same privacy rules: analytics is a notorious place for PII to leak.
 
 ## Event taxonomy
 
@@ -17,7 +17,7 @@
 
 ## Real-user monitoring (RUM)
 
-8. **Collect Core Web Vitals from the field, at p75.** LCP, INP (the responsiveness metric that replaced FID in 2024), and CLS measured on real sessions are the truth the lab budgets in `05-verification/a11y-perf-gates.md` only approximate. Report via the framework's built-in vitals hook into the same pipeline — no second SDK to start (`observability.md` rule 10).
+8. **Collect Core Web Vitals from the field, at p75.** LCP, INP (the responsiveness metric that replaced FID in 2024), and CLS measured on real sessions are the truth the lab budgets in `05-verification/a11y-perf-gates.md` only approximate. Report via the framework's built-in vitals hook into the same pipeline — no second SDK to start (`07-operations/observability.md` rule 10).
 9. **The lab gate and the field metric are reviewed together.** When SLOs are set (`docs/slos.md`), compare field p75 against the same thresholds that gate CI; a green Lighthouse run with a failing field p75 means the lab conditions don't match real users (device, network, geography) and the budget or the form factor needs revisiting (calibration CAL-C02/C09).
 10. **Segment RUM by device and connection.** A healthy median hides a broken slow-3G/low-end-mobile tail — which, since the gate runs mobile-first, is exactly the population that matters most. Aggregate-only RUM is a vanity metric.
 

@@ -24,7 +24,7 @@ A backup that has never been restored is a wish. This doc sets the cadence and �
 9. Declare two numbers in `docs/slos.md` (injected at bootstrap; has a DR-targets table) alongside the SLOs:
    - **RPO** (max acceptable data loss): bounded by backup frequency — daily dumps mean accepting up to a day; tighten with PITR if that's unacceptable.
    - **RTO** (max acceptable downtime): bounded by measured restore duration + redeploy time.
-10. The full-loss drill (provider account gone): restore the external dump to a fresh DB, point a fresh deploy at it, verify. Run it once before launch; its steps become an incident runbook (`incident-runbook.template.md`).
+10. The full-loss drill (provider account gone): restore the external dump to a fresh DB, point a fresh deploy at it, verify. Run it once before launch; its steps become an incident runbook (`07-operations/incident-runbook.template.md`).
 
 ## Standards basis
 - **3-2-1 backup rule** (3 copies, 2 media/locations, 1 offsite): the baseline data-protection strategy. Rule 1–2 satisfy it — production DB + provider auto-backup + an offsite logical dump on storage the provider doesn't control.

@@ -35,7 +35,7 @@ The inner loop — clone, run, change, see the result — is the multiplier on e
 
 ## Enforcement
 - Mechanism: none-possible
-- Config: stacks/nextjs-default/project-config/.devcontainer/devcontainer.example.json + docker-compose.example.yml + db/seed.example.ts (and the nextjs-container equivalents)
+- Config: stacks/nextjs-default/project-config/.devcontainer/devcontainer.example.json + stacks/nextjs-default/project-config/docker-compose.example.yml + stacks/nextjs-default/project-config/db/seed.example.ts (and the nextjs-container equivalents: project-config/docker-compose.example.yml + project-config/prisma/seed.example.ts)
 - Fallback if unenforceable: If a change affects local setup or onboarding, the one-command bootstrap still works — the pinned devcontainer/compose and the idempotent seed script are updated in the same change, and dev still mirrors prod's backing-service major.
 
 ## Bootstrap

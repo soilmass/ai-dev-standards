@@ -2,7 +2,7 @@
 
 The standing tool recommendations behind the default stack preset, kept as a living reference. **This is the one global file permitted to name tools.** Everything here is framed as *defaults plus deviation rules*, not immutable law: the default preset uses the Primary column; the Deviation rule says when a *second preset* is warranted. Never silently substitute — a deviation is a new preset plus an ADR.
 
-Snapshot date: June 2026 (currency pass 2026-06-07). Re-verify confidence levels at each currency pass (see `standards-lifecycle.md`).
+Snapshot date: June 2026 (currency pass 2026-06-07). Re-verify confidence levels at each currency pass (see `00-governance/standards-lifecycle.md`).
 
 ---
 
@@ -58,16 +58,16 @@ Start on Vercel for speed; evaluate Railway/self-host (Coolify/VPS) as cost beco
 
 ### Auth — hard floor
 
-Better Auth is the self-hosted default; Clerk when you want zero-maintenance managed auth. **Lucia is never acceptable** — deprecated early 2025, no security patches (see guardrail 1 in `agent-operating-rules.md`).
+Better Auth is the self-hosted default; Clerk when you want zero-maintenance managed auth. **Lucia is never acceptable** — deprecated early 2025, no security patches (see guardrail 1 in `00-governance/agent-operating-rules.md`).
 
 ---
 
 ## Currency pass checklist
 
-The twice-yearly pass (see `standards-lifecycle.md`) is concrete work, not a glance:
+The twice-yearly pass (see `00-governance/standards-lifecycle.md`) is concrete work, not a glance:
 
 1. Walk every table row: check each tool for deprecation notices, security advisories, major releases, and ecosystem drift (is the industry default moving away from it?).
-2. Re-verify the dated guardrails in `agent-operating-rules.md` — a guardrail naming a deprecated tool or a "as of <date>" claim is the first thing to go stale.
+2. Re-verify the dated guardrails in `00-governance/agent-operating-rules.md` — a guardrail naming a deprecated tool or a "as of <date>" claim is the first thing to go stale.
 3. Update the **Snapshot date** at the top of this file.
 4. Patch any affected preset ADRs (`stacks/nextjs-default/stack-decisions.md`) in the same change — the table and its ADRs must never drift.
 5. Record the pass in the library's git history as a tagged commit, so each currency review is locatable later.
@@ -76,4 +76,4 @@ The twice-yearly pass (see `standards-lifecycle.md`) is concrete work, not a gla
 
 - Each pinned tool has a pre-written ADR in `stacks/nextjs-default/stack-decisions.md` — choice, rationale, accepted tradeoff.
 - A new project never re-litigates this table; it picks a preset via `scripts/new-project.sh`.
-- A project whose constraints genuinely break a deviation rule's threshold gets a **new preset** (see `stacks/README.md`), and the lesson may flow back here as a patch (see `standards-lifecycle.md`).
+- A project whose constraints genuinely break a deviation rule's threshold gets a **new preset** (see `stacks/README.md`), and the lesson may flow back here as a patch (see `00-governance/standards-lifecycle.md`).

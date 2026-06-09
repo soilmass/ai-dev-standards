@@ -13,7 +13,7 @@ You can't operate what you can't see. This doc sets the conventions for logs, me
 ## Metrics
 
 6. The minimum panel for any web app: request rate, error rate, latency percentiles (p50/p95/p99) per route, and the saturation of whatever the platform meters (function duration, DB connections).
-7. Business metrics that define success (sign-ups, checkouts) are emitted as events from day one — the SLOs in `slo-error-budgets.md` need them.
+7. Business metrics that define success (sign-ups, checkouts) are emitted as events from day one — the SLOs in `07-operations/slo-error-budgets.md` need them.
 
 ## Tracing
 
@@ -30,7 +30,7 @@ You can't operate what you can't see. This doc sets the conventions for logs, me
 
 ## Alerting
 
-11. Alert on **symptoms users feel** (error-budget burn, elevated 5xx, p95 over threshold, client error spikes), not on causes (CPU). Every alert is actionable and links a runbook (`incident-runbook.template.md`); an alert that's routinely ignored gets fixed or deleted.
+11. Alert on **symptoms users feel** (error-budget burn, elevated 5xx, p95 over threshold, client error spikes), not on causes (CPU). Every alert is actionable and links a runbook (`07-operations/incident-runbook.template.md`); an alert that's routinely ignored gets fixed or deleted.
 
 ## Standards basis
 - **Google SRE — Four Golden Signals** (latency, traffic, errors, saturation; *SRE* book, "Monitoring Distributed Systems", https://sre.google/sre-book/monitoring-distributed-systems/): the minimum user-facing telemetry set — rule 6's metrics floor maps directly (request rate = traffic, error rate = errors, latency percentiles = latency, platform meter = saturation).

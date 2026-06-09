@@ -2,7 +2,7 @@
 
 This file governs edits to the **standards library itself**. It is distinct from `01-context/CLAUDE.template.md`, which projects consume. If you are working in a project bootstrapped *from* this library, this file does not apply to you.
 
-The layer standards in `02-product/` through `08-maintenance/` (notably `04-build/git-standards.md`) govern projects bootstrapped from this library, **not this repo's own operation**. This repo is a solo docs library: it commits direct to `main` (the branching model — no branches/PRs — not a grant of commit authority; per `00-governance/standards-lifecycle.md` §7 an agent proposes and prepares a change but the human commits it) and relies on `suite-ci.yml` (push + PR) as its only gate — it runs no git hooks of its own. Do not create branches or PRs, invoke `git-standards.md` / branch-protection rules, or add a pre-commit hook here; to shorten the feedback loop you may run `scripts/suite-ci.sh` manually before pushing. The full rule-by-rule record of how this repo's git/GitHub operation **follows / adapts / waives** the standard it ships is `00-governance/repo-operating-model.md` — keep it current when the operation diverges further.
+The layer standards in `02-product/` through `08-maintenance/` (notably `04-build/git-standards.md`) govern projects bootstrapped from this library, **not this repo's own operation**. This repo is a solo docs library: it commits direct to `main` (the branching model — no branches/PRs — not a grant of commit authority; per `00-governance/standards-lifecycle.md` §7 an agent proposes and prepares a change but the human commits it) and relies on `suite-ci.yml` (push + PR) as its only gate — it runs no git hooks of its own. Do not create branches or PRs, invoke `04-build/git-standards.md` / branch-protection rules, or add a pre-commit hook here; to shorten the feedback loop you may run `scripts/suite-ci.sh` manually before pushing. The full rule-by-rule record of how this repo's git/GitHub operation **follows / adapts / waives** the standard it ships is `00-governance/repo-operating-model.md` — keep it current when the operation diverges further.
 
 ## 1. The footer contract
 
@@ -31,7 +31,7 @@ Write real content, not placeholders. No `TODO`, no "describe here", no empty se
 - **GLOBAL = RULES; PROJECT = CHOICES.** No framework names, versions, or project-specific values in any file outside `stacks/`. If a value is a *choice* rather than a *rule*, it belongs in a stack preset.
 - Exceptions, both documented: `00-governance/pinned-decisions.md` (the standing recommendations, framed as defaults + rules) and the three verbatim governance guardrails in `00-governance/agent-operating-rules.md`.
 - Prefer enforcement over prose: when a rule can be a config, write the config in the stack preset and have the doc point at it via the footer.
-- A new tool decision = a new ADR in the relevant preset's `stack-decisions.md`, plus (if it changes a default) a patch to `pinned-decisions.md`.
+- A new tool decision = a new ADR in the relevant preset's `stack-decisions.md`, plus (if it changes a default) a patch to `00-governance/pinned-decisions.md`.
 
 ## 4. Phased-build expectation
 

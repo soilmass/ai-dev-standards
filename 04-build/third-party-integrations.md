@@ -1,6 +1,6 @@
 # Third-Party Integration Lifecycle
 
-`dependency-policy.md` and `supply-chain.md` govern the code you *build with*; this doc governs the services you *call at runtime* — payment processors, auth providers, email/SMS, CDNs, analytics, LLM APIs. Every one is a piece of your availability, latency, security, and cost surface that you do not control. Treat each as a deliberate, reversible, observable coupling, not an SDK you drop in and forget.
+`04-build/dependency-policy.md` and `04-build/supply-chain.md` govern the code you *build with*; this doc governs the services you *call at runtime* — payment processors, auth providers, email/SMS, CDNs, analytics, LLM APIs. Every one is a piece of your availability, latency, security, and cost surface that you do not control. Treat each as a deliberate, reversible, observable coupling, not an SDK you drop in and forget.
 
 ## Adopt with eyes open
 

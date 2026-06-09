@@ -1,6 +1,6 @@
 # UI Accessibility Patterns
 
-Keyboard and ARIA interaction contracts for **composite widgets** — controls a browser does not supply natively (combobox, dialog, menu/menubar, tabs, disclosure, listbox). The markup-level baseline (real elements, programmatic labels, target size, query-by-role tests) lives in `03-design/ui-design-system.md` rule 8 and the gate budgets in `05-verification/a11y-perf-gates.md`; this doc adds the per-widget behavioral contract those do not — and cannot — capture. Do not re-implement a widget the platform already provides accessibly (`select`, `details`/`summary`, `dialog`): reach for ARIA only to fill a real gap (`ui-design-system.md` rule 8).
+Keyboard and ARIA interaction contracts for **composite widgets** — controls a browser does not supply natively (combobox, dialog, menu/menubar, tabs, disclosure, listbox). The markup-level baseline (real elements, programmatic labels, target size, query-by-role tests) lives in `03-design/ui-design-system.md` rule 8 and the gate budgets in `05-verification/a11y-perf-gates.md`; this doc adds the per-widget behavioral contract those do not — and cannot — capture. Do not re-implement a widget the platform already provides accessibly (`select`, `details`/`summary`, `dialog`): reach for ARIA only to fill a real gap (`03-design/ui-design-system.md` rule 8).
 
 ## How to read a contract
 
@@ -42,7 +42,7 @@ Keyboard and ARIA interaction contracts for **composite widgets** — controls a
 ## Cross-cutting WCAG 2.2 obligations
 
 21. **Focus visibility & obscuring:** every widget above shows a visible focus indicator (2.4.7) that is not fully covered by author content such as sticky headers or the widget's own overlay (2.4.11 Focus Not Obscured (Minimum), AA). Scroll the focused element into an unobscured position on open/navigation.
-22. **Target size:** interactive targets in these widgets meet 2.5.8 Target Size (Minimum), AA — ≥ 24×24 CSS px, or undersized targets spaced so a 24px-diameter circle on each does not intersect another. Inherited from the token sizes in `ui-design-system.md` rule 8.
+22. **Target size:** interactive targets in these widgets meet 2.5.8 Target Size (Minimum), AA — ≥ 24×24 CSS px, or undersized targets spaced so a 24px-diameter circle on each does not intersect another. Inherited from the token sizes in `03-design/ui-design-system.md` rule 8.
 23. **State, not style:** open/selected/checked/expanded are exposed through ARIA states (`aria-expanded`, `aria-selected`, `aria-checked`), never by visual styling alone — the contract is what AT reads, not what sighted users see.
 
 ## Standards basis
@@ -58,4 +58,4 @@ Keyboard and ARIA interaction contracts for **composite widgets** — controls a
 - Fallback if unenforceable: Every custom composite widget (combobox, dialog, menu/menubar, tabs, disclosure, listbox) implements its full APG keyboard contract — expected keys, single tab stop (roving tabindex or aria-activedescendant, not both), correct ARIA roles/states, and dialog focus trap + focus-return — verified by keyboard-only walkthrough; no native element would have sufficed.
 
 ## Bootstrap
-- What new-project.sh injects for this standard: nothing — reference only (the preset's lint a11y rule set catches static markup defects per `ui-design-system.md`; the behavioral keyboard/focus contract here is verified by review, not generated).
+- What new-project.sh injects for this standard: nothing — reference only (the preset's lint a11y rule set catches static markup defects per `03-design/ui-design-system.md`; the behavioral keyboard/focus contract here is verified by review, not generated).

@@ -15,7 +15,7 @@
 | Latency | <SHARE_OF_REQUESTS_UNDER_THRESHOLD_E_G_P95_LT_500MS> | <TARGET> | <BUDGET> | <BURN_RATE> |
 | <JOURNEY_SLI_OR_DELETE_ROW> | <E_G_CHECKOUT_COMPLETES_WITHIN_10S_OF_SUBMIT> | <TARGET> | <BUDGET> | <BURN_RATE> |
 
-**When the budget exhausts:** the next unit of work is reliability work, not features (`slo-error-budgets.md` rule 7).
+**When the budget exhausts:** the next unit of work is reliability work, not features (`07-operations/slo-error-budgets.md` rule 7).
 
 ## Disaster-recovery targets (`07-operations/backup-dr.md` rule 9)
 

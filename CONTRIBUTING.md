@@ -16,13 +16,13 @@ before changing anything:
 
 - The library **commits direct to `main`** — no feature branches, no pull requests
   for its own development. The human maintainer is the final arbiter and makes
-  every commit (`standards-lifecycle.md` §7).
+  every commit (`00-governance/standards-lifecycle.md` §7).
 - AI agents may **propose and prepare** a change (a working-tree draft with
   rationale) but never commit on their own authority.
 - **Patch, don't rebuild:** the unit of change is the smallest edit that encodes
   the lesson. A doc and the config it points at change in the **same commit**.
 - Commit messages follow **Conventional Commits**; releases are git tags
-  (`vYYYY.MM[.N]`, `standards-lifecycle.md` §4).
+  (`vYYYY.MM[.N]`, `00-governance/standards-lifecycle.md` §4).
 - The gate is `scripts/suite-ci.sh` — run it before committing (CI also runs it on
   every push and PR): footers, calibration register, flow-back ledger, internal
   links, fragment anchors, config validity, bootstrap smoke, and preset coherence.

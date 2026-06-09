@@ -289,6 +289,48 @@ else
   echo "no stub markers in layer docs"
 fi
 
+# --- d4. Cross-ref path convention -------------------------------------------
+# Every injected template header states the rule: backtick layer-doc references
+# are repo-relative to the standards library root, never bare filenames (a bare
+# `foo.md` resolves wrong from the root / a consuming project's stamped
+# standards-path). The markdown-link checker (d) only validates [text](path)
+# links, so backtick refs drift unseen — this catches them.
+section "d4. Cross-ref path convention (no bare layer-doc backtick refs)"
+XREF_REPORT="$WORK_DIR/xref.out"
+if python3 - "$LIB_ROOT" >"$XREF_REPORT" 2>&1 <<'PY'
+import re, glob, os, sys
+from collections import defaultdict
+root = sys.argv[1]
+layer_dirs = ['00-governance','01-context','02-product','03-design','04-build',
+              '05-verification','06-delivery','07-operations','08-maintenance','_spines']
+b2p = defaultdict(list)
+for d in layer_dirs:
+    for p in glob.glob(os.path.join(root, d, '*.md')):
+        b2p[os.path.basename(p)].append(p)
+uniq = {b for b, ps in b2p.items() if len(ps) == 1 and b != 'README.md'}
+bare = re.compile(r'`([0-9A-Za-z][0-9A-Za-z._-]*\.md)`')
+for f in glob.glob(os.path.join(root, '**', '*.md'), recursive=True):
+    if '/node_modules/' in f:
+        continue
+    for ln, line in enumerate(open(f, encoding='utf-8'), 1):
+        for m in bare.finditer(line):
+            name = m.group(1)
+            if '/' not in name and name in uniq:
+                print(f"{os.path.relpath(f, root)}:{ln}: bare `{name}` — use the repo-relative path")
+PY
+then
+  if [[ -s "$XREF_REPORT" ]]; then
+    while IFS= read -r line; do
+      [[ -n "$line" ]] && fail "bare cross-ref: $line"
+    done < "$XREF_REPORT"
+  else
+    echo "all backtick layer-doc refs are repo-relative"
+  fi
+else
+  cat "$XREF_REPORT"
+  fail "cross-ref convention check errored"
+fi
+
 # --- e. Bootstrap smoke test -------------------------------------------------
 section "e. Bootstrap smoke test (new-project.sh)"
 SMOKE_DIR="$WORK_DIR/smoke"
@@ -448,7 +490,7 @@ fi
 # --- summary -----------------------------------------------------------------
 echo
 if [[ $failures -eq 0 ]]; then
-  echo "OK: suite CI passed — footers, script syntax, config validity, calibration register, flow-back ledger, internal links, fragment anchors, never-stub, bootstrap smoke test, and preset manifest coherence all clean."
+  echo "OK: suite CI passed — footers, script syntax, config validity, calibration register, flow-back ledger, internal links, fragment anchors, never-stub, cross-ref path convention, bootstrap smoke test, and preset manifest coherence all clean."
 else
   echo "FAIL: $failures finding(s). Fix the reported issues above."
   exit 1

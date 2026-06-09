@@ -1,6 +1,6 @@
 # API Evolution
 
-How an externally-consumed HTTP API changes shape over time without breaking the clients that depend on it. `03-design/api-contract-design.md` defines the *shape* of a contract; this doc defines how that contract is **versioned, evolved, and retired** once strangers consume it. Internal same-repo APIs are out of scope — the type system is their migration tool (`api-contract-design.md` rule 9). Everything here applies the moment a second party (a third-party app, a partner, the public) calls the surface.
+How an externally-consumed HTTP API changes shape over time without breaking the clients that depend on it. `03-design/api-contract-design.md` defines the *shape* of a contract; this doc defines how that contract is **versioned, evolved, and retired** once strangers consume it. Internal same-repo APIs are out of scope — the type system is their migration tool (`03-design/api-contract-design.md` rule 9). Everything here applies the moment a second party (a third-party app, a partner, the public) calls the surface.
 
 ## 1. What counts as a breaking change
 
@@ -15,15 +15,15 @@ The classification is SemVer applied to the wire, not the package version:
 A versioned API exposes a major version on every externally-consumed surface from day one. Choose **one** negotiation scheme per API and document it; do not mix.
 
 4. **URI-path versioning is the default** (`/v1/...`, `/v2/...`). It is explicit, cacheable per RFC 9110 caching semantics, trivially observable in logs and gateways, and testable from a browser. Only the **major** appears in the path — minor/additive changes never mint a new path (rule 1).
-5. **Media-type / header negotiation** (`Accept: application/vnd.example.v2+json`, or a header `Accept-Version`) is permitted when one resource needs multiple concurrent representations and URI churn is unacceptable. It is RFC 9110 §12 content-negotiation-correct but harder to test, cache, and debug — choose it deliberately, not by default. The chosen scheme is part of the contract (`api-contract-design.md`).
+5. **Media-type / header negotiation** (`Accept: application/vnd.example.v2+json`, or a header `Accept-Version`) is permitted when one resource needs multiple concurrent representations and URI churn is unacceptable. It is RFC 9110 §12 content-negotiation-correct but harder to test, cache, and debug — choose it deliberately, not by default. The chosen scheme is part of the contract (`03-design/api-contract-design.md`).
 6. **Never version with an undeclared default.** A request that omits the version MUST NOT silently float to "latest" — pin it to a stated version (typically the oldest supported, or reject with `400`), because floating-latest turns every MAJOR release into a silent break for lazy clients.
 7. **Minor/patch is not in the URL or header.** Within a major, only additive change ships (rule 1). The full semantic version is advertised out-of-band (changelog, an info endpoint, a response header), never used for routing.
 
 ## 3. Running versions in parallel: expand → migrate → contract
 
-8. A MAJOR change ships the new version **alongside** the old, not in place of it (parallel change). Sequence: **expand** (publish `vN+1` while `vN` keeps serving) → **migrate** (consumers move on their own schedule, measured — `07-operations/observability.md` makes residual `vN` traffic answerable) → **contract** (retire `vN` per §4 once silence is proven). This is the contract-phase pattern of `api-contract-design.md` rule 8 applied across an externally-consumed boundary.
+8. A MAJOR change ships the new version **alongside** the old, not in place of it (parallel change). Sequence: **expand** (publish `vN+1` while `vN` keeps serving) → **migrate** (consumers move on their own schedule, measured — `07-operations/observability.md` makes residual `vN` traffic answerable) → **contract** (retire `vN` per §4 once silence is proven). This is the contract-phase pattern of `03-design/api-contract-design.md` rule 8 applied across an externally-consumed boundary.
 9. **State the support window up front.** Publish how many major versions run concurrently and for how long (the concrete numbers are a stack/product choice, not a global rule). A version with no stated end is debt wearing a sign (`08-maintenance/deprecation-process.md`).
-10. **Errors are versioned surface too.** Every version emits errors as RFC 9457 Problem Details (`application/problem+json`); the `type` URI is stable, machine-readable API (`api-contract-design.md` rule 6). Changing a `type`'s meaning is breaking; adding a new `type` is additive.
+10. **Errors are versioned surface too.** Every version emits errors as RFC 9457 Problem Details (`application/problem+json`); the `type` URI is stable, machine-readable API (`03-design/api-contract-design.md` rule 6). Changing a `type`'s meaning is breaking; adding a new `type` is additive.
 
 ## 4. The retirement contract: Deprecation → Sunset → 410
 

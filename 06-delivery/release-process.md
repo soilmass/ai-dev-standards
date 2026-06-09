@@ -27,7 +27,7 @@ The minimal flag, concretely: a boot-validated env var (e.g. `FLAG_NEW_CHECKOUT`
 1. Confirm the nightly/pre-deploy tier is green on the release commit (`05-verification/ci-pipeline.md`).
 2. Merge → automatic deploy (`06-delivery/deployment-strategy.md`).
 3. Tag + generate changelog for announced releases.
-4. Watch the dashboards for one error-budget-relevant interval (`07-operations/observability.md`, `slo-error-budgets.md`).
+4. Watch the dashboards for one error-budget-relevant interval (`07-operations/observability.md`, `07-operations/slo-error-budgets.md`).
 
 ## Standards basis
 

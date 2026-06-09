@@ -1,6 +1,6 @@
 # Rate Limiting & Abuse Prevention
 
-An endpoint with no rate limit is a denial-of-wallet and credential-stuffing surface waiting to be found. This doc governs how the API's request budget is **designed at the boundary** — who gets how much, what happens at the ceiling, and which surfaces need abuse controls beyond a simple counter. It is a design-time decision (it shapes the contract in `api-contract-design.md`), not an ops afterthought.
+An endpoint with no rate limit is a denial-of-wallet and credential-stuffing surface waiting to be found. This doc governs how the API's request budget is **designed at the boundary** — who gets how much, what happens at the ceiling, and which surfaces need abuse controls beyond a simple counter. It is a design-time decision (it shapes the contract in `03-design/api-contract-design.md`), not an ops afterthought.
 
 ## What gets a limit, and keyed by what
 
@@ -17,7 +17,7 @@ An endpoint with no rate limit is a denial-of-wallet and credential-stuffing sur
 ## The 429 contract
 
 7. **Over-limit returns `429 Too Many Requests` with a `Retry-After` header** (RFC 6585) so a well-behaved client backs off instead of tightening the loop. Expose the budget with the standard `RateLimit-Limit` / `RateLimit-Remaining` / `RateLimit-Reset` response fields (IETF `RateLimit header fields` draft) on normal responses too, so clients self-throttle before they hit the wall.
-8. **429 is part of the API contract** (`api-contract-design.md`): it is documented, returns the standard error envelope, and is covered by a test. A limit nobody can discover until they trip it is a usability bug; a limit with no test rots.
+8. **429 is part of the API contract** (`03-design/api-contract-design.md`): it is documented, returns the standard error envelope, and is covered by a test. A limit nobody can discover until they trip it is a usability bug; a limit with no test rots.
 9. **Never leak the limiter as an oracle.** Rate-limit responses must not reveal whether an account exists or a password was close — auth throttling returns the same generic 429/401 shape regardless, or the limiter itself becomes an enumeration tool.
 
 ## Abuse beyond rate limiting

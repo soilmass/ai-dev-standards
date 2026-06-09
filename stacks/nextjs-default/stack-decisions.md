@@ -104,11 +104,11 @@ Pre-written ADRs for every pinned tool in this preset. Each records the choice, 
 ## ADR-S17: Next.js as framework
 
 - **Decision:** Next.js, App Router, Server Components by default; version pinned ≥ the React2Shell-patched line for its major (≥ 15.5.7 on the 15.x line, ≥ 16.0.7 on 16.x), which also clears the older CVE-2025-29927 floor.
-- **Rationale:** The most mature React full-stack framework: RSC support, first-class Vercel deployment, the largest knowledge base (which AI agents have deepest training coverage of). Deviations per `pinned-decisions.md`: SvelteKit (leaving React), TanStack Start (type-safe Vite-native, RSC experimental/opt-in not the default — governance guardrail 2).
-- **Accepted tradeoff:** Framework complexity (caching layers, server/client boundary) and a degree of Vercel gravity; both are managed by the standards rather than avoided. The App Router's RSC surface carries an active RCE history (CVE-2025-29927 middleware bypass; CVE-2025-55182 / React2Shell unauthenticated RCE) — the version-pin floor above and guardrail 3 in `agent-operating-rules.md` are the standing mitigation (re-verified June 2026 currency pass).
+- **Rationale:** The most mature React full-stack framework: RSC support, first-class Vercel deployment, the largest knowledge base (which AI agents have deepest training coverage of). Deviations per `00-governance/pinned-decisions.md`: SvelteKit (leaving React), TanStack Start (type-safe Vite-native, RSC experimental/opt-in not the default — governance guardrail 2).
+- **Accepted tradeoff:** Framework complexity (caching layers, server/client boundary) and a degree of Vercel gravity; both are managed by the standards rather than avoided. The App Router's RSC surface carries an active RCE history (CVE-2025-29927 middleware bypass; CVE-2025-55182 / React2Shell unauthenticated RCE) — the version-pin floor above and guardrail 3 in `00-governance/agent-operating-rules.md` are the standing mitigation (re-verified June 2026 currency pass).
 
 ## ADR-S18: Vercel for hosting
 
 - **Decision:** Frontend deploys to Vercel — preview deploy per PR, production from `main`.
-- **Rationale:** Zero-config Next.js deploys, preview URLs that the CI Lighthouse gate runs against, edge network by default. Box 1 of the three-box model (`pinned-decisions.md`).
+- **Rationale:** Zero-config Next.js deploys, preview URLs that the CI Lighthouse gate runs against, edge network by default. Box 1 of the three-box model (`00-governance/pinned-decisions.md`).
 - **Accepted tradeoff:** Cost curve at scale and serverless limits (no WebSockets/long jobs). The rule, not this pick, is pinned: workloads that outgrow box 1 move to a container PaaS (Railway/Fly.io) — raise it as an architecture decision, don't contort the app.

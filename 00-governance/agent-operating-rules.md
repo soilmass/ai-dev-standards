@@ -50,7 +50,7 @@ The agent must NEVER modify, delete, or bypass the following, regardless of task
 - **CI workflow files, git hooks, and lint configs in order to make a failing check pass.** Fix the code, not the gate. Proposing a gate change is allowed; silently weakening one is not.
 - **Generated artifacts** (build output, generated types/clients) — regenerate, don't hand-edit.
 - **License files and legal notices.**
-- **This standards library itself from inside a consuming project.** Lessons flow back via the lifecycle process (see `standards-lifecycle.md`), not ad-hoc edits.
+- **This standards library itself from inside a consuming project.** Lessons flow back via the lifecycle process (see `00-governance/standards-lifecycle.md`), not ad-hoc edits.
 
 ## 4. Behavior under uncertainty
 

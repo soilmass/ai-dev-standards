@@ -19,5 +19,5 @@ Disposition values: `patched` (names the tag that shipped the fix) · `deferred`
 
 - **Patched** rows must name a tag that exists in the repo's `git tag` list — `check-flowback.sh` enforces this, so a "fixed" claim can't outrun the actual release. (Release ordering, like a changelog: commit the fix + this row, cut the tag, then push commit and tag together — `git push --follow-tags` — so CI never sees a patched row whose tag is absent.)
 - **Deferred** rows must carry a non-empty revisit trigger (same data-driven discipline as calibration triggers); the currency pass walks them.
-- The library cannot enumerate where consuming projects live, so harvesting findings *into* this log is a manual currency-pass step (`standards-lifecycle.md` §6): for each known project, diff its debt-log "Library flow-back" section against the rows here and add any missing finding.
-- A finding that also moved a calibration knob gets a paired row in `calibration.md`'s Observations section (e.g. FB-02 ↔ the coverage-include observation).
+- The library cannot enumerate where consuming projects live, so harvesting findings *into* this log is a manual currency-pass step (`00-governance/standards-lifecycle.md` §6): for each known project, diff its debt-log "Library flow-back" section against the rows here and add any missing finding.
+- A finding that also moved a calibration knob gets a paired row in `00-governance/calibration.md`'s Observations section (e.g. FB-02 ↔ the coverage-include observation).

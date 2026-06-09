@@ -14,7 +14,7 @@ Reminder of what does NOT belong here: bugs (fix or ticket them) and missing tes
 
 ## Library flow-back (lessons for ai-dev-standards)
 
-When this project hits friction with a *standard or preset* (not project debt) — a stale version pin, an unreachable gate, a rule that fights reality — record it here. These are not fixed in the library mid-project (never-touch list); they flow back through `standards-lifecycle.md` §6 and land in the library's `00-governance/flow-back-log.md` with a disposition. One bullet per finding: what the standard says, what reality required, and the suggested library fix.
+When this project hits friction with a *standard or preset* (not project debt) — a stale version pin, an unreachable gate, a rule that fights reality — record it here. These are not fixed in the library mid-project (never-touch list); they flow back through `00-governance/standards-lifecycle.md` §6 and land in the library's `00-governance/flow-back-log.md` with a disposition. One bullet per finding: what the standard says, what reality required, and the suggested library fix.
 
 - _none yet — add findings as they surface._
 

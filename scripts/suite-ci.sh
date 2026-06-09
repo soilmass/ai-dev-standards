@@ -375,6 +375,7 @@ else
     .github/ISSUE_TEMPLATE/bug_report.md
     .github/ISSUE_TEMPLATE/feature_request.md
     .github/ISSUE_TEMPLATE/config.yml
+    scripts/check-enforcement.sh
   )
   for artifact in "${expected[@]}"; do
     if [[ -s "$SMOKE_DIR/$artifact" ]]; then
@@ -400,6 +401,23 @@ else
       fail "bootstrap helper missing/not-executable/invalid: scripts/$helper $(cat "$WORK_DIR/helper.err" 2>/dev/null)"
     fi
   done
+
+  # Enforcement-integrity guard: must pass on a fresh project AND fail when a gate
+  # is loosened (proves it has teeth, not just exits 0 unconditionally).
+  eg="$SMOKE_DIR/scripts/check-enforcement.sh"
+  if [[ -s "$eg" ]] && bash -n "$eg" 2>/dev/null && ( cd "$SMOKE_DIR" && bash scripts/check-enforcement.sh >/dev/null 2>&1 ); then
+    echo "  ok   scripts/check-enforcement.sh passes on a fresh project"
+    ng="$WORK_DIR/enforce-neg"; rm -rf "$ng"; cp -r "$SMOKE_DIR" "$ng"
+    python3 -c "p='$ng/tsconfig.json'; s=open(p).read(); open(p,'w').write(s.replace('\"strict\": true','\"strict\": false'))"
+    if ( cd "$ng" && bash scripts/check-enforcement.sh >/dev/null 2>&1 ); then
+      fail "enforcement guard did NOT catch a loosened tsconfig (strict:false) — no teeth"
+    else
+      echo "  ok   scripts/check-enforcement.sh catches a loosened gate"
+    fi
+    rm -rf "$ng"
+  else
+    fail "enforcement guard missing/invalid or failed on a fresh project: scripts/check-enforcement.sh"
+  fi
 
   # Derivation smoke: run the helper in DRY_RUN with a stub gh and assert it
   # actually extracts the PR job names from pr.yml (guards the indent-match bug class).

@@ -111,6 +111,14 @@ jobs:
             exit 1
           fi
 
+  enforcement-guard:
+    name: Enforcement integrity
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - name: Enforcement floor intact (no weakened gates)
+        run: bash scripts/check-enforcement.sh
+
   deps:
     name: Dependency audit + license allowlist
     runs-on: ubuntu-latest

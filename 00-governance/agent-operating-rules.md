@@ -47,7 +47,7 @@ The agent must NEVER modify, delete, or bypass the following, regardless of task
 - **Applied database migrations** — forward-only; write a new migration instead (see `06-delivery/migration-discipline.md`).
 - **Git history that has been pushed to a shared branch** — no rebase/force-push on shared branches.
 - **Lockfiles by hand** — lockfiles change only as a side effect of the package manager.
-- **CI workflow files, git hooks, and lint configs in order to make a failing check pass.** Fix the code, not the gate. Proposing a gate change is allowed; silently weakening one is not.
+- **Enforcement configuration, in order to make a failing check pass.** The whole surface, not just CI files: CI workflow files and job definitions, git hooks, lint configs (`biome.json` rule levels), the type-checker's strictness (`tsconfig.json` `strict` / `noUncheckedIndexedAccess`), test coverage and complexity thresholds, and calibration values. Fix the code, not the gate. Proposing a gate change is allowed — as its own reviewed PR with a stated reason — but silently weakening one to go green is not. The injected `scripts/check-enforcement.sh` CI job mechanically blocks the most common loosenings (strict turned off, a safety lint downgraded, the coverage gate zeroed); the rest rides this rule and review.
 - **Generated artifacts** (build output, generated types/clients) — regenerate, don't hand-edit.
 - **License files and legal notices.**
 - **This standards library itself from inside a consuming project.** Lessons flow back via the lifecycle process (see `00-governance/standards-lifecycle.md`), not ad-hoc edits.

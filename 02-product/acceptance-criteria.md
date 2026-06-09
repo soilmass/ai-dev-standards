@@ -44,7 +44,7 @@ Equivalent checkable forms are fine (invariant statements, example tables) as lo
 ## Enforcement
 - Mechanism: none-possible
 - Config: n/a
-- Fallback if unenforceable: Every acceptance criterion for this task maps to at least one automated test or a named manual verification step.
+- Fallback if unenforceable: Every acceptance criterion is Observable, Deterministic, and Atomic, and maps to at least one automated test or a named manual verification step.
 
 ## Bootstrap
 - What new-project.sh injects for this standard: nothing — reference only (the spec template's acceptance-criteria section points here).

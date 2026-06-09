@@ -65,7 +65,10 @@ for entry in manifest:
             node = json.loads(content)
             for part in entry["path"].split("."):
                 node = node[int(part)] if isinstance(node, list) else node[part]
-            actual = json.dumps(node) if isinstance(node, (dict, list)) else str(node)
+            if isinstance(node, (dict, list)):
+                fail(entry, f"{fname} — JSON path '{entry.get('path')}' resolved to a {type(node).__name__}, not a scalar (path too short or mistyped)")
+                continue
+            actual = str(node)
         except (KeyError, IndexError, ValueError, TypeError):
             fail(entry, f"{fname} — JSON path '{entry.get('path')}' did not resolve")
             continue

@@ -38,7 +38,7 @@ The solo developer's stand-in for a second reviewer. Before any work is declared
 Each line below is the verbatim `Fallback if unenforceable` from a layer doc whose enforcement mechanism is `none-possible` — this checklist is their only gate. Source doc in parentheses.
 
 - [ ] Confirm the diff stays within the approved spec's scope and non-goals; name any scope creep explicitly and split it out. (`02-product/spec.template.md`)
-- [ ] Every acceptance criterion for this task maps to at least one automated test or a named manual verification step. (`02-product/acceptance-criteria.md`)
+- [ ] Every acceptance criterion is Observable, Deterministic, and Atomic, and maps to at least one automated test or a named manual verification step. (`02-product/acceptance-criteria.md`)
 - [ ] For changes touching auth, session, input parsing, file handling, or data access: confirm the feature's threat model exists and each listed mitigation is implemented in this diff. (`03-design/threat-model.template.md`)
 - [ ] Confirm the change ships through the standard promotion flow (PR → preview → production) with no manual host-side steps introduced. (`06-delivery/deployment-strategy.md`)
 - [ ] State the rollback path for this change (revert commit, feature-flag off, or roll-forward migration) in the PR description before merging. (`06-delivery/rollback.md`)

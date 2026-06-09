@@ -51,7 +51,9 @@
           "level": "error",
           "options": { "allow": ["warn", "error"] }
         },
-        "noDebugger": "error"
+        "noDebugger": "error",
+        "noFocusedTests": "error",
+        "noSkippedTests": "error"
       },
       "style": {
         "noNonNullAssertion": "error",

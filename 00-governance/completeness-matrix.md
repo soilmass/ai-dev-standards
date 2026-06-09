@@ -35,6 +35,7 @@ Column meanings — **Articulated**: rule written concretely. **Templated**: fil
 | Rate limiting & abuse | [rate-limiting-abuse.md](../03-design/rate-limiting-abuse.md) | n/a | none-possible → fallback in [checklist §E](../05-verification/code-review-standard.md) | reference only |
 | UI accessibility patterns | [ui-accessibility-patterns.md](../03-design/ui-accessibility-patterns.md) | n/a | none-possible → fallback in [checklist §E](../05-verification/code-review-standard.md); markup baseline lint-backed | reference only |
 | Data privacy | [data-privacy.md](../03-design/data-privacy.md) | n/a | none-possible → fallback in [checklist §E](../05-verification/code-review-standard.md) | reference only |
+| Web security headers & CSRF | [web-security-headers.md](../03-design/web-security-headers.md) | n/a | none-possible → fallback in [checklist §E](../05-verification/code-review-standard.md) | reference only (headers/CSP are per-deployment config) |
 | **04 Build** | — | — | — | — |
 | Coding standards | [coding-standards.md](../04-build/coding-standards.md) | n/a | lint ([biome.json](../stacks/nextjs-default/lint-config/biome.json)) | via lint config |
 | Git standards | [git-standards.md](../04-build/git-standards.md) | PR template ([PULL_REQUEST_TEMPLATE.md](../stacks/nextjs-default/ci/PULL_REQUEST_TEMPLATE.md)) | hooks ([pre-commit](../stacks/nextjs-default/hooks/pre-commit), [commitlint.config.mjs](../stacks/nextjs-default/hooks/commitlint.config.mjs)) | via `.husky/` + configs |

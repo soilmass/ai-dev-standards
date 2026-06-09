@@ -99,6 +99,12 @@ Every tunable knob in the suite — thresholds, budgets, cadences, score floors,
 | CAL-E11 | Full-loss drill once before launch | Run the provider-account-gone drill once before launch; steps become the incident runbook | 07-operations/backup-dr.md rule 10 (line 27) | Doing the full account-loss drill once pre-launch is the minimum that proves the external dump is actually recoverable into a fresh deploy before real data exists, and capturing the steps as a runbook means the rehearsal pays off during a real incident; for a solo operator a recurring drill cadence would likely be skipped, so "once, and it produces an artifact" is the right floor. | Add a periodic (e.g. annual) re-drill if the hosting/provider topology changes materially, or after any incident where the existing runbook proved stale or wrong. |
 | CAL-E12 | Quarterly: re-confirm accepted-permanently debt/risk rows | Quarterly sweep: close paid rows, escalate grown ones, re-confirm "accepted permanently" rows still deserve it | 08-maintenance/tech-debt-policy.md rule 8 (line 21); debt-log.template.md line 3 | Quarterly re-confirmation keeps "accepted permanently" from becoming a silent permanent excuse, and aligning it with the quarterly SLO review and rotation cadence gives the solo operator a single periodic-maintenance ritual rather than several competing calendars. | Move to semi-annual only if quarterly sweeps consistently produce no changes to the accepted-permanently rows over a year; tighten if a permanently-accepted row ever causes an incident (signal the bar for that label is too low). |
 | CAL-E13 | Audit-log retention floor (security/trust events) | ≥ 1 year retained, ≈90 days immediately queryable (PCI DSS Req 10 baseline; binding regulation overrides upward) | 07-operations/audit-log-retention.md rule 7 | One year with a ~90-day hot window is the widely-applicable PCI DSS Req 10 baseline and a defensible default where no stricter rule binds; it is a floor (regulation/contract raises it), bounded above by storage-limitation (rule 8), not an open-ended hoard. Left unmanifested because the binding value is per-project/regulatory — set from each project's compliance reality, like the RPO/RTO and SLO example bounds. | Raise for any project under a stricter regime (HIPAA, financial-records, SOC 2 contractual); shorten the hot window only if query cost dominates and investigations never reach past 90 days across multiple real incidents; never below the binding regulatory minimum. |
+
+## Area F — Front-end & site quality
+
+| ID | Knob | Value | Where | Verdict & rationale | Recalibrate when |
+|---|---|---|---|---|---|
+| CAL-F01 | Allowed broken-internal-link budget 0 | 0 (zero 404s on any crawled internal/nav/footer link) | stacks/nextjs-default/ci/pr.yml (site-integrity job, ALLOWED_404: '0') + stacks/nextjs-default/project-config/scripts/check-site-integrity.example.sh (ALLOWED_404 default) | A multi-page site whose own navigation 404s is broken, full stop — the audit that motivated this gate shipped three site-wide 404s (`/signin`, `/privacy`, `/terms`) past a "passing" build because nothing crawled the rendered link surface. Zero is the only defensible budget: a broken internal link is always a defect, never noise, and the site-integrity crawl (03-design/multi-page-site-coherence.md) is deterministic against the SSR HTML. The script's default and the CI job env are paired at 0 with no drift. | Never raise above 0; a legitimately-removed page must have its inbound links removed (or 301-redirected, which the gate accepts as a 3xx) in the same change, not be waived by widening the budget. If a third-party-controlled external link rots, that is out of scope here — this knob governs internal targets only. |
 ## Observations
 
 The trigger↔reality surface: dated records of a recalibration trigger being checked against real data, and what followed. This is what makes "data-driven, not mood-driven" auditable — each row is a time a knob's trigger fired (or was checked and held). Currency passes append here.
@@ -189,7 +195,9 @@ Consumed by `scripts/check-calibration.sh` (kinds: `json` = dotted path into a J
   {"id":"CAL-D15c","file":".github/workflows/preset-integration.yml","kind":"regex","pattern":"actions/setup-node@v([0-9]+)","expect":"6"},
   {"id":"CAL-E01","file":"07-operations/slo-error-budgets.md","kind":"regex","pattern":"more than ~([0-9.]+)%","expect":"99.5"},
   {"id":"CAL-E05","file":"07-operations/backup-dr.md","kind":"regex","pattern":"([0-9]+) daily, [0-9]+ weekly, [0-9]+ monthly","expect":"7"},
-  {"id":"CAL-E10","file":"stacks/nextjs-default/env.schema.example","kind":"regex","pattern":"min\\(([0-9]+),","expect":"32"}
+  {"id":"CAL-E10","file":"stacks/nextjs-default/env.schema.example","kind":"regex","pattern":"min\\(([0-9]+),","expect":"32"},
+  {"id":"CAL-F01a","file":"stacks/nextjs-default/ci/pr.yml","kind":"regex","pattern":"ALLOWED_404: '([0-9]+)'","expect":"0"},
+  {"id":"CAL-F01b","file":"stacks/nextjs-default/project-config/scripts/check-site-integrity.example.sh","kind":"regex","pattern":"ALLOWED_404:-([0-9]+)\\}","expect":"0"}
 ]
 ```
 
@@ -226,5 +234,6 @@ stacks/nextjs-default/lint-config/biome.json
 stacks/nextjs-default/project-config/package.json.example
 stacks/nextjs-default/project-config/playwright.config.example.ts
 stacks/nextjs-default/project-config/scripts/check-enforcement.example.sh
+stacks/nextjs-default/project-config/scripts/check-site-integrity.example.sh
 stacks/nextjs-default/project-config/vitest.config.example.ts
 ```

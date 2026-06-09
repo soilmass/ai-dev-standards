@@ -98,7 +98,7 @@ import os
 # they don't match — only knob-definition rows do).
 rows = {}
 for ln in text.splitlines():
-    rm = re.match(r"\s*\|\s*(CAL-[A-E]\d+)\s*\|(.*)$", ln)
+    rm = re.match(r"\s*\|\s*(CAL-[A-F]\d+)\s*\|(.*)$", ln)
     if rm:
         cells = [c.strip() for c in rm.group(2).split("|")]
         # remaining cells after the id: Knob | Value | Where | ...

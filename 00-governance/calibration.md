@@ -41,7 +41,7 @@ Every tunable knob in the suite — thresholds, budgets, cadences, score floors,
 
 | ID | Knob | Value | Where | Verdict & rationale | Recalibrate when |
 |---|---|---|---|---|---|
-| CAL-C01 | Coverage thresholds 70/70/70/70 (lines/functions/branches/statements) | 70 for all four metrics | stacks/nextjs-default/project-config/vitest.config.example.ts:25-28 | 70% is the conventional erosion-floor for application code and the suite explicitly frames it as a floor-to-raise (not a start target), so it is reachable at bootstrap yet catches regressions; uniform 70 across all four metrics avoids the branch-coverage trap where statements pass while branches rot. | At each quarterly sweep, raise each metric's floor to trailing-actual minus 10pts once real coverage has exceeded that floor by more than 15pts for two consecutive sweeps; never lower without a stated PR reason. |
+| CAL-C01 | Coverage thresholds 70/70/70/70 (lines/functions/branches/statements) | 70 for all four metrics | stacks/nextjs-default/project-config/vitest.config.example.ts:25-28; floor mirrored in stacks/nextjs-default/project-config/scripts/check-enforcement.example.sh + stacks/nextjs-container/project-config/scripts/check-enforcement.example.sh | 70% is the conventional erosion-floor for application code and the suite explicitly frames it as a floor-to-raise (not a start target), so it is reachable at bootstrap yet catches regressions; uniform 70 across all four metrics avoids the branch-coverage trap where statements pass while branches rot. | At each quarterly sweep, raise each metric's floor to trailing-actual minus 10pts once real coverage has exceeded that floor by more than 15pts for two consecutive sweeps; never lower without a stated PR reason. The same floor is enforced in-project by the injected `check-enforcement.sh` guard (`FLOOR`, tracked as CAL-C01e/f) — raise both together. |
 | CAL-C02 | Lighthouse performance minScore 0.9 | 0.9 (config and doc agree) | stacks/nextjs-default/ci/lighthouserc.json + 05-verification/a11y-perf-gates.md | 0.9 is the standard 'good' performance threshold, now gated on **mobile emulation** (the CAL-C09 adjustment) — the harder, traffic-dominant form factor; config and doc are paired with no drift. | Raise to 0.95 once field RUM p75 performance (`07-operations/observability.md` rule 10, reviewed against the lab thresholds in `docs/slos.md`) clears 0.93+ for a full quarterly review window; if mobile 0.9 proves unreachable-at-start — the lighthouse CI job failing the performance gate across two consecutive quarterly sweeps of the PR run history — relax the specific failing CWV budget (not this floor) via a reviewed diff. |
 | CAL-C03 | Lighthouse accessibility minScore 0.95 | 0.95 (config and doc agree) | stacks/nextjs-default/ci/lighthouserc.json:12 + 05-verification/a11y-perf-gates.md:9 | A11y is the one category where automated checks are deterministic and the suite targets WCAG 2.2 AA, so the higher 0.95 floor (vs 0.9 for perf/SEO) is correctly the strictest gate; config and doc match. | Raise to 1.0 once two consecutive quarterly sweeps find no a11y-gate failures of the lighthouse CI job in the PR run history, since Lighthouse a11y is binary-ish and near-perfect scores are routinely attainable. |
 | CAL-C04 | Lighthouse best-practices minScore 0.9 | 0.9 (config and doc agree) | stacks/nextjs-default/ci/lighthouserc.json:13 + 05-verification/a11y-perf-gates.md:22 | 0.9 is the standard 'good' band; best-practices audits (HTTPS, console errors, deprecated APIs) are largely pass/fail so 0.9 leaves room for one minor finding without blocking a solo dev's merge. | Raise to 0.95 if the lighthouse CI job has logged no best-practices-gate failure in the PR run history across two consecutive quarterly sweeps; investigate (do not lower) any sustained run of best-practices-gate CI failures. |
@@ -124,6 +124,8 @@ Consumed by `scripts/check-calibration.sh` (kinds: `json` = dotted path into a J
   {"id":"CAL-C01b","file":"stacks/nextjs-default/project-config/vitest.config.example.ts","kind":"regex","pattern":"functions: ([0-9]+),","expect":"70"},
   {"id":"CAL-C01c","file":"stacks/nextjs-default/project-config/vitest.config.example.ts","kind":"regex","pattern":"branches: ([0-9]+),","expect":"70"},
   {"id":"CAL-C01d","file":"stacks/nextjs-default/project-config/vitest.config.example.ts","kind":"regex","pattern":"statements: ([0-9]+),","expect":"70"},
+  {"id":"CAL-C01e","file":"stacks/nextjs-default/project-config/scripts/check-enforcement.example.sh","kind":"regex","pattern":"FLOOR=([0-9]+)","expect":"70"},
+  {"id":"CAL-C01f","file":"stacks/nextjs-container/project-config/scripts/check-enforcement.example.sh","kind":"regex","pattern":"FLOOR=([0-9]+)","expect":"70"},
   {"id":"CAL-C02a","file":"stacks/nextjs-default/ci/lighthouserc.json","kind":"json","path":"ci.assert.assertions.categories:performance.1.minScore","expect":"0.9"},
   {"id":"CAL-C02b","file":"05-verification/a11y-perf-gates.md","kind":"regex","pattern":"\\| Lighthouse performance score \\| ≥ ([0-9.]+) \\|","expect":"0.90"},
   {"id":"CAL-C03a","file":"stacks/nextjs-default/ci/lighthouserc.json","kind":"json","path":"ci.assert.assertions.categories:accessibility.1.minScore","expect":"0.95"},
@@ -151,9 +153,9 @@ Consumed by `scripts/check-calibration.sh` (kinds: `json` = dotted path into a J
   {"id":"CAL-D03b","file":"04-build/dependency-policy.md","kind":"regex","pattern":"Allowed without question: (.+)\\.","expect":"`MIT`, `Apache-2.0`, `ISC`, `BSD-2-Clause`, `BSD-3-Clause`, `0BSD`, `BlueOak-1.0.0`, `CC0-1.0`, `Unlicense`, `Python-2.0`"},
   {"id":"CAL-D04","file":"stacks/nextjs-default/dependabot.yml","kind":"regex","pattern":"interval: ([a-z]+)","expect":"weekly"},
   {"id":"CAL-D05","file":"stacks/nextjs-default/dependabot.yml","kind":"regex","pattern":"open-pull-requests-limit: ([0-9]+)","expect":"5"},
-  {"id":"CAL-D06a","file":"stacks/nextjs-default/ci/pr.yml","kind":"regex","pattern":"retention-days: ([0-9]+)","expect":"7"},
-  {"id":"CAL-D06b","file":"stacks/nextjs-default/ci/nightly.yml","kind":"regex","pattern":"name: playwright-report[\\s\\S]*?retention-days: ([0-9]+)","expect":"14"},
-  {"id":"CAL-D06c","file":"stacks/nextjs-default/ci/nightly.yml","kind":"regex","pattern":"name: visual-diffs[\\s\\S]*?retention-days: ([0-9]+)","expect":"14"},
+  {"id":"CAL-D06a","file":"stacks/nextjs-default/ci/pr.yml","kind":"regex","pattern":"retention-days:\\s*([0-9]+)","expect":"7"},
+  {"id":"CAL-D06b","file":"stacks/nextjs-default/ci/nightly.yml","kind":"regex","pattern":"name: playwright-report[\\s\\S]*?retention-days:\\s*([0-9]+)","expect":"14"},
+  {"id":"CAL-D06c","file":"stacks/nextjs-default/ci/nightly.yml","kind":"regex","pattern":"name: visual-diffs[\\s\\S]*?retention-days:\\s*([0-9]+)","expect":"14"},
   {"id":"CAL-D07","file":"stacks/nextjs-default/ci/nightly.yml","kind":"regex","pattern":"cron: '([^']+)'","expect":"0 3 * * *"},
   {"id":"CAL-D08a","file":"stacks/nextjs-default/ci/nightly.yml","kind":"regex","pattern":"name: Full E2E suite \\(Playwright\\)[\\s\\S]*?timeout-minutes: ([0-9]+)","expect":"60"},
   {"id":"CAL-D08b","file":"stacks/nextjs-default/ci/nightly.yml","kind":"regex","pattern":"name: Visual regression[\\s\\S]*?timeout-minutes: ([0-9]+)","expect":"30"},
@@ -166,7 +168,7 @@ Consumed by `scripts/check-calibration.sh` (kinds: `json` = dotted path into a J
   {"id":"CAL-D09f","file":"stacks/nextjs-default/ci/pr.yml","kind":"regex","pattern":"anchore/sbom-action@v([0-9]+)","expect":"0"},
   {"id":"CAL-D09g","file":"stacks/nextjs-default/ci/pr.yml","kind":"regex","pattern":"github/codeql-action/init@v([0-9]+)","expect":"3"},
   {"id":"CAL-D09h","file":"stacks/nextjs-container/ci/release.yml","kind":"regex","pattern":"aquasecurity/trivy-action@([0-9.]+)","expect":"0.28.0"},
-  {"id":"CAL-C14","file":"stacks/nextjs-default/project-config/vitest.config.example.ts","kind":"regex","pattern":"include: \\[('lib/\\*\\*')\\],","expect":"'lib/**'"},
+  {"id":"CAL-C14","file":"stacks/nextjs-default/project-config/vitest.config.example.ts","kind":"regex","pattern":"include:\\s*\\[\\s*('lib/\\*\\*')\\s*\\]","expect":"'lib/**'"},
   {"id":"CAL-D12a","file":"stacks/nextjs-default/project-config/package.json.example","kind":"regex","pattern":"\"zod\": \"(\\^[0-9]+)","expect":"^4"},
   {"id":"CAL-D12b","file":"stacks/nextjs-default/project-config/package.json.example","kind":"regex","pattern":"\"drizzle-orm\": \"(\\^[0-9.]+)","expect":"^0.45.2"},
   {"id":"CAL-D12c","file":"stacks/nextjs-default/env.schema.example","kind":"regex","pattern":"(z\\.url)\\(","expect":"z.url"},
@@ -202,6 +204,7 @@ The forcing function that stops a new calibrated knob from sneaking in *uncalibr
 stacks/nextjs-container/ci/release.yml
 stacks/nextjs-container/project-config/Dockerfile.example
 stacks/nextjs-container/project-config/package.json.example
+stacks/nextjs-container/project-config/scripts/check-enforcement.example.sh
 stacks/nextjs-default/ci/lighthouserc.json
 stacks/nextjs-default/ci/nightly.yml
 stacks/nextjs-default/ci/pr.yml
@@ -212,5 +215,6 @@ stacks/nextjs-default/hooks/commitlint.config.mjs
 stacks/nextjs-default/lint-config/biome.json
 stacks/nextjs-default/project-config/package.json.example
 stacks/nextjs-default/project-config/playwright.config.example.ts
+stacks/nextjs-default/project-config/scripts/check-enforcement.example.sh
 stacks/nextjs-default/project-config/vitest.config.example.ts
 ```

@@ -407,14 +407,23 @@ else
   eg="$SMOKE_DIR/scripts/check-enforcement.sh"
   if [[ -s "$eg" ]] && bash -n "$eg" 2>/dev/null && ( cd "$SMOKE_DIR" && bash scripts/check-enforcement.sh >/dev/null 2>&1 ); then
     echo "  ok   scripts/check-enforcement.sh passes on a fresh project"
-    ng="$WORK_DIR/enforce-neg"; rm -rf "$ng"; cp -r "$SMOKE_DIR" "$ng"
-    python3 -c "p='$ng/tsconfig.json'; s=open(p).read(); open(p,'w').write(s.replace('\"strict\": true','\"strict\": false'))"
-    if ( cd "$ng" && bash scripts/check-enforcement.sh >/dev/null 2>&1 ); then
-      fail "enforcement guard did NOT catch a loosened tsconfig (strict:false) — no teeth"
-    else
-      echo "  ok   scripts/check-enforcement.sh catches a loosened gate"
-    fi
-    rm -rf "$ng"
+    # Three negative cases — each was a real bypass closed in the empirical audit:
+    #   (a) strict off, (b) coverage lowered 70->50 (not just zeroed), (c) a strict
+    #   per-option override. The guard must FAIL on each, proving real teeth.
+    enforce_neg() { # <label> <python-mutation>
+      local lbl="$1" mut="$2" ng="$WORK_DIR/enforce-neg"
+      rm -rf "$ng"; cp -r "$SMOKE_DIR" "$ng"
+      python3 -c "$mut" "$ng"
+      if ( cd "$ng" && bash scripts/check-enforcement.sh >/dev/null 2>&1 ); then
+        fail "enforcement guard did NOT catch: $lbl — no teeth"
+      else
+        echo "  ok   scripts/check-enforcement.sh catches: $lbl"
+      fi
+      rm -rf "$ng"
+    }
+    enforce_neg "tsconfig strict:false" "import sys;p=sys.argv[1]+'/tsconfig.json';s=open(p).read();open(p,'w').write(s.replace('\"strict\": true','\"strict\": false'))"
+    enforce_neg "coverage lowered 70->50" "import sys;p=sys.argv[1]+'/vitest.config.ts';s=open(p).read();open(p,'w').write(s.replace('lines: 70','lines: 50'))"
+    enforce_neg "strictNullChecks:false override" "import sys;p=sys.argv[1]+'/tsconfig.json';s=open(p).read();open(p,'w').write(s.replace('\"strict\": true','\"strict\": true, \"strictNullChecks\": false'))"
   else
     fail "enforcement guard missing/invalid or failed on a fresh project: scripts/check-enforcement.sh"
   fi

@@ -322,3 +322,45 @@ jobs:
           # Budgets live with the repo so they are reviewable; see 05-verification/a11y-perf-gates.md.
           # The configPath thresholds apply identically to each audited route.
           configPath: ./lighthouserc.json
+
+  smoke:
+    name: Functional verification (smoke vs preview deploy)
+    needs: [build]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v6
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Install Playwright browser
+        run: pnpm exec playwright install --with-deps chromium
+      # The functional-verification covenant (_spines/functional-verification.md):
+      # run the `smoke` Playwright project against the DEPLOYED artifact (the PR
+      # preview), proving it boots, serves its routes, resolves its endpoints, logs
+      # ZERO console errors, and a primary flow reaches its expected outcome —
+      # before promotion. This is distinct from the unit/e2e tiers ("tests pass"
+      # against a local build); it verifies the thing that will actually ship.
+      - name: Wait for Vercel preview deployment
+        id: preview
+        uses: patrickedqvist/wait-for-vercel-preview@v1.3.3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          max_timeout: 600
+      - name: Smoke the preview deploy
+        # SMOKE_MAX_CONSOLE_ERRORS pins the zero console-error budget (CAL-F02);
+        # keep == the playwright.config.ts SMOKE_MAX_CONSOLE_ERRORS constant.
+        # Raising it weakens the gate — do not.
+        env:
+          PLAYWRIGHT_BASE_URL: ${{ steps.preview.outputs.url }}
+          SMOKE_MAX_CONSOLE_ERRORS: '0'
+        run: pnpm exec playwright test --project=smoke
+      - name: Upload smoke report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: smoke-report
+          path: playwright-report/
+          retention-days: 14

@@ -8,7 +8,8 @@
 #                    supply-chain (SBOM + dependency review), migration-discipline guard,
 #                    docs-updated check
 # Tier 2 (after tier 1): production build
-# Tier 3 (after tier 2): Lighthouse CI against the preview deploy
+# Tier 3 (after tier 2): Lighthouse CI against the preview deploy; site-integrity
+#                    crawl against a locally-served production build
 #
 # Requires repo secrets: VERCEL_PREVIEW (set automatically by the Vercel GitHub
 # integration as a deployment) — the Lighthouse job waits for that deployment URL.
@@ -246,6 +247,38 @@ jobs:
         env:
           ENV_VALIDATE_ONLY: 'true'
       - run: pnpm build
+
+  site-integrity:
+    name: Site integrity (multi-page coherence crawl)
+    needs: [build]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v6
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Build app
+        run: pnpm build
+      - name: Serve build + crawl for broken links / chrome drift / sitemap coherence
+        # Enforces 03-design/multi-page-site-coherence.md. ALLOWED_404 is the
+        # zero broken-internal-link budget (CAL-F01); raising it weakens the gate.
+        # Server start + crawl live in ONE step so the backgrounded `next start`
+        # survives (each `run:` is a fresh shell — a process backgrounded in a
+        # prior step would not). The trap tears it down on any exit path.
+        env:
+          ALLOWED_404: '0'
+        run: |
+          pnpm start -- -p 3000 &
+          server_pid=$!
+          trap 'kill "$server_pid" 2>/dev/null || true' EXIT
+          for i in $(seq 1 30); do
+            curl -fsS -o /dev/null http://localhost:3000/ && break
+            echo "waiting for server… ($i)"; sleep 2
+          done
+          bash scripts/check-site-integrity.sh http://localhost:3000
 
   lighthouse:
     name: Lighthouse CI (preview deploy)

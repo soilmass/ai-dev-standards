@@ -5,7 +5,7 @@ Component structure and styling discipline. The styling system itself is a stack
 ## One styling system
 
 1. The project uses **exactly one** styling system — the one the active stack preset names — applied one way. No parallel CSS approaches accreting per feature; an agent finding two styles in the codebase asks which is canonical instead of adding a third.
-2. Design tokens (color, spacing, type scale, radii) are defined once in the styling system's config and referenced everywhere. Raw hex values and magic pixel numbers in component code are violations.
+2. Design tokens (color, spacing, type scale, radii) are defined once in the styling system's config and referenced everywhere. Raw hex values and magic pixel numbers in component code are violations. The full token **taxonomy** (which DTCG groups the token set must cover), the alias-don't-duplicate rule, and the platform-guideline grounding (Apple HIG / Material 3 / WAI-ARIA APG borrow-vs-reject discipline + citation requirement) live in `03-design/design-tokens-and-hig.md` — this rule is its consuming consequence; do not restate the taxonomy here.
 3. Dark mode / theming, if present, works through tokens — never per-component conditionals.
 
 ## Component structure
@@ -30,7 +30,7 @@ Component structure and styling discipline. The styling system itself is a stack
 
 - **WCAG 2.2 Level AA** (W3C Recommendation, 12 Dec 2024, https://www.w3.org/TR/WCAG22/): POUR — Perceivable, Operable, Understandable, Robust. Grounds the accessibility baseline: real semantic elements, keyboard operability + visible focus (2.4.7 / 2.4.11 Focus Not Obscured), programmatic labels (1.3.1, 4.1.2), meaningful/empty alt (1.1.1), and 2.5.8 Target Size.
 - **WAI-ARIA Authoring Practices Guide (APG)** (https://www.w3.org/WAI/ARIA/apg/): authoritative role/state/keyboard-interaction patterns for composite widgets. Basis for "use the real element first, ARIA only to fill gaps" and the per-role keyboard expectations on composites.
-- **W3C Design Tokens Format Module** (DTCG, first stable version Oct 2025; `.tokens`/`application/design-tokens+json`): a vendor-neutral interchange format for color/spacing/type/radii tokens with groups and aliases. Grounds rules 2–3 — tokens defined once, referenced everywhere, theming via token aliasing rather than per-component conditionals.
+- **W3C Design Tokens Format Module** (DTCG, first stable version Oct 2025; `.tokens`/`application/design-tokens+json`): a vendor-neutral interchange format for color/spacing/type/radii tokens with groups and aliases. Grounds rules 2–3 — tokens defined once, referenced everywhere, theming via token aliasing rather than per-component conditionals. The full taxonomy these rules consume, plus the Apple HIG / Material 3 grounding and borrow-vs-reject discipline, is fixed in `03-design/design-tokens-and-hig.md`.
 - **Design-token / atomic structure** (single source of style; primitives→composites→views): grounds the component hierarchy (rules 4–5) and the no-parallel-styling-system rule (1).
 
 ## Enforcement

@@ -42,6 +42,15 @@ Keep the E2E suite at **≈20–30 tests covering revenue-critical paths only** 
 - The CI coverage gate is a floor against erosion, not a target to game. Review assertions, not percentages.
 - Test behavior, not implementation: a refactor that preserves behavior should not break tests.
 
+## Advanced techniques — reach for these by risk
+
+The pyramid is the default; these are sharper tools for specific high-risk code, applied **by risk, not always-on**. Security- and money-critical paths (auth, payments, input parsing, access control) earn them; a CRUD form does not.
+
+- **Property-based testing** — for code with a wide input space and a clear invariant (parsers, validators, serializers, money/permission math): assert the property holds over *generated* inputs instead of a few hand-picked examples; the runner shrinks any failure to a minimal case. Surfaces the edge case you didn't think to write.
+- **Mutation testing** — the test for your tests: it mutates the code under test and fails if no test notices, measuring assertion quality the coverage % cannot. Run it on the modules that matter (core business logic), not the whole repo.
+- **Consumer-driven contract testing** — when you own an API with separate consumers (or consume one): pin the request/response contract so a provider change that would break a consumer fails in CI, not in production. Complements `03-design/api-contract-design.md` and `api-evolution.md`.
+- **Fuzzing** — for untrusted-input boundaries (parsers, file/upload handling, anything taking raw bytes): feed malformed/random input to surface crashes and security bugs no example test would. Ties to the threat model (`03-design/threat-modeling.md`).
+
 ## Test-runner limitation (guardrail)
 
 **Vitest cannot render async Server Components** (React's async component support isn't stable in the test runner). Unit-test Server Actions, Zod schemas, and synchronous components with Vitest; cover async Server Components and full flows with Playwright instead.
@@ -57,6 +66,7 @@ Keep the E2E suite at **≈20–30 tests covering revenue-critical paths only** 
 
 - **Test Pyramid** (Mike Cohn, *Succeeding with Agile*) — many fast unit tests, fewer integration, a thin UI/E2E crown: the shape of the tiers table and the E2E-scope rule.
 - **Testing Trophy** (Kent C. Dodds, https://kentcdodds.com/blog/the-testing-trophy-and-testing-classifications) — weights the integration band heavily ("write tests, not too many, mostly integration") and adds **static analysis** as the base layer; grounds the per-PR integration emphasis and the lint-as-first-tier posture (static gate is the type-checker + linter, see `coding-standards.md`).
+- **Property-based testing** (QuickCheck lineage; Hypothesis, fast-check) — generate-and-shrink over invariants; the basis for the advanced property-testing technique. **Mutation testing** (Stryker, PIT — "who tests the tests") — assertion-quality measurement behind the mutation technique. **Consumer-driven contract testing** (Pact) — the provider/consumer contract guarantee. **Coverage-guided fuzzing** (AFL/libFuzzer lineage, OSS-Fuzz) — input-boundary crash/security discovery. Each is applied by risk, per the advanced-techniques section.
 - **Google test sizes** (small/medium/large, *Software Engineering at Google*) — classifies tests by resource scope and determinism rather than position; the basis for the "deterministic: no real network, no real clocks, no order dependence" hygiene rule (small tests forbid network/disk/sleep).
 - **Coverage as a floor, not a target** — Goodhart's law applied to metrics; coverage is necessary-not-sufficient. Aligned in the coverage-philosophy section: review assertions, gate against erosion.
 - **Test behavior, not implementation** — the refactor-resilience principle (Testing Library guiding principle: "the more your tests resemble the way your software is used, the more confidence they give you").

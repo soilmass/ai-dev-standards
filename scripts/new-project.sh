@@ -154,6 +154,7 @@ install_file "$LIB_ROOT/03-design/threat-model.template.md"      "$TARGET/docs/t
 install_file "$LIB_ROOT/07-operations/incident-runbook.template.md" "$TARGET/docs/incident-runbook.template.md"
 install_file "$LIB_ROOT/07-operations/slos.template.md"          "$TARGET/docs/slos.md"
 install_file "$LIB_ROOT/08-maintenance/debt-log.template.md"     "$TARGET/docs/debt-log.md"
+install_file "$LIB_ROOT/06-delivery/launch-readiness.template.md" "$TARGET/docs/launch-readiness.md"
 
 # helper scripts -> project scripts/ (executable)
 install_file "$LIB_ROOT/01-context/setup-branch-protection.template.sh" "$TARGET/scripts/setup-branch-protection.sh" 755

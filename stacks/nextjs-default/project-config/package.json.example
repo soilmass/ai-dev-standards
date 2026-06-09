@@ -17,6 +17,7 @@
     "format": "biome check --write .",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
+    "db:seed": "tsx db/seed.ts",
     "prepare": "husky"
   },
   "dependencies": {

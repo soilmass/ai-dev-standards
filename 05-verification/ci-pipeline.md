@@ -13,6 +13,7 @@ The pipeline **is** the enforcement layer: every standard that can be checked me
 | Unit + component tests (accessibility checks included in unit tier) | `04-build/testing-strategy.md`, `05-verification/a11y-perf-gates.md` |
 | Coverage gate | erosion floor per testing strategy |
 | Secret scan (full history) | `04-build/secrets-config.md` |
+| SAST (CodeQL) | `04-build/static-analysis.md` |
 | Dependency audit + license allowlist | `04-build/dependency-policy.md` |
 | PR-size gate | `02-product/task-decomposition.md` |
 | Migration-discipline guard | `06-delivery/migration-discipline.md` |
@@ -50,7 +51,7 @@ A production deploy never proceeds without a green run of the nightly tier (trig
 The bootstrap cannot set host-side repository settings; do this once after the first push (Settings → Branches → add a rule for `main`, or the equivalent ruleset):
 
 1. Require a pull request before merging (no direct pushes — mirrors the local hook).
-2. Require status checks to pass, and mark **all PR jobs** required. With this preset the check names are: `Lint & format (Biome)`, `Type check (tsc, strict)`, `Unit + component tests (Vitest, a11y included)`, `Secret scan (gitleaks)`, `PR size gate`, `Dependency audit + license allowlist`, `Supply chain (SBOM + dependency review)`, `Migration discipline guard`, `Docs-updated check`, `Production build`, `Lighthouse CI (preview deploy)`. The injected `scripts/setup-branch-protection.sh` (step below) derives this list straight from `pr.yml`, so it stays correct even if the job set changes.
+2. Require status checks to pass, and mark **all PR jobs** required. With this preset the check names are: `Lint & format (Biome)`, `Type check (tsc, strict)`, `Unit + component tests (Vitest, a11y included)`, `Secret scan (gitleaks)`, `SAST (CodeQL)`, `PR size gate`, `Dependency audit + license allowlist`, `Supply chain (SBOM + dependency review)`, `Migration discipline guard`, `Docs-updated check`, `Production build`, `Lighthouse CI (preview deploy)`. The injected `scripts/setup-branch-protection.sh` (step below) derives this list straight from `pr.yml`, so it stays correct even if the job set changes.
 3. Require branches to be up to date before merging.
 4. Block force pushes and deletions on `main`.
 5. Do **not** allow administrators to bypass — solo means you're the admin; an escape hatch for you is an escape hatch for every agent run.

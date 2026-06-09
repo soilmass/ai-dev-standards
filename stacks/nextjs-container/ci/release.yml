@@ -64,3 +64,12 @@ jobs:
           subject-name: ghcr.io/${{ github.repository }}
           subject-digest: ${{ steps.build.outputs.digest }}
           push-to-registry: true
+      # Image vulnerability scan (04-build/static-analysis.md): fail the release on
+      # HIGH/CRITICAL fixable CVEs in the built image (OS + app layers).
+      - name: Scan image (Trivy)
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          image-ref: ghcr.io/${{ github.repository }}:${{ github.ref_name }}
+          severity: 'HIGH,CRITICAL'
+          ignore-unfixed: true
+          exit-code: '1'

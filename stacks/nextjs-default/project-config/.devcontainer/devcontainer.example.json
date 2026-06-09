@@ -1,0 +1,17 @@
+{
+  "name": "PROJECT_NAME",
+  "image": "mcr.microsoft.com/devcontainers/typescript-node:24",
+  "features": {
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {}
+  },
+  "forwardPorts": [3000, 5432, 8080],
+  "postCreateCommand": "corepack enable && pnpm install",
+  "remoteEnv": {
+    "DATABASE_URL": "postgresql://app:app@localhost:5432/app"
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": ["biomejs.biome"]
+    }
+  }
+}

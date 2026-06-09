@@ -297,10 +297,14 @@ else
     next.config.ts
     instrumentation.ts
     db/schema.ts
+    db/seed.ts
     .gitignore
     .gitattributes
+    .devcontainer/devcontainer.json
+    docker-compose.yml
     docs/slos.md
     docs/debt-log.md
+    docs/launch-readiness.md
     .github/CODEOWNERS
     .github/SECURITY.md
     .github/CONTRIBUTING.md
@@ -395,7 +399,7 @@ for preset_dir in "$LIB_ROOT"/stacks/*/; do
   done
   # Container preset specifics: Prisma schema + Dockerfile + standalone next.config.
   if [[ "$preset" == "nextjs-container" ]]; then
-    for artifact in prisma/schema.prisma Dockerfile next.config.ts; do
+    for artifact in prisma/schema.prisma prisma/seed.ts Dockerfile next.config.ts docker-compose.yml .devcontainer/devcontainer.json; do
       [[ -s "$pdir/$artifact" ]] || fail "[$preset] bootstrap artifact missing/empty: $artifact"
     done
     grep -q "output: 'standalone'" "$pdir/next.config.ts" || fail "[$preset] next.config.ts lacks standalone output"

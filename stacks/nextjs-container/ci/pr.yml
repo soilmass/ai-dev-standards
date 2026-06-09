@@ -161,6 +161,25 @@ jobs:
           path: sbom.cdx.json
           retention-days: 30
 
+  codeql:
+    name: SAST (CodeQL)
+    runs-on: ubuntu-latest
+    permissions:
+      security-events: write # upload findings to the Security tab
+      actions: read
+      contents: read
+    steps:
+      - uses: actions/checkout@v6
+      # Static application security testing (04-build/static-analysis.md). JS/TS
+      # is interpreted, so no build step is needed before analysis.
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: javascript-typescript
+          queries: security-extended
+      - name: Analyze
+        uses: github/codeql-action/analyze@v3
+
   migrations:
     name: Migration discipline guard
     runs-on: ubuntu-latest

@@ -77,6 +77,8 @@ Every tunable knob in the suite — thresholds, budgets, cadences, score floors,
 
 | CAL-D14 | Local-dev image pins (docker-compose) | `postgres:17-alpine` + `adminer:5` in both presets' `docker-compose.example.yml` | stacks/nextjs-default/project-config/docker-compose.example.yml + stacks/nextjs-container/project-config/docker-compose.example.yml | Local dev/prod parity (04-build/developer-experience.md) needs a pinned local database; Postgres 17 is the current stable major and `-alpine` keeps the pull small, adminer 5 is the current major. Pinned (not `latest`) so local == CI == every machine. Left unmanifested: it's a local-dev convenience image, not a shipped/gated artifact, and the two presets carry identical copies. | Bump the Postgres major when the managed production database the project uses moves major (keep local == prod major); bump adminer on its major. |
 
+| CAL-D15 | Library's own CI action pins (this repo's workflows) | `actions/checkout@v6` + `actions/setup-node@v6` in `suite-ci.yml` / `preset-integration.yml` | .github/workflows/suite-ci.yml + .github/workflows/preset-integration.yml | The library's own workflows must not lag the action versions it ships to projects (CAL-D09): checkout/setup-node majors track the same Active-Node line (v6 → Node 24) so the repo practices the currency it preaches and stays clear of the Node-20 deprecation (checkout@v4 forced to Node 24 2026-06-16, removed 2026-09-16). `pnpm/action-setup` held at v4 (current major). Surfaced by a live CI deprecation annotation on the v2026.06.20 push. | Bump these majors whenever CAL-D09 (the preset action pins) bumps, keeping the repo's own CI in lockstep with what it ships. |
+
 ## Area E — Operations & secrets
 
 | ID | Knob | Value | Where | Verdict & rationale | Recalibrate when |
@@ -171,6 +173,9 @@ Consumed by `scripts/check-calibration.sh` (kinds: `json` = dotted path into a J
   {"id":"CAL-D13a","file":"stacks/nextjs-container/project-config/package.json.example","kind":"regex","pattern":"\"prisma\": \"(\\^[0-9]+)","expect":"^6"},
   {"id":"CAL-D13b","file":"stacks/nextjs-container/project-config/Dockerfile.example","kind":"regex","pattern":"FROM node:([0-9]+)-alpine","expect":"24"},
   {"id":"CAL-D13c","file":"stacks/nextjs-container/ci/release.yml","kind":"regex","pattern":"attest-build-provenance@v([0-9]+)","expect":"4"},
+  {"id":"CAL-D15a","file":".github/workflows/suite-ci.yml","kind":"regex","pattern":"actions/checkout@v([0-9]+)","expect":"6"},
+  {"id":"CAL-D15b","file":".github/workflows/preset-integration.yml","kind":"regex","pattern":"actions/checkout@v([0-9]+)","expect":"6"},
+  {"id":"CAL-D15c","file":".github/workflows/preset-integration.yml","kind":"regex","pattern":"actions/setup-node@v([0-9]+)","expect":"6"},
   {"id":"CAL-E01","file":"07-operations/slo-error-budgets.md","kind":"regex","pattern":"more than ~([0-9.]+)%","expect":"99.5"},
   {"id":"CAL-E05","file":"07-operations/backup-dr.md","kind":"regex","pattern":"([0-9]+) daily, [0-9]+ weekly, [0-9]+ monthly","expect":"7"},
   {"id":"CAL-E10","file":"stacks/nextjs-default/env.schema.example","kind":"regex","pattern":"min\\(([0-9]+),","expect":"32"}
@@ -184,6 +189,8 @@ Knobs without a manifest entry are register-governed only — their rows above s
 The forcing function that stops a new calibrated knob from sneaking in *uncalibrated*: the list below is the exhaustive inventory of every file the manifest reads from. `scripts/check-calibration.sh` asserts this list and the manifest's file set are **identical** — a file appearing in one but not the other fails the build. The effect: adding a knob to a new config (a manifest entry pointing at a not-yet-listed file) forces you to consciously add that file here, and removing the last knob from a file forces you to drop it — neither side can drift silently. Keep this block in lockstep with the manifest, in the same commit (root `CLAUDE.md` §5).
 
 ```calibration-tracked-files
+.github/workflows/preset-integration.yml
+.github/workflows/suite-ci.yml
 02-product/task-decomposition.md
 04-build/dependency-policy.md
 04-build/git-standards.md

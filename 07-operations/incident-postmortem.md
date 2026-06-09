@@ -1,0 +1,44 @@
+# Incident Postmortem
+
+A postmortem is the only step in incident response that pays forward: mitigation stops *this* outage, the postmortem stops the *next* one. This doc owns the postmortem **method** — how you turn a resolved incident into a more reliable system. It does not own the per-incident artifact: the Postmortem section of `07-operations/incident-runbook.template.md` is where a specific incident's write-up lives, and the escalation/severity machinery it feeds back into is owned by `07-operations/oncall-escalation.md`. This doc is the discipline that makes that section worth filling.
+
+## When and at what weight
+
+1. **A postmortem is mandatory for every S1 and every S2** (severity ladder in `07-operations/oncall-escalation.md`). S3s get one only if they recurred or surprised you; a single cosmetic glitch does not earn the ceremony. The trigger is user impact plus novelty, not whether anyone "did something wrong" — clean recoveries from real outages still teach.
+2. **Write it while the incident is fresh**, on the cadence the per-incident artifact already fixes (the Postmortem section of `07-operations/incident-runbook.template.md` and its calibrated window). Memory of what you saw, tried, and ruled out decays within days; reconstructing a timeline a week later produces fiction. The cadence is one number, owned there — this doc does not set a second deadline.
+3. **For a solo operator a postmortem is a 15-minute write-up, not a meeting.** The full incident-review ceremony — review committee, action-item owners across teams, formal sign-off — is a team practice; alone you keep the *substance* (timeline, causes, actions) and drop the *ritual*. The substance is what prevents recurrence; the ritual was only ever the coordination overhead a team needs and you don't.
+
+## Blameless by construction
+
+4. **The subject of a postmortem is the system, never a person.** Frame every finding as a property of the system that let the failure happen — a missing guard, an absent alert, an ambiguous runbook step, an unvalidated assumption — not as a choice someone should have made differently. "The deploy lacked a smoke check" is a finding; "I deployed carelessly" is not.
+5. **Assume everyone acted reasonably on the information they had at the time.** Hindsight makes the cause look obvious; it was not obvious in the moment or the incident would not have happened. The question is always "what made this the reasonable thing to do, and what would have surfaced the problem sooner?" — not "who should have known better."
+6. **Blameless applies even when you are the only suspect.** Solo, the temptation is to write "I messed up" and move on; that records nothing actionable and teaches nothing. Name the systemic gap that would have caught *anyone* in your position. Self-flagellation is not a postmortem; a tracked preventive change is.
+
+## What the write-up must contain
+
+7. **A timeline of what actually happened, in clock order** — detected, escalated, mitigated, resolved — with the key observations and decisions between them. This is the spine; build it from the live incident-state document (`07-operations/oncall-escalation.md`) you kept during the response, while it is still legible.
+8. **How it was detected, and how it should have been.** Record whether an alert caught it or a user did. A user-reported incident is itself a finding: the monitoring missed a symptom users felt, and closing that gap is an action item.
+9. **Root cause distinguished from trigger, plus contributing factors.** The trigger is what set it off (a deploy, a traffic spike, a dependency blip); the root cause is the systemic weakness that let the trigger become an outage. Most real incidents have several contributing factors, not one cause — list them all; the single-cause story is usually the incomplete one.
+10. **What made the incident better and what made it worse.** Surface what shortened it (a runbook that worked, a fast rollback, a kill switch) so it is repeated, and what lengthened it (a missing dashboard, a flapping alert, a debugging detour) so it is fixed. Recovery is a capability the postmortem tunes, not just a story it tells.
+11. **What would have caught it sooner** — the prevention question. For each contributing factor, name the guard, test, alert, or design change that would have prevented it or detected it earlier. This is the bridge from analysis to the action items in the next section.
+
+## Lessons must not evaporate
+
+12. **Every action item becomes a tracked obligation with a named owner — full stop.** It is either a tracked task on the backlog or a row in the debt log (`08-maintenance/tech-debt-policy.md`) with an explicit paydown trigger. An action item that lives only inside the postmortem prose is an action item that will not happen; the postmortem's value is realized in the tracker, not on the page.
+13. **An action item is a concrete change to a system, never a behavioral resolution.** "Be more careful", "remember to check X", and "pay more attention next time" are non-items — they encode no system change and recur on the next incident. If a finding cannot be turned into a guard, test, alert, runbook edit, or design change, it is not yet understood well enough to act on.
+14. **The postmortem feeds back into the runbook and the alerting in the same cycle it is written.** A detection gap (found via the prevention question) becomes an alert or a tuning change owned by `07-operations/oncall-escalation.md`; a response gap becomes an edit to the relevant `07-operations/incident-runbook.template.md` entry — ideally in the same change that records the lesson, so the next responder inherits the fix, not just the story.
+15. **Recurrence escalates a failure out of the pager and into design.** When the same root cause produces a second postmortem, the response is no longer a runbook tweak — it is a design fix, a permanent guard, or an ADR. A failure mode you have now postmortemed twice is a backlog item you under-prioritized, not a fact of life (`07-operations/oncall-escalation.md`, `00-governance/standards-lifecycle.md` feedback loop).
+
+## Standards basis
+- **Google SRE — *Postmortem Culture: Learning from Failure*** (https://sre.google/sre-book/postmortem-culture/, *SRE* book ch.15): postmortems are blameless, focus on systemic contributing causes rather than individuals, distinguish root cause from trigger, and convert findings into tracked action items with owners; the trigger for writing one is user-visible impact (or other defined thresholds), not whether someone erred. Grounds the blameless framing (rules 4–6), the contents (rules 7–11), and the "action items become tracked work" discipline (rules 12–13). The companion *Postmortem Action Items* guidance — that items name an owner and become tracked work, and that "be more careful" is not an action item — is the basis for rules 12–13.
+- **Blameless postmortems — Etsy / John Allspaw lineage** (Allspaw, "Blameless PostMortems and a Just Culture", codeascraft.com, 2012): operators act rationally given the information, context, and tools available at the time, so a postmortem reconstructs *why an action made sense then* instead of assigning fault; treating human error as a starting point for inquiry rather than a conclusion is what keeps the account honest enough to be useful. Grounds rule 5 (reasonable-actor assumption) and rule 6 (blameless-even-when-solo).
+- **Google SRE — *Managing Incidents*** (https://sre.google/sre-book/managing-incidents/): the live incident-state document maintained during the response — timeline and current hypothesis — is the raw material the postmortem's timeline (rule 7) is assembled from; this doc consumes what that practice produces (kept here via `07-operations/oncall-escalation.md`).
+- **Just Culture — Sidney Dekker, *The Field Guide to Understanding Human Error*** (and Dekker, *Just Culture*): the systems view of failure — that asking "who" stops inquiry where asking "what in the system" continues it — is the theoretical ground beneath the SRE/Etsy blameless practice and rule 4's "subject is the system, never a person."
+
+## Enforcement
+- Mechanism: none-possible
+- Config: n/a
+- Fallback if unenforceable: Every S1/S2 in this work has a blameless postmortem (systems and contributing factors, never individuals) covering timeline, detection, root vs contributing causes, what helped/hurt, and what would have caught it sooner; each action item is a tracked task or a debt-log row with an owner, and any detection/response gap is reflected back into the alerting and the runbook.
+
+## Bootstrap
+- What new-project.sh injects for this standard: nothing — reference only (the postmortem *artifact* is the Postmortem section of the `docs/incident-runbook.template.md` injected per failure scenario; this doc is the method that governs filling it).

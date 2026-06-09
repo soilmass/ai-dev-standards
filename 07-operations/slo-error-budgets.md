@@ -9,6 +9,7 @@ Reliability targets you set on purpose, and what happens when you spend them. So
    - **Latency:** share of requests faster than a threshold (e.g. p95 < 500 ms on API routes).
    - Optionally one **journey SLI** for the revenue-critical flow (checkout completes, login succeeds).
 2. Set each target from **measured reality minus ambition**: run a month, look at the data (`observability.md` metrics), set the SLO slightly above current performance — not at 99.99% because it sounds professional. A solo-operated app with no on-call rotation has no business promising more than ~99.5% anywhere.
+   - **First launch has no history to measure.** Set provisional targets from load-test results (`05-verification/load-testing.md`) or a comparable service, ship, then reset them from real data after the first ~month (rule 9). If even provisional SLOs aren't ready at launch, record it as a signed risk acceptance in `docs/launch-readiness.md` (mitigation: collect the baseline, then update; with an owner and a ~30-day revisit) rather than blocking the launch — a measured SLO is a fast-follow, not a hard first-launch gate.
 3. Write them down in the project — the bootstrap drops a `docs/slos.md` starter (from `07-operations/slos.template.md`: SLI/target/window table, burn-alert column, RPO/RTO, verified-restore log). An SLO that lives in your head is a mood, not an objective.
 
 ## Error budgets

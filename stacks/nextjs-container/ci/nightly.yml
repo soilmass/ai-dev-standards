@@ -87,10 +87,16 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - name: Run the project's restore verification (07-operations/backup-dr.md)
         # Projects define `restore:verify` (restore latest backup into a scratch DB,
-        # assert row counts / critical invariants). --if-present keeps the preset
-        # generic: the job passes trivially until the project wires a real check,
-        # and backup-dr.md requires wiring it before production data exists.
-        run: pnpm run --if-present restore:verify
+        # assert row counts / critical invariants). backup-dr.md requires wiring it
+        # before production data exists. Until then, surface a VISIBLE warning rather
+        # than passing silently — a green nightly must not imply verified backups
+        # (launch-readiness is the hard gate that blocks launch on a real restore).
+        run: |
+          if pnpm run 2>/dev/null | grep -q 'restore:verify'; then
+            pnpm run restore:verify
+          else
+            echo "::warning title=Backup restore unverified::No 'restore:verify' script yet — wire it before production launch (07-operations/backup-dr.md); launch-readiness gates on a verified restore."
+          fi
 
   notify:
     name: Report failures

@@ -2,7 +2,7 @@
 
 ## Stack rules — nextjs-default
 
-This project runs the **nextjs-default** preset: Next.js (App Router) + TypeScript strict + Biome + Vitest/Testing Library/MSW + Playwright + Zod + Drizzle + Better Auth + pnpm, deployed on Vercel. Rationale per tool: `stack-decisions.md` in the preset directory.
+This project runs the **nextjs-default** preset: Next.js (App Router) + TypeScript strict + Biome + Vitest/Testing Library/MSW + Playwright + Zod + Drizzle + Better Auth + pnpm, deployed on Vercel. Rationale per tool: `<STANDARDS_PATH>/stacks/nextjs-default/stack-decisions.md`.
 
 ### Commands
 
@@ -28,10 +28,10 @@ One-time wiring, in order (the bootstrap copies configs; this makes them executa
 3. **gitleaks binary** (not an npm package): `brew install gitleaks` or download from `github.com/gitleaks/gitleaks/releases` — the pre-commit hook fails closed without it.
 4. **Hooks:** `pnpm exec husky init` (the bootstrap already placed `pre-commit` and `commit-msg` in `.husky/`); verify with a test commit on a branch.
 5. **Visual baselines:** the test scaffolding is already injected — `tests/setup.ts` (jest-dom matchers + MSW server lifecycle), `tests/msw/` (server + contract-mirroring handlers), and example `tests/unit/`, `tests/e2e/`, `tests/visual/` tests. Adapt the examples to your app, then generate visual baselines locally (`pnpm exec playwright test --project=visual --update-snapshots`), review the PNGs, and commit them. CI never regenerates baselines.
-6. **Auth schema:** Better Auth needs four tables (`user`/`session`/`account`/`verification`). Generate them from your `lib/auth.ts` with `pnpm dlx @better-auth/cli generate` (needs a reachable `DATABASE_URL`), put them in `db/auth-schema.ts`, and **reconcile column names to snake_case** (data-modeling rule 1 — Better Auth's generator defaults to camelCase columns). Re-export them from `db/schema.ts` (`export * from './auth-schema'`) so drizzle-kit sees one schema, and make your domain tables' `userId` a real FK to `user.id`.
-7. **Database:** `db/schema.ts` (schema starter) and `lib/db.ts` (the lazy, server-only Drizzle client) are injected. Adapt the schema, set `DATABASE_URL` in `.env.local`, then `pnpm exec drizzle-kit generate` for the migration. `drizzle.config.ts` (injected) pins migrations to `./drizzle` — the CI guard watches that path. Add typed query functions bound to `getDb()` (keep data access in `lib/`, not components).
+6. **Database (do this before auth — auth generation needs a reachable DB):** start the local database with `docker compose up -d` (the injected `docker-compose.yml`) and point `DATABASE_URL` in `.env.local` at it. `db/schema.ts` (schema starter) and `lib/db.ts` (the lazy, server-only Drizzle client) are injected — adapt the schema, then `pnpm exec drizzle-kit generate` for the migration and `pnpm db:migrate` to apply it (optionally `pnpm db:seed`). `drizzle.config.ts` (injected) pins migrations to `./drizzle` — the CI guard watches that path. Add typed query functions bound to `getDb()` (keep data access in `lib/`, not components).
+7. **Auth schema:** with `DATABASE_URL` set and the DB running (step 6), generate Better Auth's four tables (`user`/`session`/`account`/`verification`) from your `lib/auth.ts` with `pnpm dlx @better-auth/cli generate`, put them in `db/auth-schema.ts`, and **reconcile column names to snake_case** (data-modeling rule 1 — Better Auth's generator defaults to camelCase columns). Re-export them from `db/schema.ts` (`export * from './auth-schema'`) so drizzle-kit sees one schema, and make your domain tables' `userId` a real FK to `user.id`.
 8. **Env validation at boot:** `instrumentation.ts` (injected) calls `serverEnv()` guarded on `NEXT_RUNTIME === 'nodejs'` so startup fails on bad config. **Call `serverEnv()` (and construct DB/auth clients) inside handlers / the request path, never at module top-level** — `next build` evaluates route modules, so a module-scope `serverEnv()` throws at build (env absent). `env.schema.ts` itself is import-safe; the discipline is on callers. Client code imports `clientEnv` only. `next.config.ts` (injected) sets `serverExternalPackages` for Better Auth + `pg`.
-9. **After first push:** set branch protection per `05-verification/ci-pipeline.md` (Bootstrap section) — all PR jobs as required checks.
+9. **After first push:** set branch protection per `<STANDARDS_PATH>/05-verification/ci-pipeline.md` (Bootstrap section) — all PR jobs as required checks (or run `bash scripts/setup-branch-protection.sh`).
 
 ### Stack-specific rules
 
@@ -44,4 +44,4 @@ One-time wiring, in order (the bootstrap copies configs; this makes them executa
 7. **Server Components by default; `'use client'` only when needed** (state, effects, browser APIs). Keep data fetching on the server.
 8. **Testing split (Vitest cannot render async Server Components):** unit-test Server Actions, Zod schemas, hooks, and synchronous components with Vitest + Testing Library (MSW for network); cover async Server Components and full user flows with Playwright.
 9. **Hooks are sacred:** pre-commit (lint-staged + gitleaks) and commit-msg (commitlint) run on every commit; do not bypass with `--no-verify`.
-10. **Deployment is Vercel**, preview deploy per PR. If a feature needs WebSockets, cron, or long-running jobs, raise the three-box question (see `pinned-decisions.md`) rather than contorting it into serverless.
+10. **Deployment is Vercel**, preview deploy per PR. If a feature needs WebSockets, cron, or long-running jobs, raise the three-box question (see `<STANDARDS_PATH>/00-governance/pinned-decisions.md`) rather than contorting it into serverless.

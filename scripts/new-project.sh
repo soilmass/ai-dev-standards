@@ -81,7 +81,10 @@ else
         -e "s|<STANDARDS_PATH>|$LIB_ROOT|g" \
         "$LIB_ROOT/01-context/CLAUDE.template.md"
     echo
-    cat "$PRESET_DIR/CLAUDE.partial.md"
+    sed -e "s|<STACK_PRESET>|$PRESET|g" \
+        -e "s|<BOOTSTRAP_DATE>|$(date -u +%Y-%m-%d)|g" \
+        -e "s|<STANDARDS_PATH>|$LIB_ROOT|g" \
+        "$PRESET_DIR/CLAUDE.partial.md"
   } > "$TARGET/CLAUDE.md"
   echo "  create CLAUDE.md (template + $PRESET partial; fill remaining <ANGLE_BRACKET> blanks)"
   created=$((created + 1))
@@ -172,11 +175,10 @@ install_file "$LIB_ROOT/01-context/issue-templates/config.template.yml"         
 echo
 echo "Done: $created created, $skipped skipped (already existed)."
 echo "Next steps (full walkthrough: the 'Project setup after bootstrap' section of CLAUDE.md):"
-echo "  1. Scaffold the framework app if not done, then fill the <ANGLE_BRACKET> blanks in CLAUDE.md and docs/."
-echo "  2. Install the stack's dependencies — the canonical pnpm add lines are in CLAUDE.md's setup section."
-echo "  3. Install the gitleaks binary (brew install gitleaks | github.com/gitleaks/gitleaks/releases) — the pre-commit hook fails closed without it."
-echo "  4. Wire hooks: pnpm exec husky init (scripts already in .husky/), then make one test commit on a branch."
-echo "  4b. Turn on verified signing: bash scripts/configure-signing.sh (then commits/tags are signed)."
-echo "      Fill the <ANGLE_BRACKET> blanks in .github/CODEOWNERS, SECURITY.md, and ISSUE_TEMPLATE/config.yml."
-echo "  5. After the first push: run 'bash scripts/setup-branch-protection.sh' (needs gh, authenticated) to apply the required-checks ruleset — or follow the manual checklist in 05-verification/ci-pipeline.md."
+echo "  1. Follow CLAUDE.md's 'Project setup after bootstrap' section IN ORDER — it is the source of truth: install deps FIRST, then the app skeleton (do NOT run create-next-app in the non-empty dir), copy .env.example to .env.local, start the local DB ('docker compose up -d'), migrate, seed."
+echo "  2. Install the gitleaks binary (brew install gitleaks | github.com/gitleaks/gitleaks/releases) — the pre-commit hook fails closed without it."
+echo "  3. Wire hooks: pnpm exec husky init (scripts already in .husky/), then make one test commit on a branch."
+echo "  4. Turn on verified signing: bash scripts/configure-signing.sh (needs an SSH or GPG key — create one first if you have none)."
+echo "     Fill the <ANGLE_BRACKET> blanks in CLAUDE.md, docs/, and .github/ (CODEOWNERS, SECURITY.md, ISSUE_TEMPLATE/config.yml)."
+echo "  5. After the first push: run 'bash scripts/setup-branch-protection.sh' (needs gh, authenticated) — branch + tag protection + required signatures — or follow the manual checklist in 05-verification/ci-pipeline.md."
 echo "  6. Read $LIB_ROOT/00-governance/agent-operating-rules.md before letting an agent loose."

@@ -29,7 +29,7 @@ This project uses **`<STACK_PRESET>`** — see the merged stack rules below (app
 
 | Topic | Doc |
 |---|---|
-| Spec & scoping | `<STANDARDS_PATH>/02-product/spec.template.md`, `task-decomposition.md`, `acceptance-criteria.md` |
+| Spec & scoping | `<STANDARDS_PATH>/02-product/spec.template.md`, `<STANDARDS_PATH>/02-product/task-decomposition.md`, `<STANDARDS_PATH>/02-product/acceptance-criteria.md` |
 | Architecture & boundaries | `<STANDARDS_PATH>/03-design/architecture-standards.md` |
 | Data modeling | `<STANDARDS_PATH>/03-design/data-modeling.md` |
 | API contracts | `<STANDARDS_PATH>/03-design/api-contract-design.md` |

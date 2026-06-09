@@ -34,6 +34,10 @@
 
 <HARD_LIMITS the implementation must respect: performance budgets, compatibility, data rules, deadlines, security/threat-model requirements. "None beyond the standards" is a valid entry.>
 
+<!-- Design-time triggers — decide these now, while the design is cheap to change, not at code review:
+  - Security: if this touches a trust boundary, auth, money, secrets, PII, file handling, or a new input surface, check the trigger conditions in `03-design/threat-modeling.md` and, if any applies, complete `03-design/threat-model.template.md` as part of this spec.
+  - Abuse/cost: if this exposes a new publicly reachable mutating or expensive endpoint, decide its rate-limit + anti-automation strategy now per `03-design/rate-limiting-abuse.md` (it shapes the API contract). -->
+
 ## Decomposition note
 
 <HOW_THIS_SPLITS_INTO_PRS per `02-product/task-decomposition.md` — list the planned shippable units, or state it fits one PR.>

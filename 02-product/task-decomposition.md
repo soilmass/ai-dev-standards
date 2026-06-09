@@ -7,7 +7,7 @@ How a spec becomes a sequence of small, shippable units. Decomposition quality i
 1. **One concern per PR.** A PR does exactly one of: add a behavior, fix a defect, refactor structure, update dependencies, change config. Mixing concerns hides regressions in noise.
 2. **Every unit is shippable.** After each PR merges, `main` is releasable: the unit includes its tests, docs, and migration. "Part 1 of 3 (broken until part 3)" is not a unit — use a feature flag to keep incomplete features dark in production (`06-delivery/release-process.md`).
 3. **Vertical slices over horizontal layers.** Split by user-visible capability (one flow end-to-end), not by layer ("all the models, then all the endpoints"). A slice proves integration immediately.
-4. **Sequence by risk.** Do the unit that could invalidate the design first — the unknown integration, the performance question — not the easy CRUD.
+4. **Sequence by risk.** Do the unit that could invalidate the design first — the unknown integration, the performance question — not the easy CRUD. To surface the risks worth sequencing first, check the trigger conditions in `03-design/threat-modeling.md` before ordering; a threat model that's due is a design input that shapes the sequence, not a code-review afterthought.
 5. **Write the decomposition into the spec** (the spec template has a section for it) before the first PR; renegotiate it explicitly when reality disagrees.
 
 ## Sizing heuristics

@@ -60,11 +60,19 @@ jobs:
       - name: Build app
         run: pnpm build
       - name: Compare against committed screenshot baselines
-        # The 'visual' project is defined in playwright.config.ts (injected from
-        # project-config/playwright.config.example.ts at bootstrap). Baselines are
-        # created locally — `pnpm exec playwright test --project=visual --update-snapshots`
-        # — reviewed, and committed; CI only ever compares, never regenerates.
-        run: pnpm exec playwright test --project=visual --update-snapshots=none
+        # The per-viewport 'visual-*' projects are defined in playwright.config.ts
+        # (injected from project-config/playwright.config.example.ts at bootstrap):
+        # one project per responsive breakpoint width (320/768/1024/1280) so every
+        # surface is verified at multiple viewports, not one
+        # (03-design/responsive-layout-discipline.md). Baselines are created locally
+        # — `pnpm exec playwright test --project=visual-320 --project=visual-768
+        # --project=visual-1024 --project=visual-1280 --update-snapshots` — reviewed,
+        # and committed; CI only ever compares, never regenerates.
+        run: >-
+          pnpm exec playwright test
+          --project=visual-320 --project=visual-768
+          --project=visual-1024 --project=visual-1280
+          --update-snapshots=none
       - name: Upload diff artifacts on failure
         if: failure()
         uses: actions/upload-artifact@v4

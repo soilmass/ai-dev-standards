@@ -40,8 +40,8 @@ A passing E2E suite proves the app *works*; it says almost nothing about whether
 
 ## Enforcement
 - Mechanism: CI job
-- Config: stacks/nextjs-default/ci/nightly.yml (visual-regression job: compares against committed baselines with `--update-snapshots=none`, never regenerates) + stacks/nextjs-default/project-config/playwright.config.example.ts (the `visual` project and its per-page `maxDiffPixelRatio` drift tolerance)
+- Config: stacks/nextjs-default/ci/nightly.yml (visual-regression job: compares against committed baselines with `--update-snapshots=none`, never regenerates) + stacks/nextjs-default/project-config/playwright.config.example.ts (the per-viewport `visual-*` projects — one per responsive breakpoint width, per `03-design/responsive-layout-discipline.md` — and their `maxDiffPixelRatio` drift tolerance)
 - Fallback if unenforceable: n/a — the nightly visual-regression job compares against committed baselines and fails on out-of-tolerance pixel drift; baseline-review judgment rides the standing self-review checklist.
 
 ## Bootstrap
-- What new-project.sh injects for this standard: nothing — reference only (the nightly visual-regression job is injected by `04-build/testing-strategy.md`'s CI workflows, and the `visual` Playwright project with its drift tolerance is injected by the playwright config those workflows run).
+- What new-project.sh injects for this standard: nothing — reference only (the nightly visual-regression job is injected by `04-build/testing-strategy.md`'s CI workflows, and the per-viewport `visual-*` Playwright projects with their drift tolerance are injected by the playwright config those workflows run).

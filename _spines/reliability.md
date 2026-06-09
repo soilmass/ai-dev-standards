@@ -30,7 +30,7 @@ Reliability is not a layer — it's whether the system keeps its promise when so
 - **Exponential backoff with jitter** (AWS Architecture Blog) and **idempotency keys**: rule 2's safe-retry discipline — bounded, jittered, idempotent, so a blip isn't amplified into a self-inflicted storm.
 - **Graceful degradation / fault tolerance** (the long-standing resilience principle) and **expand–contract / parallel change** (Fowler) — the basis for rules 1, 3 (degrade visibly) and 4 (reversible migrations).
 - **3-2-1 backup rule + restore verification** (US-CERT/CISA backup guidance) — rule 5; a backup is only real once a restore has succeeded. Owned in `07-operations/backup-dr.md`.
-- Builds on `04-build/third-party-integrations.md` (the per-call resilience contract — owned there), `06-delivery/rollback.md` + `migration-discipline.md` (reversibility), `07-operations/*` (SLOs/incidents/backups), and `02-product/acceptance-criteria.md` (unhappy paths). This spine is the map that makes them one reliability story.
+- Builds on `04-build/third-party-integrations.md` (the per-call resilience contract — owned there), `06-delivery/rollback.md` + `06-delivery/migration-discipline.md` (reversibility), `07-operations/*` (SLOs/incidents/backups), and `02-product/acceptance-criteria.md` (unhappy paths). This spine is the map that makes them one reliability story.
 
 ## Enforcement
 - Mechanism: CI job

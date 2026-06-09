@@ -11,7 +11,7 @@ The inner loop — clone, run, change, see the result — is the multiplier on e
 ## A fast, trustworthy inner loop
 
 4. **The loop is fast and incremental.** Hot-reload for the app, watch-mode + the unit tier for tests; the per-change feedback a developer (or agent) waits on is seconds, not a full build. Slow feedback is a defect to fix, like a flaky test.
-5. **Seed data is a committed, idempotent script, never a manual ritual.** `pnpm db:seed` populates a representative-but-minimal dataset (enough to exercise the core loop), is safe to re-run (upsert/conflict-do-nothing), and **never targets production** — it writes rows. A shared SQL dump passed around in chat is not seed data.
+5. **Seed data is a committed, idempotent script, never a manual ritual.** The `db:seed` script populates a representative-but-minimal dataset (enough to exercise the core loop), is safe to re-run (upsert/conflict-do-nothing), and **never targets production** — it writes rows. A shared SQL dump passed around in chat is not seed data.
 6. **The feedback loop is the metric.** DORA/SPACE research ties developer throughput to fast feedback and low friction; treat onboarding-to-running time and inner-loop latency as numbers to keep low, and a regression in either as worth fixing.
 
 ## Standards basis

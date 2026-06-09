@@ -21,9 +21,9 @@ This:
 
 1. Assembles the project's `CLAUDE.md` from [`01-context/CLAUDE.template.md`](01-context/CLAUDE.template.md) + the preset's `CLAUDE.partial.md` (you fill the `<ANGLE_BRACKET>` blanks afterward);
 2. Copies the preset's known-good configs into place: lint config, CI workflows, git hooks, `dependabot.yml`, the boot-validated env schema (`env.schema.ts`, from `env.schema.example`), and the recursive `project-config/**` payload — tool configs (test runner, browser tests, ORM), test scaffolding (`tests/setup.ts`, the network-mock server + handlers, example unit/e2e/visual tests), `instrumentation.ts` (boot-time env validation), the `db/schema.ts` starter, `.gitignore`, and `.gitattributes`;
-3. Drops in the working templates (ADR, glossary, architecture map, spec, threat model, incident runbook, `docs/slos.md`, `docs/debt-log.md`) under `docs/`, the GitHub community-health set (`.github/CODEOWNERS`, `SECURITY.md`, `CONTRIBUTING.md`, `ISSUE_TEMPLATE/`), and two host-side helper scripts — `scripts/setup-branch-protection.sh` (branch + tag protection + required signatures) and `scripts/configure-signing.sh` (commit/tag signing).
+3. Drops in the working templates (ADR, glossary, architecture map, spec, threat model, incident runbook, `docs/slos.md`, `docs/debt-log.md`, `docs/launch-readiness.md`) under `docs/`, the GitHub community-health set (`.github/CODEOWNERS`, `SECURITY.md`, `CONTRIBUTING.md`, `ISSUE_TEMPLATE/`), and two host-side helper scripts — `scripts/setup-branch-protection.sh` (branch + tag protection + required signatures) and `scripts/configure-signing.sh` (commit/tag signing).
 
-It is idempotent (re-running refuses to clobber files you've edited) and prints everything it did. That's the whole bootstrap — no other meta-tooling required.
+It is idempotent (re-running refuses to clobber files you've edited) and prints everything it did. This library is the only meta-tooling required; the printed next-steps (install dependencies, the gitleaks binary, wire git hooks, run `configure-signing.sh` and `setup-branch-protection.sh`) then finish project setup.
 
 ## The four-test quality bar
 

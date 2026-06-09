@@ -267,6 +267,28 @@ else
   fi
 fi
 
+# --- d3. Never-stub check ----------------------------------------------------
+# Mechanically enforces root CLAUDE.md §2: no TODO/placeholder stubs in layer
+# docs. Colon-marker pattern (TODO:/FIXME:/XXX:) + a couple of stub phrases, so
+# prose that merely mentions the words (e.g. the rule itself) isn't flagged.
+# Templates are exempt (their <ANGLE_BRACKET> fill-ins are the point).
+section "d3. Never-stub check (no TODO/placeholder markers in layer docs)"
+STUB_REPORT="$WORK_DIR/stubs.out"
+: > "$STUB_REPORT"
+while IFS= read -r -d '' md; do
+  case "$md" in *.template.md) continue ;; esac
+  grep -HniE 'TODO:|FIXME:|XXX:|describe here|lorem ipsum' "$md" >>"$STUB_REPORT" 2>/dev/null || true
+done < <(find "$LIB_ROOT"/02-product "$LIB_ROOT"/03-design "$LIB_ROOT"/04-build \
+              "$LIB_ROOT"/05-verification "$LIB_ROOT"/06-delivery "$LIB_ROOT"/07-operations \
+              "$LIB_ROOT"/08-maintenance "$LIB_ROOT"/_spines -name '*.md' -type f -print0 2>/dev/null)
+if [[ -s "$STUB_REPORT" ]]; then
+  while IFS= read -r line; do
+    [[ -n "$line" ]] && fail "stub marker: ${line#"$LIB_ROOT"/}"
+  done < "$STUB_REPORT"
+else
+  echo "no stub markers in layer docs"
+fi
+
 # --- e. Bootstrap smoke test -------------------------------------------------
 section "e. Bootstrap smoke test (new-project.sh)"
 SMOKE_DIR="$WORK_DIR/smoke"
@@ -426,7 +448,7 @@ fi
 # --- summary -----------------------------------------------------------------
 echo
 if [[ $failures -eq 0 ]]; then
-  echo "OK: suite CI passed — footers, script syntax, config validity, calibration register, flow-back ledger, internal links, fragment anchors, bootstrap smoke test, and preset manifest coherence all clean."
+  echo "OK: suite CI passed — footers, script syntax, config validity, calibration register, flow-back ledger, internal links, fragment anchors, never-stub, bootstrap smoke test, and preset manifest coherence all clean."
 else
   echo "FAIL: $failures finding(s). Fix the reported issues above."
   exit 1

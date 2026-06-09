@@ -13,7 +13,7 @@ Compliance is not a layer — a framework like SOC 2 or ISO 27001 asks "show me 
 | Data protection & privacy (CC6 / privacy criteria / A.5.34, A.8.10–12) | `03-design/data-privacy.md` (classification, retention, DSR) | PII map, retention register, DSR test |
 | Logging & monitoring (CC7 / A.8.15–16) | `07-operations/observability.md`, `07-operations/audit-log-retention.md` | audit-log retention policy, alert config |
 | Availability & resilience (A1 / A.5.29–30, A.8.13–14) | `07-operations/slo-error-budgets.md`, `07-operations/backup-dr.md`, `_spines/reliability.md` | SLO doc, verified-restore log, DR drill record |
-| Incident management (CC7 / A.5.24–28) | `07-operations/incident-runbook.template.md`, `oncall-escalation.md` | runbooks, postmortems |
+| Incident management (CC7 / A.5.24–28) | `07-operations/incident-runbook.template.md`, `07-operations/oncall-escalation.md` | runbooks, postmortems |
 | Vendor / supplier risk (CC9 / A.5.19–23) | `04-build/third-party-integrations.md` (ADR + DPA/BAA) | integration ADRs, signed DPAs |
 | Risk assessment (CC3 / A.5.* clause 6) | `03-design/threat-modeling.md`, `08-maintenance/tech-debt-policy.md` | threat models, risk/debt log |
 

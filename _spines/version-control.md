@@ -51,7 +51,7 @@ Version control is not a layer — it's the substrate every layer commits throug
 
 ## Enforcement
 - Mechanism: git hook
-- Config: stacks/nextjs-default/hooks/pre-commit + hooks/commit-msg (commit/branch discipline) + stacks/nextjs-default/ci/pr.yml (required checks) — the mechanical subset; the host-side pieces (required checks, required signatures, tag protection) are applied by the injected scripts/setup-branch-protection.sh, and signing is configured by scripts/configure-signing.sh. Each layer row above names its own gate.
+- Config: stacks/nextjs-default/hooks/pre-commit + hooks/commit-msg (commit/branch discipline) + stacks/nextjs-default/ci/pr.yml (required checks) — the mechanical subset; the host-side pieces (required checks, required signatures, tag protection) are applied by the injected `scripts/setup-branch-protection.sh` (library source: 01-context/setup-branch-protection.template.sh), and signing by the injected `scripts/configure-signing.sh` (source: 01-context/configure-signing.template.sh). Each layer row above names its own gate.
 - Fallback if unenforceable: n/a — commit/branch rules are hook-gated, required checks + signatures + tag protection are branch-protection-gated once the helper is run, and the judgment pieces (community-health files filled, publish surface correct) ride the existing git and security fallback lines in the self-review checklist.
 
 ## Bootstrap

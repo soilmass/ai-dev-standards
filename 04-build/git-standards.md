@@ -1,6 +1,6 @@
 # Git Standards
 
-How history is shaped. Machine-checkable parts (commit format, branch names) are enforced by hooks; the rest is review discipline.
+How history is shaped. Machine-checkable parts (commit format, branch names) are enforced by hooks; the rest is review discipline. Commit/tag **signing**, the host-side protection configuration, `.gitattributes`, and the GitHub community-health files (CODEOWNERS, SECURITY, CONTRIBUTING, issue templates) are cross-cutting and owned by `_spines/version-control.md`.
 
 ## Branching model
 

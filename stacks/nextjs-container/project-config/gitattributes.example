@@ -1,0 +1,26 @@
+# Normalize line endings: the repo stores text as LF, and LF is forced on
+# checkout too, so Windows checkouts don't reintroduce CRLF and CI (Linux)
+# never sees spurious whole-file diffs. (gitattributes(5): `text`, `eol`.)
+* text=auto eol=lf
+
+# Shell scripts, hooks, and the Dockerfile MUST stay LF (CRLF breaks the build).
+*.sh       text eol=lf
+Dockerfile text eol=lf
+
+# Generated lockfile: keep it LF, hide it from `git diff`, and exclude it from
+# GitHub's language stats (it isn't authored code).
+pnpm-lock.yaml linguist-generated=true -diff text eol=lf
+
+# Binary assets: never normalize, never diff.
+*.png   binary
+*.jpg   binary
+*.jpeg  binary
+*.gif   binary
+*.webp  binary
+*.avif  binary
+*.ico   binary
+*.woff  binary
+*.woff2 binary
+*.ttf   binary
+*.otf   binary
+*.pdf   binary

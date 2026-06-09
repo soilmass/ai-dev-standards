@@ -91,6 +91,7 @@ Every tunable knob in the suite — thresholds, budgets, cadences, score floors,
 | CAL-E10 | BETTER_AUTH_SECRET min 32 chars | min 32 characters, with hint "openssl rand -base64 32" | stacks/nextjs-default/env.schema.example line 34 (z.string().min(32)) | 32 bytes of entropy is the standard floor for an auth signing secret and matches Better Auth's own generation guidance; the inline openssl hint steers the operator to base64-of-32-bytes, so the constraint and the recommended generator are consistent. | Raise the min only if Better Auth's documented minimum increases or it migrates to an algorithm requiring a longer key; no change needed on a schedule. |
 | CAL-E11 | Full-loss drill once before launch | Run the provider-account-gone drill once before launch; steps become the incident runbook | 07-operations/backup-dr.md rule 10 (line 27) | Doing the full account-loss drill once pre-launch is the minimum that proves the external dump is actually recoverable into a fresh deploy before real data exists, and capturing the steps as a runbook means the rehearsal pays off during a real incident; for a solo operator a recurring drill cadence would likely be skipped, so "once, and it produces an artifact" is the right floor. | Add a periodic (e.g. annual) re-drill if the hosting/provider topology changes materially, or after any incident where the existing runbook proved stale or wrong. |
 | CAL-E12 | Quarterly: re-confirm accepted-permanently debt/risk rows | Quarterly sweep: close paid rows, escalate grown ones, re-confirm "accepted permanently" rows still deserve it | 08-maintenance/tech-debt-policy.md rule 8 (line 21); debt-log.template.md line 3 | Quarterly re-confirmation keeps "accepted permanently" from becoming a silent permanent excuse, and aligning it with the quarterly SLO review and rotation cadence gives the solo operator a single periodic-maintenance ritual rather than several competing calendars. | Move to semi-annual only if quarterly sweeps consistently produce no changes to the accepted-permanently rows over a year; tighten if a permanently-accepted row ever causes an incident (signal the bar for that label is too low). |
+| CAL-E13 | Audit-log retention floor (security/trust events) | ≥ 1 year retained, ≈90 days immediately queryable (PCI DSS Req 10 baseline; binding regulation overrides upward) | 07-operations/audit-log-retention.md rule 7 | One year with a ~90-day hot window is the widely-applicable PCI DSS Req 10 baseline and a defensible default where no stricter rule binds; it is a floor (regulation/contract raises it), bounded above by storage-limitation (rule 8), not an open-ended hoard. Left unmanifested because the binding value is per-project/regulatory — set from each project's compliance reality, like the RPO/RTO and SLO example bounds. | Raise for any project under a stricter regime (HIPAA, financial-records, SOC 2 contractual); shorten the hot window only if query cost dominates and investigations never reach past 90 days across multiple real incidents; never below the binding regulatory minimum. |
 ## Observations
 
 The trigger↔reality surface: dated records of a recalibration trigger being checked against real data, and what followed. This is what makes "data-driven, not mood-driven" auditable — each row is a time a knob's trigger fired (or was checked and held). Currency passes append here.
@@ -173,3 +174,32 @@ Consumed by `scripts/check-calibration.sh` (kinds: `json` = dotted path into a J
 ```
 
 Knobs without a manifest entry are register-governed only — their rows above still carry the rationale and trigger, and the currency pass reviews them by hand. What is left unmanifested is genuinely unautomatable: pure-prose cadences ("quarterly", "twice a year", "same day"), per-project example bounds in the operations docs and templates (SLO/SLI targets, RPO/RTO, burn-alert windows — set from each project's measured reality, not a fixed library value), and choices expressed in prose rather than a config literal. Any knob that is a stable literal in a config file is manifested above, even when it appears more than once: the multi-valued artifact-retention and job-timeout knobs are anchored to their unique job/upload-step names rather than left out.
+
+## Tracked-files inventory
+
+The forcing function that stops a new calibrated knob from sneaking in *uncalibrated*: the list below is the exhaustive inventory of every file the manifest reads from. `scripts/check-calibration.sh` asserts this list and the manifest's file set are **identical** — a file appearing in one but not the other fails the build. The effect: adding a knob to a new config (a manifest entry pointing at a not-yet-listed file) forces you to consciously add that file here, and removing the last knob from a file forces you to drop it — neither side can drift silently. Keep this block in lockstep with the manifest, in the same commit (root `CLAUDE.md` §5).
+
+```calibration-tracked-files
+02-product/task-decomposition.md
+04-build/dependency-policy.md
+04-build/git-standards.md
+04-build/testing-strategy.md
+05-verification/a11y-perf-gates.md
+07-operations/backup-dr.md
+07-operations/slo-error-budgets.md
+08-maintenance/tech-debt-policy.md
+stacks/nextjs-container/ci/release.yml
+stacks/nextjs-container/project-config/Dockerfile.example
+stacks/nextjs-container/project-config/package.json.example
+stacks/nextjs-default/ci/lighthouserc.json
+stacks/nextjs-default/ci/nightly.yml
+stacks/nextjs-default/ci/pr.yml
+stacks/nextjs-default/ci/release.yml
+stacks/nextjs-default/dependabot.yml
+stacks/nextjs-default/env.schema.example
+stacks/nextjs-default/hooks/commitlint.config.mjs
+stacks/nextjs-default/lint-config/biome.json
+stacks/nextjs-default/project-config/package.json.example
+stacks/nextjs-default/project-config/playwright.config.example.ts
+stacks/nextjs-default/project-config/vitest.config.example.ts
+```

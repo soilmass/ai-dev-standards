@@ -1,6 +1,6 @@
 # Release Process
 
-How shipped code becomes a release: versioning, changelog, and feature flags. Built on the machine-parseable history that the commit standard guarantees.
+How shipped code becomes a release: versioning, changelog, and feature flags. Built on the machine-parseable history that the commit standard guarantees. The git/GitHub *mechanics* that carry a release — `v`-prefixed **signed, protected** tags, GitHub Releases creation, and **package publishing** (npm provenance + publish metadata) — are owned by `_spines/version-control.md`; this doc owns the versioning *scheme*, the changelog, and feature flags.
 
 ## Versioning
 

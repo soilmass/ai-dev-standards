@@ -153,6 +153,120 @@ else
   echo "all relative markdown links resolve"
 fi
 
+# --- d2. Fragment anchor check ------------------------------------------------
+# Section d proves the file half of every relative link resolves; it deliberately
+# strips the #fragment. This section proves the OTHER half: every in-repo
+# [text](file#frag) / [text](#frag) anchor names a heading that actually exists in
+# the target doc (GitHub's slug algorithm). Catches the silent rot a Markdown
+# renderer swallows — a link to #a-heading-that-was-renamed scrolls nowhere.
+section "d2. Fragment anchor check (#targets resolve to headings)"
+ANCHOR_REPORT="$WORK_DIR/anchors.out"
+if python3 - "$LIB_ROOT" >"$ANCHOR_REPORT" 2>&1 <<'PYEOF'
+import os, re, sys
+
+lib_root = sys.argv[1]
+
+INLINE_CODE = re.compile(r"`([^`]*)`")
+BOLD = re.compile(r"\*\*([^*]+)\*\*")
+ITAL = re.compile(r"\*([^*]+)\*")
+MDLINK = re.compile(r"\[([^\]]*)\]\([^)]*\)")
+NONSLUG = re.compile(r"[^\w\s-]", re.UNICODE)
+HEADING = re.compile(r"^(#{1,6})\s+(.*?)\s*#*\s*$")
+# [text](target) link extractor — target captured up to the first ) or whitespace.
+LINK = re.compile(r"\]\(([^)\s]+)")
+
+def slug(text):
+    text = INLINE_CODE.sub(r"\1", text)
+    text = BOLD.sub(r"\1", text)
+    text = ITAL.sub(r"\1", text)
+    text = MDLINK.sub(r"\1", text)
+    text = text.strip().lower()
+    text = NONSLUG.sub("", text)
+    return text.replace(" ", "-")
+
+def anchors_for(path):
+    """Return the set of GitHub heading slugs in a markdown file (deduped)."""
+    slugs, counts, in_fence = set(), {}, False
+    try:
+        lines = open(path, encoding="utf-8").read().splitlines()
+    except OSError:
+        return None
+    for ln in lines:
+        if ln.lstrip().startswith("```"):
+            in_fence = not in_fence
+            continue
+        if in_fence:
+            continue
+        m = HEADING.match(ln)
+        if not m:
+            continue
+        base = slug(m.group(2))
+        if not base:
+            continue
+        n = counts.get(base, 0)
+        slugs.add(base if n == 0 else f"{base}-{n}")
+        counts[base] = n + 1
+    return slugs
+
+# Cache slug sets per file so a doc linked many times is parsed once.
+cache = {}
+def get_anchors(path):
+    if path not in cache:
+        cache[path] = anchors_for(path)
+    return cache[path]
+
+findings = 0
+for dirpath, dirnames, filenames in os.walk(lib_root):
+    dirnames[:] = [d for d in dirnames if d not in (".git", "node_modules")]
+    for fn in filenames:
+        if not fn.endswith(".md"):
+            continue
+        md = os.path.join(dirpath, fn)
+        rel = os.path.relpath(md, lib_root)
+        in_fence = False
+        for raw in open(md, encoding="utf-8").read().splitlines():
+            if raw.lstrip().startswith("```"):
+                in_fence = not in_fence
+                continue
+            if in_fence:
+                continue
+            for target in LINK.findall(raw):
+                if "#" not in target:
+                    continue
+                if target.startswith(("http://", "https://", "mailto:")):
+                    continue
+                filepart, frag = target.split("#", 1)
+                if not frag:
+                    continue
+                if filepart == "":
+                    tgt = md                          # same-file anchor
+                elif filepart.startswith("/"):
+                    tgt = lib_root + filepart
+                else:
+                    tgt = os.path.normpath(os.path.join(dirpath, filepart))
+                if not tgt.endswith(".md"):
+                    continue                          # only markdown carries heading anchors
+                anchors = get_anchors(tgt)
+                if anchors is None:
+                    continue                          # missing file is section d's job, not ours
+                if frag not in anchors:
+                    print(f"{rel} -> {target} (no heading '#{frag}' in {os.path.relpath(tgt, lib_root)})")
+                    findings += 1
+
+sys.exit(1 if findings else 0)
+PYEOF
+then
+  echo "all markdown fragment anchors resolve"
+else
+  if [[ -s "$ANCHOR_REPORT" ]]; then
+    while IFS= read -r line; do
+      [[ -n "$line" ]] && fail "broken anchor $line"
+    done < "$ANCHOR_REPORT"
+  else
+    fail "fragment anchor check errored (see above)"
+  fi
+fi
+
 # --- e. Bootstrap smoke test -------------------------------------------------
 section "e. Bootstrap smoke test (new-project.sh)"
 SMOKE_DIR="$WORK_DIR/smoke"
@@ -184,8 +298,15 @@ else
     instrumentation.ts
     db/schema.ts
     .gitignore
+    .gitattributes
     docs/slos.md
     docs/debt-log.md
+    .github/CODEOWNERS
+    .github/SECURITY.md
+    .github/CONTRIBUTING.md
+    .github/ISSUE_TEMPLATE/bug_report.md
+    .github/ISSUE_TEMPLATE/feature_request.md
+    .github/ISSUE_TEMPLATE/config.yml
   )
   for artifact in "${expected[@]}"; do
     if [[ -s "$SMOKE_DIR/$artifact" ]]; then
@@ -200,6 +321,37 @@ else
     echo "  ok   .husky/pre-commit (executable)"
   else
     fail "bootstrap artifact missing or not executable: .husky/pre-commit"
+  fi
+
+  # Injected helper scripts must be executable and syntactically sound.
+  for helper in setup-branch-protection.sh configure-signing.sh; do
+    hp="$SMOKE_DIR/scripts/$helper"
+    if [[ -f "$hp" && -x "$hp" ]] && bash -n "$hp" 2>"$WORK_DIR/helper.err"; then
+      echo "  ok   scripts/$helper (executable, valid syntax)"
+    else
+      fail "bootstrap helper missing/not-executable/invalid: scripts/$helper $(cat "$WORK_DIR/helper.err" 2>/dev/null)"
+    fi
+  done
+
+  # Derivation smoke: run the helper in DRY_RUN with a stub gh and assert it
+  # actually extracts the PR job names from pr.yml (guards the indent-match bug class).
+  ghstub="$WORK_DIR/ghstub"
+  mkdir -p "$ghstub"
+  cat > "$ghstub/gh" <<'GHEOF'
+#!/usr/bin/env bash
+case "$*" in
+  *nameWithOwner*)    echo "smoke/repo" ;;
+  *defaultBranchRef*) echo "main" ;;
+esac
+GHEOF
+  chmod +x "$ghstub/gh"
+  if ( cd "$SMOKE_DIR" && PATH="$ghstub:$PATH" DRY_RUN=1 bash scripts/setup-branch-protection.sh ) >"$WORK_DIR/bp-dry.out" 2>&1 \
+       && grep -q 'Production build' "$WORK_DIR/bp-dry.out" \
+       && grep -q 'required_signatures' "$WORK_DIR/bp-dry.out" \
+       && grep -q 'protect-version-tags' "$WORK_DIR/bp-dry.out"; then
+    echo "  ok   setup-branch-protection.sh derives checks + plans signatures + tag protection"
+  else
+    fail "setup-branch-protection.sh DRY_RUN missing checks/signatures/tag-protection: $(tail -n 3 "$WORK_DIR/bp-dry.out" 2>/dev/null)"
   fi
 
   # Conditional: only assert tests/setup.ts if the preset ships test scaffolding.
@@ -252,10 +404,25 @@ for preset_dir in "$LIB_ROOT"/stacks/*/; do
   echo "  ok   preset '$preset' bootstraps to a sound shape"
 done
 
+# --- f. Preset manifest coherence --------------------------------------------
+# One level past "the files exist": every preset's package.json declares the
+# scripts the injected workflows invoke, and its tsconfig parses. The network
+# dependency-resolution proof is the scheduled preset-integration workflow's job
+# (RUN_INSTALL=1); here we run the offline half.
+section "f. Preset manifest coherence (check-presets.sh, no install)"
+if "$LIB_ROOT/scripts/check-presets.sh" >"$WORK_DIR/presets.out" 2>&1; then
+  echo "every preset's package.json scripts + tsconfig are coherent"
+else
+  while IFS= read -r line; do
+    [[ "$line" == FAIL:* ]] && fail "${line#FAIL: }"
+  done < "$WORK_DIR/presets.out"
+  [[ -s "$WORK_DIR/presets.out" ]] && sed 's/^/    /' "$WORK_DIR/presets.out"
+fi
+
 # --- summary -----------------------------------------------------------------
 echo
 if [[ $failures -eq 0 ]]; then
-  echo "OK: suite CI passed — footers, script syntax, config validity, calibration register, flow-back ledger, internal links, and bootstrap smoke test all clean."
+  echo "OK: suite CI passed — footers, script syntax, config validity, calibration register, flow-back ledger, internal links, fragment anchors, bootstrap smoke test, and preset manifest coherence all clean."
 else
   echo "FAIL: $failures finding(s). Fix the reported issues above."
   exit 1

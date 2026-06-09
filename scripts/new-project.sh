@@ -130,10 +130,11 @@ if [[ -d "$PRESET_DIR/project-config" ]]; then
     dir="$(dirname "$rel")"         # '.' for top-level files
     base="$(basename "$rel")"
     case "$base" in
-      gitignore.example) base=".gitignore" ;;
-      env.example)       base=".env.example" ;;          # dotfile devs copy to .env.local
-      *.example.*)       base="${base/.example./.}" ;;  # collapse the '.example.' segment only
-      *.example)         base="${base%.example}" ;;
+      gitignore.example)     base=".gitignore" ;;
+      gitattributes.example) base=".gitattributes" ;;
+      env.example)           base=".env.example" ;;       # dotfile devs copy to .env.local
+      *.example.*)           base="${base/.example./.}" ;; # collapse the '.example.' segment only
+      *.example)             base="${base%.example}" ;;
     esac
     if [[ "$dir" == "." ]]; then
       install_file "$f" "$TARGET/$base"
@@ -154,6 +155,18 @@ install_file "$LIB_ROOT/07-operations/incident-runbook.template.md" "$TARGET/doc
 install_file "$LIB_ROOT/07-operations/slos.template.md"          "$TARGET/docs/slos.md"
 install_file "$LIB_ROOT/08-maintenance/debt-log.template.md"     "$TARGET/docs/debt-log.md"
 
+# helper scripts -> project scripts/ (executable)
+install_file "$LIB_ROOT/01-context/setup-branch-protection.template.sh" "$TARGET/scripts/setup-branch-protection.sh" 755
+install_file "$LIB_ROOT/01-context/configure-signing.template.sh"       "$TARGET/scripts/configure-signing.sh" 755
+
+# GitHub community-health files -> .github/ (tool-agnostic; fill the <ANGLE_BRACKET> blanks)
+install_file "$LIB_ROOT/01-context/CODEOWNERS.template"      "$TARGET/.github/CODEOWNERS"
+install_file "$LIB_ROOT/01-context/SECURITY.template.md"     "$TARGET/.github/SECURITY.md"
+install_file "$LIB_ROOT/01-context/CONTRIBUTING.template.md" "$TARGET/.github/CONTRIBUTING.md"
+install_file "$LIB_ROOT/01-context/issue-templates/bug_report.template.md"      "$TARGET/.github/ISSUE_TEMPLATE/bug_report.md"
+install_file "$LIB_ROOT/01-context/issue-templates/feature_request.template.md" "$TARGET/.github/ISSUE_TEMPLATE/feature_request.md"
+install_file "$LIB_ROOT/01-context/issue-templates/config.template.yml"         "$TARGET/.github/ISSUE_TEMPLATE/config.yml"
+
 # --- summary ------------------------------------------------------------------
 echo
 echo "Done: $created created, $skipped skipped (already existed)."
@@ -162,5 +175,7 @@ echo "  1. Scaffold the framework app if not done, then fill the <ANGLE_BRACKET>
 echo "  2. Install the stack's dependencies — the canonical pnpm add lines are in CLAUDE.md's setup section."
 echo "  3. Install the gitleaks binary (brew install gitleaks | github.com/gitleaks/gitleaks/releases) — the pre-commit hook fails closed without it."
 echo "  4. Wire hooks: pnpm exec husky init (scripts already in .husky/), then make one test commit on a branch."
-echo "  5. After the first push: set branch protection per the checklist in 05-verification/ci-pipeline.md (Bootstrap section)."
+echo "  4b. Turn on verified signing: bash scripts/configure-signing.sh (then commits/tags are signed)."
+echo "      Fill the <ANGLE_BRACKET> blanks in .github/CODEOWNERS, SECURITY.md, and ISSUE_TEMPLATE/config.yml."
+echo "  5. After the first push: run 'bash scripts/setup-branch-protection.sh' (needs gh, authenticated) to apply the required-checks ruleset — or follow the manual checklist in 05-verification/ci-pipeline.md."
 echo "  6. Read $LIB_ROOT/00-governance/agent-operating-rules.md before letting an agent loose."

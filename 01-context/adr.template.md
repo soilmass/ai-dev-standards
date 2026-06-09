@@ -1,4 +1,5 @@
 <!-- Format: Michael Nygard's Architecture Decision Record (2011) — Status / Context / Decision / Consequences. Keep it short and immutable; supersede rather than rewrite. See adr.github.io. -->
+<!-- Use an ADR for a decision made on its merits. A shortcut taken under time pressure is NOT an ADR — log it in docs/debt-log.md with a paydown trigger (08-maintenance/tech-debt-policy.md). See 03-design/architecture-standards.md rules 11–13. -->
 
 # ADR-<NUMBER>: <SHORT_DECISION_TITLE>
 

@@ -1,0 +1,13 @@
+# CODEOWNERS — who must review changes to each path.
+# When "Require review from Code Owners" is on in branch protection, GitHub
+# requests (and can require) the matching owner's review on every PR.
+# Format: <path glob>  <@owner...>. The LAST matching pattern wins.
+# Docs: https://docs.github.com/articles/about-code-owners
+
+# Default owner for everything not matched below.
+*   @<GITHUB_OWNER>
+
+# Tighten ownership per sensitive area as the team grows (examples — uncomment/edit):
+# /.github/**   @<GITHUB_OWNER>
+# /db/**        @<GITHUB_OWNER>
+# /docs/**      @<GITHUB_OWNER>

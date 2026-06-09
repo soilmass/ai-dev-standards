@@ -33,6 +33,7 @@ How a standard in this library is proposed, changed, versioned, and deprecated â
 - The library is versioned **as a whole** by git history; individual docs are not version-stamped.
 - Tag the repo (`vYYYY.MM[.N]` â€” the year-month, plus an incrementing sequence suffix when more than one enforcement-altering batch ships in the same month) after any change-batch that alters enforcement behavior, so a project can record which library snapshot it bootstrapped from.
 - Projects record their bootstrap snapshot in their `CLAUDE.md` (the bootstrap script stamps the date); they upgrade by re-diffing against the current library, not by silently inheriting changes.
+- How this repo's own tagging/signing/release practice relates to the git/GitHub standard it ships is recorded rule-by-rule in `repo-operating-model.md`.
 
 ## 5. Deprecating a standard
 

@@ -1,0 +1,23 @@
+name: Preset integration
+
+# Deeper than suite-ci's syntactic bootstrap smoke: bootstraps every stack preset
+# and resolves its pinned dependency graph for real (RUN_INSTALL=1), proving the
+# peer set a fresh project receives actually installs (the FB-01 class of bug).
+# Needs network, so it runs on a weekly schedule + on demand rather than per-push.
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 4 * * 1' # Mondays 04:00 UTC, off-peak
+
+jobs:
+  presets:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Bootstrap + resolve every preset
+        run: RUN_INSTALL=1 bash scripts/check-presets.sh

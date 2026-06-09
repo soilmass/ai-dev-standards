@@ -1,0 +1,14 @@
+# OS cruft
+.DS_Store
+Thumbs.db
+
+# Editor / IDE
+.idea/
+.vscode/
+*.swp
+*~
+
+# Local scratch & logs (the scripts mktemp under the system tmp dir, not here,
+# but guard against stray local runs)
+*.log
+/tmp-*/

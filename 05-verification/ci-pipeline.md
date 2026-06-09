@@ -50,7 +50,7 @@ A production deploy never proceeds without a green run of the nightly tier (trig
 The bootstrap cannot set host-side repository settings; do this once after the first push (Settings → Branches → add a rule for `main`, or the equivalent ruleset):
 
 1. Require a pull request before merging (no direct pushes — mirrors the local hook).
-2. Require status checks to pass, and mark **all PR jobs** required. With this preset the check names are: `Lint & format (Biome)`, `Type check (tsc, strict)`, `Unit + component tests (Vitest, a11y included)`, `Secret scan (gitleaks)`, `PR size gate`, `Dependency audit + license allowlist`, `Migration discipline guard`, `Docs-updated check`, `Production build`, `Lighthouse CI (preview deploy)`.
+2. Require status checks to pass, and mark **all PR jobs** required. With this preset the check names are: `Lint & format (Biome)`, `Type check (tsc, strict)`, `Unit + component tests (Vitest, a11y included)`, `Secret scan (gitleaks)`, `PR size gate`, `Dependency audit + license allowlist`, `Supply chain (SBOM + dependency review)`, `Migration discipline guard`, `Docs-updated check`, `Production build`, `Lighthouse CI (preview deploy)`. The injected `scripts/setup-branch-protection.sh` (step below) derives this list straight from `pr.yml`, so it stays correct even if the job set changes.
 3. Require branches to be up to date before merging.
 4. Block force pushes and deletions on `main`.
 5. Do **not** allow administrators to bypass — solo means you're the admin; an escape hatch for you is an escape hatch for every agent run.
@@ -68,4 +68,4 @@ The bootstrap cannot set host-side repository settings; do this once after the f
 - Fallback if unenforceable: n/a — the pipeline is self-enforcing once branch protection marks every PR stage required (checklist above).
 
 ## Bootstrap
-- What new-project.sh injects for this standard: the workflow files (PR, nightly, release) into `.github/workflows/` and `lighthouserc.json` at the project root. Branch protection is the one manual step — the checklist above, linked from the bootstrap output's next-steps.
+- What new-project.sh injects for this standard: the workflow files (PR, nightly, release) into `.github/workflows/` and `lighthouserc.json` at the project root, plus `scripts/setup-branch-protection.sh` which applies the required-checks ruleset via the GitHub API (derives the check list from `pr.yml`). Branch protection still requires running that one script (or the manual checklist above) after the first push — host-side settings the bootstrap can't set itself; it's linked from the bootstrap output's next-steps.

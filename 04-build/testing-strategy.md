@@ -16,6 +16,22 @@ What gets tested, where, and how much. The shape is a pyramid: many fast unit/co
 - **Every PR:** unit + component + integration suites green, with the coverage gate (below). Accessibility unit checks run in this tier (see `05-verification/a11y-perf-gates.md`).
 - **Nightly / pre-deploy:** full E2E suite + visual regression (see `05-verification/ci-pipeline.md`). A production deploy never skips the pre-deploy run.
 
+## What each tier must cover
+
+The pyramid says where a test *can* live; this says what each tier *owes*. Coverage percentage is a floor against erosion (below); this is the qualitative obligation that the percentage can't express — a suite can hit 70% and still never test a single deny path.
+
+| Tier | Owes coverage of |
+|---|---|
+| Unit | Every branch of business/validation logic; the edge cases the logic implies (empty, null/undefined, zero, boundary, duplicate); **both sides of every decision** — a guard tested only on its allow path is half-tested. |
+| Component | Each component's distinct states — loading, empty, error, populated — and its keyboard/ARIA interactions (the a11y checks of `05-verification/a11y-perf-gates.md`), not just the happy render. |
+| Integration | Every data-access path against a scratch DB, and every API handler's **success + auth-failure + validation-failure** responses — the seam is where the authorization decision and the error envelope (`03-design/api-contract-design.md`) are actually proven. |
+| E2E | Every revenue-critical journey end-to-end (the crown below), each exercised once as the real user flows it. |
+
+Two obligations cut across the tiers:
+
+- **Authorization is tested at both verdicts.** Every permission/role/ownership check has a test proving the allowed actor succeeds *and* the forbidden actor is refused, at the tier where the check lives (`_spines/security-privacy.md`). An authz check with only a positive test is the most expensive untested line in the codebase.
+- **Coverage follows risk, not lines.** Security-relevant code — authorization, input parsing at the boundary, money/credits, file handling — earns explicit allow-and-deny and malformed-input tests regardless of what the coverage number already says; low-risk glue does not need tests written to chase the percentage. The threat model's mitigations (`03-design/threat-modeling.md`) each map to a test that would fail if the mitigation were removed.
+
 ## The E2E-scope rule
 
 Keep the E2E suite at **≈20–30 tests covering revenue-critical paths only** — sign-up/sign-in, the core value loop, checkout/payment, anything whose breakage is an incident. E2E tests are the most expensive to run and maintain; breadth belongs in the lower tiers. A new E2E test must displace a marginal one or justify growing the suite.

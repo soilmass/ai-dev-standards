@@ -26,7 +26,7 @@ You can't operate what you can't see. This doc sets the conventions for logs, me
    - **Source maps uploaded per release and events tagged with the release/commit ID** — an unsymbolicated minified stack is noise, and untagged events can't answer "did the last deploy cause this?".
    - **User-impact counts, not raw event counts**, drive triage: 1 error × 10,000 users outranks 10,000 errors × 1 user.
    - The SDK's redaction config upholds rule 5 (no PII/secrets in error payloads — scrub URLs, form values, request bodies).
-10. Real-user monitoring collects Core Web Vitals **from the field**, reported through the framework's built-in vitals hook into the analytics/error pipeline (no second SDK needed to start). The lab budgets in `05-verification/a11y-perf-gates.md` are gates; field data is the truth they approximate — review field p75 against the same thresholds when SLOs are set (`docs/slos.md`).
+10. Real-user monitoring collects Core Web Vitals **from the field**, reported through the framework's built-in vitals hook into the analytics/error pipeline (no second SDK needed to start). The lab budgets in `05-verification/a11y-perf-gates.md` are gates; field data is the truth they approximate — review field p75 against the same thresholds when SLOs are set (`docs/slos.md`). The product-event taxonomy and success-metric side of this telemetry — including the RUM segmentation discipline — lives in `07-operations/product-analytics.md`.
 
 ## Alerting
 

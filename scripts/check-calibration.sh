@@ -119,13 +119,42 @@ for entry in manifest:
         cfail(f"{eid}: target '{basename}' not named in row {base}'s Where column "
               f"(row points elsewhere — id/knob mismatch)")
 
+# --- Inventory: tracked-files block must equal the manifest's file set -------
+# Stops a new calibrated knob sneaking in uncalibrated: the ```calibration-tracked-files
+# block is the declared inventory of every file the manifest reads; it must match
+# the actual set of manifested files exactly (both directions), and each must exist.
+inventory = 0
+def ifail(msg):
+    global inventory
+    inventory += 1
+    print(f"INVENTORY {msg}")
+
+im = re.search(r"```calibration-tracked-files\n(.*?)\n```", text, re.DOTALL)
+if not im:
+    ifail("no ```calibration-tracked-files block in calibration.md")
+    declared = set()
+else:
+    declared = {ln.strip() for ln in im.group(1).splitlines() if ln.strip()}
+
+manifested = {e.get("file") for e in manifest if e.get("file")}
+for f in sorted(manifested - declared):
+    ifail(f"{f}: read by the manifest but absent from the tracked-files inventory")
+for f in sorted(declared - manifested):
+    ifail(f"{f}: listed in tracked-files but no manifest entry reads it")
+for f in sorted(declared):
+    if not os.path.exists(f"{lib_root}/{f}"):
+        ifail(f"{f}: listed in tracked-files but missing on disk")
+
 print()
-if failures or coherence:
+if failures or coherence or inventory:
     if failures:
         print(f"FAIL: {failures} drifted/unresolvable of {checked} calibration entries.")
     if coherence:
         print(f"FAIL: {coherence} manifest↔row coherence issue(s).")
+    if inventory:
+        print(f"FAIL: {inventory} tracked-files inventory mismatch(es).")
     print("Re-align the file and 00-governance/calibration.md in the same commit.")
     sys.exit(1)
-print(f"OK: {checked} calibration entries verified — values agree and every manifest id maps to its row.")
+print(f"OK: {checked} calibration entries verified — values agree, every manifest id maps to its row, "
+      f"and the tracked-files inventory matches the manifest ({len(declared)} files).")
 PYEOF

@@ -21,6 +21,7 @@ Equivalent checkable forms are fine (invariant statements, example tables) as lo
 - Every spec scope bullet has at least one criterion; every criterion traces back to a scope bullet. Orphans on either side mean the spec is out of date.
 - Cover the unhappy paths explicitly: invalid input, unauthorized access, empty states, failure of an external dependency. Most production bugs live where criteria were only written for success.
 - Criteria for non-functional requirements point at the standing gates rather than restating them (e.g. "meets the performance budgets" — `05-verification/a11y-perf-gates.md`).
+- **Regulated features carry compliance criteria.** A feature touching PII, payments, or otherwise regulated data has criteria covering its data classification, retention period, data-subject-rights satisfiability, and breach-notification scope — pointing at `03-design/data-privacy.md` and `_spines/security-privacy.md` rather than restating them, so the compliance obligation is a checkable contract, not an assumption.
 - Each criterion maps to at least one automated test, or — where automation is genuinely impossible — a named manual verification step recorded in the PR.
 - Write criteria **before** implementation. Criteria written after the code passes describe the code, not the requirement.
 

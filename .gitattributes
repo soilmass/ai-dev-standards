@@ -1,0 +1,7 @@
+# This library practices the line-ending normalization it ships
+# (_spines/version-control.md). Text is LF in the repo and on checkout, so a
+# Windows clone can't reintroduce CRLF and CI never sees a spurious diff.
+* text=auto eol=lf
+
+# Shell scripts MUST stay LF or they won't execute.
+*.sh text eol=lf

@@ -24,6 +24,12 @@ Layering, dependency direction, and module boundaries — the rules that keep a 
 9. Architectural decisions — new layer, new service, new boundary — get an ADR before the implementing PR.
 10. Frameworks live at the edges: domain logic that imports the framework is domain logic you can't test cheaply or move (the testing strategy depends on this rule).
 
+## Deviations & when a decision needs an ADR
+
+11. **A deviation from a standard or a pinned default is never silent.** It is exactly one of two things, and you must say which: an **ADR** (a decision made on its merits, with the accepted tradeoff written down) or **debt** (a shortcut taken under pressure, logged with a paydown trigger in `08-maintenance/tech-debt-policy.md`). The test: would you choose this again with unlimited time? Yes → ADR. No → debt. "We just did it this way" is the only wrong answer.
+12. **ADR and debt-log are not interchangeable.** An ADR is forward-looking and durable (it stays the decision until superseded); a debt entry is a known wrong that has a trigger to remove it. Filing a real shortcut as an ADR launders debt into "architecture"; filing a genuine decision as debt schedules pointless rework. Pick by intent, not by which doc is closer to hand.
+13. **What earns architecture review (ADR + map update) vs. lint-only review.** Most diffs need only the lint gate and the layer-review prompts below. A change earns a full architecture review — an ADR *before* the implementing PR (rule 9) and an architecture-map update in the same PR (rule 8) — when it does any of: introduces a new layer, module boundary, or service; reverses or crosses a dependency-direction rule (rule 2); adds a new external runtime dependency (`04-build/third-party-integrations.md`); adds or moves a cross-cutting concern (rule 3); or changes a pinned default (`00-governance/pinned-decisions.md`). When unsure, the cost of a three-paragraph ADR is far below the cost of an unexamined boundary.
+
 ## Layer-review prompts
 
 The lint only catches deep relative imports; full layering is review-carried. Apply these to every diff (reviewer or agent):
@@ -32,6 +38,7 @@ The lint only catches deep relative imports; full layering is review-carried. Ap
 - Does new code reach into another module's internals instead of its entry/index? (Rule 4.)
 - Did a new boundary, component, or external dependency update the architecture map? (Rule 8.)
 - Is framework code creeping inward past the edges into domain logic? (Rule 10.)
+- Does this diff deviate from a standard or pinned default? If so, is the deviation filed as an ADR (decision on merits) or as debt with a paydown trigger — and is it the right one of the two? (Rules 11–13.)
 
 ## Standards basis
 
@@ -39,7 +46,7 @@ The lint only catches deep relative imports; full layering is review-carried. Ap
 - **Hexagonal / Ports & Adapters** (A. Cockburn, 2005): the application core is reached only through ports, with adapters at the boundary; isomorphic to Clean's rings. Grounds the "interface/infrastructure are adapters around an untouched domain" framing.
 - **C4 model** (Simon Brown, https://c4model.com): hierarchical Context → Container → Component → Code views as the model-as-code description of structure. The architecture map (rule 8) is the project's C4-style Component/Container record; new boundaries update it in the same PR.
 - **12-Factor App** (https://12factor.net): III (config in the environment), IV (backing services as attached resources) underpin rule 12's single config/single cross-cutting module and the "infrastructure at the edge" placement.
-- **ADR** (Architecture Decision Records, M. Nygard): one immutable record per significant decision — basis for rule 9 (an ADR precedes the implementing PR).
+- **ADR** (Architecture Decision Records, M. Nygard): one immutable record per significant decision — basis for rule 9 (an ADR precedes the implementing PR) and rules 11–13 (a deviation is an ADR or logged debt, never silent; the ADR/debt-log split; what earns a full architecture review).
 
 ## Enforcement
 - Mechanism: lint rule
